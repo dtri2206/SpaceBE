@@ -1,6 +1,7 @@
 // Role 1: Rocket Builder. Owns MENU, HANGAR and GONOGO (contract.js STATE_OWNERS). See README-ARCH.md.
-// HANGAR is the engineering bay: a round integration hall the engineer walks through in first person, with one
-// machine per job (integration stand, propulsion, structures, crew systems, warehouse, test stand, range, handbook).
+// HANGAR is a VAB high bay (hangarScene.js): the real ship on its launch mount inside wrapping work decks, and a bank
+// of four consoles the engineer walks to in first person: WINDOW & WEATHER (the launch pad desk), SPACECRAFT DESIGN
+// (the design page), ENGINE TEST & SIM (static fire) and LAUNCH DIRECTOR (the readiness poll, GONOGO).
 import './builder.css';
 import { assets, graphics } from '/src/graphics/index.js';
 import { audio } from '/src/audio/index.js';
@@ -186,7 +187,7 @@ function ensureBay() {
   if (!modelsPromise) {
     // only the models of the parts on the stand download now; the rest arrive when a part is placed or looked at
     const onStand = [...new Set(ensureAssembly().parts.map((p) => p.type))];
-    modelsPromise = requestArt(onStand).then(() => bay.decorate(catalog));
+    modelsPromise = requestArt(onStand);
   }
   return bay;
 }
@@ -206,24 +207,20 @@ function highlight(ids) {
   for (const partId of ids) events.emit('builder:highlightPart', { partId });
 }
 
-/** Pushes the current vehicle to the stand, the wall screen, the station screens and the tablet. */
+/** Pushes the current vehicle to the launch mount, the console screens and the tablet. */
 function syncBay(result) {
   const b = ensureBay();
   const a = ensureAssembly();
   b.setLayout(a.layout(), a.freeNodes());
   const stackHeight = a.stackHeight;
-  b.wall.setTelemetry({ spec: result.spec, breakdown: result.breakdown, poll: result.poll, money: economy.getMoney() });
-  b.wall.refresh(stackHeight);
   const s = result.spec.stats;
   const station = (id) => b.stations.find((st) => st.id === id);
   station('integration')?.setScreen({ lines: [`Vehicle: ${a.name}`, `${a.parts.length} parts · ${fmtInt(stackHeight * 10) / 10} m tall`, `Δv ${fmtInt(s.deltaV)} m/s · TWR ${s.twrEarth.toFixed(2)}`, `Cost ${fmtMoney(s.cost)}`], status: { text: result.blocks.length ? 'BLOCKED' : 'READY', color: result.blocks.length ? '#f87171' : '#4ade80' } }); // hard blocks only: no hints while building
-  const eng = result.breakdown.engineSpecs[0];
-  station('propulsion')?.setScreen({ lines: eng ? [`Engine: ${eng.fuel} · ${eng.nozzle} nozzle · pump ${eng.pump}`, `Thrust ${fmtInt(eng.thrust / 1000)} kN · Isp ${eng.ispSL}/${eng.ispVac} s`, `Propellant ${fmtInt(s.fuelMass)} kg`] : ['No engine installed.'] });
-  station('structures')?.setScreen({ lines: [`Heat shield: ${s.hasHeatShield ? (s.heatShieldDamaged ? 'ceramic tiles (fragile)' : 'ablative') : 'NONE'}`, `Legs: ${s.hasLegs ? 'yes' : 'NO'} · Parachute: ${s.hasParachute ? 'yes' : 'no'}`, `Stability: ${result.breakdown.copY < result.breakdown.comY ? 'stable' : 'UNSTABLE'}`] });
-  station('crew')?.setScreen({ lines: [`Spare O₂ ${s.spareO2Tanks} · Shelter ${s.hasShelter ? 'yes' : 'NO'}`, `Antenna ${s.hasAntenna ? 'yes' : 'NO'} · Power ${fmtInt(s.power)} W`, `Reliability ${fmtInt(s.reliability * 100)} %`] });
   station('teststand')?.setScreen({ lines: [`TWR ${s.twrEarth.toFixed(2)} · Δv ${fmtInt(s.deltaV)} m/s`, `Static fire ${fmtMoneyShort(staticFireFee(result.breakdown))}`, result.poll.blocks.length ? `${result.poll.blocks.length} hard block(s)` : 'Stand ready'] });
   station('launchwindow')?.setScreen({ lines: [`Window: ${result.breakdown.slot?.name}`, `${fmtInt(result.breakdown.slot?.tempC)} °C · fees ${fmtMoney(result.breakdown.slot?.fee ?? 0)}`, s.coldRatedSeals ? 'Seals: cold-rated' : 'Seals: CHEAP, not rated below 5 °C'] });
-  station('warehouse')?.setScreen({ lines: [`${catalog.parts.length} part types in stock`, `Funds ${fmtMoney(economy.getMoney())}`] });
+  // the launch director's board: the readiness at a glance (hard blocks only: no hints while building)
+  const { poll } = result;
+  station('director')?.setScreen({ lines: [`Vehicle: ${a.name}`, `Cost ${fmtMoney(s.cost)} · Funds ${fmtMoney(economy.getMoney())}`, ...poll.blocks.map((id) => ({ text: `✖ ${id.replace(/_/g, ' ')}`, color: '#f87171' })), poll.blocks.length ? 'The poll will refuse.' : 'The readiness poll runs at this console.'], status: { text: poll.blocks.length ? 'HOLD' : 'READY', color: poll.blocks.length ? '#f87171' : '#4ade80' } });
   b.player.setTablet({ title: a.name, lines: [`Cost ${fmtMoney(s.cost)} · Funds ${fmtMoney(economy.getMoney())}`, `Δv ${fmtInt(s.deltaV)} m/s`, `TWR ${s.twrEarth.toFixed(2)} · Reliability ${fmtInt(s.reliability * 100)} %`, result.blocks.length ? `Blocked: ${result.blocks.join(', ')}` : result.reuse ? `Reflight ${result.reuse.flights + 1} · wear ${fmtInt(result.reuse.mean * 100)} %` : 'Ready for the poll'] });
 }
 
@@ -238,8 +235,8 @@ function enterHangar() {
     assembly: a, catalog, sections, materials, engines, launch, text, scene: b, scene3d, g0: G0, icons, stations: b.stations, getMoney: () => economy.getMoney(), insolvencyFloor: economy.balance.insolvencyFloor ?? 0,
     hooks: {
       onChange: refresh,
-      onView: (s, c) => graphics.setView(s, c),
-      onViewRestore: () => graphics.setView(b.scene, b.camera),
+      onView: (s, c) => { b.setActive(false); graphics.setView(s, c); },
+      onViewRestore: () => { b.setActive(true); graphics.setView(b.scene, b.camera); },
       onNeedArt: (ids) => requestArt(ids),
       onSound: (id) => audio.play(id),
       onGonogo: () => { audio.play('ui.click'); requestState('GONOGO'); },
@@ -259,9 +256,9 @@ function enterHangar() {
       onStationOpen: (id) => {
         input.unlockPointer();
         audio.play('ui.click');
-        if (id === 'teststand' || DESIGN_STATIONS.includes(id)) b.player.lookAt(0, 0, 0.1);
+        b.sit(id); // back to the ship, facing the desk
       },
-      onStationClose: () => audio.play('ui.click'),
+      onStationClose: () => { audio.play('ui.click'); b.standUp(); }, // stand up and turn round: the ship from below
     },
   });
   ui.mount(hangar.el);
@@ -412,16 +409,14 @@ function enterHangar() {
     const noLight = found.some((d) => d.kind === 'noLight');
     const version = a.version, unitsAt = unitsKey();
     hangar.closeStation();
-    // step up to the railing on the test conductor's side, where the engine and the clamps are in view
-    const st = b.stations.find((s) => s.id === 'teststand');
-    if (st) { const p = b.hall.pitRadius + 1.4; b.player.teleport(Math.cos(st.deg * Math.PI / 180) * p, Math.sin(st.deg * Math.PI / 180) * p); }
-    b.player.lookAt(0, 0, -0.12);
+    // the decks and the crew arm swing back, and the test conductor watches the engines from the console bank
+    b.watchTest();
     const phaseText = { countdown: 'T-3… hold-down clamps locked', ignition: noLight ? 'IGNITION… an engine will not come up' : 'IGNITION', hold: 'Full thrust · clamps holding · measuring', release: 'CLAMPS RELEASED', cutoff: 'CUTOFF', settle: 'Securing the vehicle' };
     b.test.start({
       spec: flown.spec, breakdown: result.breakdown, layout: a.layout(),
       thrustFactor: flown.designed.thrust > 0 ? flown.asBuilt.thrust / flown.designed.thrust : 1,
       onPhase: (phase) => hangar.setTestStatus(`STATIC FIRE · ${phaseText[phase] ?? phase}`),
-      onDone: (report) => { hangar.showTestResult({ ...report, fee, found, rated: flown.designed, version, units: unitsAt }); hangar.openStation('teststand'); input.unlockPointer(); },
+      onDone: (report) => { b.closeDecks(); hangar.showTestResult({ ...report, fee, found, rated: flown.designed, version, units: unitsAt }); hangar.openStation('teststand'); input.unlockPointer(); },
     });
     hangar.setTestStatus('STATIC FIRE · T-3… hold-down clamps locked');
   }
@@ -442,11 +437,8 @@ function enterHangar() {
     boardRec = rec;
     hangar.closeStation();
     input.unlockPointer();
-    // stand back from the stand so the whole vehicle shows on the right of the board, where the parts to look at glow
-    const deg = (22 * Math.PI) / 180, r = b.hall.pitRadius + 4.5;
-    const x = Math.cos(deg) * r, z = Math.sin(deg) * r;
-    b.player.teleport(x, z, Math.atan2(x, z) + 0.3);
-    b.player.setPitch(0.3);
+    // stand back at the console bank so the whole vehicle shows on the right of the board, where the parts to look at glow
+    b.standBack();
   }
   function openBoard(rec) {
     if (!rec) return;
@@ -491,7 +483,10 @@ function enterHangar() {
     input.onPress('KeyE', () => {
       if (hangar.station || b.test.active || board) return;
       const s = b.nearestStation();
-      if (s) hangar.openStation(s.id);
+      if (!s) return;
+      // the launch director's console runs the readiness poll (GONOGO) from the seat
+      if (s.action === 'gonogo') { input.unlockPointer(); b.sit(s.id); audio.play('ui.click'); requestState('GONOGO'); return; }
+      hangar.openStation(s.id);
     }),
     input.onPress('KeyH', () => { if (hangar.station === 'handbook') hangar.closeStation(); else if (!b.test.active && !board) { hangar.openStation('handbook'); } }),
     input.onPress('KeyZ', () => { if (DESIGN_STATIONS.includes(hangar.station) && a.undo()) { audio.play('ui.click'); refresh(); } }),
@@ -530,6 +525,7 @@ function enterHangar() {
       offs.forEach((off) => off());
       window.removeEventListener('click', lockOnClick);
       b.test.cancel();
+      b.closeDecks();
       closeBoard();
       lens.dispose();
       hangar.dispose();
@@ -538,6 +534,9 @@ function enterHangar() {
     },
   };
   refresh();
+  // back from the poll (BACK): stand up from the director's console; back from a flight: the decks are closed again
+  if (b.seated) b.standUp();
+  b.closeDecks({ instant: true });
   // back from a flight: the investigation board (a failure) or the flight analysis (a success) opens beside the stand
   const due = luck().flights.at(-1);
   if (due?.outcome?.final && !due.seen) {
@@ -559,7 +558,7 @@ function enterGonogo() {
   const b = ensureBay();
   b.setLayout(a.layout(), []);
   b.select(null);
-  b.placeAtStation('teststand');
+  b.sit('director', { instant: true }); // the poll runs at the launch director's console
   b.update(0, { frozen: true });
   graphics.setView(b.scene, b.camera);
   audio.play('ambience.ship', { loop: true, volume: 0.3 });
@@ -583,6 +582,7 @@ function enterGonogo() {
   let view = null;
   let done = false;
   let launching = false;
+  let left = false;
 
   function runPoll(preface = []) {
     view?.dispose();
@@ -661,7 +661,10 @@ function enterGonogo() {
     setShip(flown.spec);
     events.emit('ship:built', { shipSpec: flown.spec });
     audio.play('ui.snap');
-    requestState('PRELAUNCH');
+    // GO: the director stands up and turns round, the work decks roll back top-down with a rumble and smoke at
+    // their tracks, then the launch campaign goes on (PRELAUNCH, Role 4)
+    root.style.display = 'none';
+    b.startLaunch();
   }
 
   /**
@@ -692,7 +695,11 @@ function enterGonogo() {
   runPoll();
 
   screen = {
-    update: (dt) => { view?.update(dt); b.update(dt, { frozen: true }); },
+    update: (dt) => {
+      view?.update(dt);
+      b.update(dt, { frozen: true });
+      if (launching && b.launchDone && !left) { left = true; requestState('PRELAUNCH'); }
+    },
     dispose: () => { view?.dispose(); root.remove(); audio.stop('ambience.ship'); },
   };
 }

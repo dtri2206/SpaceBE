@@ -213,13 +213,13 @@ function installAft(group, model, ctrl, { screenLight }) {
   group.userData.harness = (t = 1) => { released = Math.min(1, Math.max(0, t)); setStraps(released, performance.now() / 1000); return seats.length > 0; };
   ctrl.addFrame((dt, now) => { if (released >= 0.999) setStraps(1, now / 1000); });
 
-  // --- float path: waypoints are Object3Ds in the cockpit frame (couch eye, over the head rest, in front of the hatch, hatch mouth, passage middle, passage end)
+  // --- float path: waypoints are Object3Ds in the cockpit frame (couch eye, over the head rest, in front of the hatch, hatch mouth, collar end)
   const named = (n) => model.getObjectByName(n);
-  const wp = ['wp_couch', 'wp_over', 'wp_front', 'wp_mouth', 'wp_mid', 'passageEnd'].map(named).filter(Boolean);
+  const wp = ['wp_couch', 'wp_over', 'wp_front', 'wp_mouth', 'passageEnd'].map(named).filter(Boolean);
   group.userData.floatPath = wp;
   const passageEnd = named('passageEnd');
 
-  // --- the cabin: hangs behind the aft bulkhead, its ceiling hatch shaft meets the passage end (cabin y axis = cockpit -Z, cabin z = cockpit +Y)
+  // --- the cabin: stands upright behind the aft bulkhead, in the cockpit's frame (identity rotation); its -Z bulkhead hatch meets the collar end (passageEnd)
   let attached = null;
   const viewer = new THREE.Vector3();
   const lightTarget = new THREE.Vector3();
@@ -227,25 +227,25 @@ function installAft(group, model, ctrl, { screenLight }) {
   let lightOn = false;
   group.userData.attachCabin = (cabin) => {
     if (!cabin || !passageEnd) return null;
-    const sh = cabin.userData.ceilingHatch || { x: -0.68, z: 2.3, yTop: 3.32, yCeiling: 2.6 };
+    const bh = cabin.userData.bulkheadHatch || { x: 0, y: 0.925, z: -4, r: 0.375 };
     if (attached && attached !== cabin) group.userData.detachCabin();
     cabin.visible = true;
     cabin.userData.attached = true;
     cabin.userData.setLights?.(false);   // light counts are baked into shaders: the cockpit's own lights light the cabin while attached
-    cabin.userData.setShaft?.(false);    // open the shaft top: the passage continues into it
     cabin.userData.setWindowViews?.(false); // windows show the real scene
-    cabin.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
-    cabin.position.set(passageEnd.position.x - sh.x, passageEnd.position.y - sh.z, passageEnd.position.z + sh.yTop);
+    cabin.quaternion.identity();
+    cabin.position.set(passageEnd.position.x - bh.x, passageEnd.position.y - bh.y, passageEnd.position.z - bh.z);
     cabin.updateMatrixWorld(true);
     group.add(cabin);
     cabin.traverse((o) => { if (o.isMesh) o.frustumCulled = false; });
     attached = cabin;
     group.userData.cabin = cabin;
-    // float path continues into the cabin: under the ceiling hatch, then the cabin's own eye nodes
+    // float path continues through the collar into the aisle: standing eye height, 1.1 m in, facing +Z
     const entry = new THREE.Object3D();
     entry.name = 'cabinEntry';
     cabin.add(entry);
-    entry.position.set(sh.x, sh.yCeiling - 0.55, sh.z - 0.1);
+    entry.position.set(bh.x, 1.65, bh.z + 1.1);
+    entry.rotation.y = Math.PI;
     cabin.userData.cabinEntry = entry;
     group.userData.floatPath = [...wp, entry];
     return cabin;
@@ -280,9 +280,9 @@ function installAft(group, model, ctrl, { screenLight }) {
     attached = null;
     cabin.removeFromParent();
     cabin.position.set(0, 0, 0); cabin.quaternion.identity();
+    cabin.userData.openBulkheadHatch?.(0);
     cabin.userData.attached = false;
     cabin.userData.setLights?.(true);
-    cabin.userData.setShaft?.(true);
     cabin.userData.setWindowViews?.(true);
     cabin.userData.cabinEntry?.removeFromParent();
     group.userData.cabin = null;
@@ -307,10 +307,10 @@ function installAft(group, model, ctrl, { screenLight }) {
     _cabinLocal.copy(viewer);
     group.worldToLocal(_cabinLocal);
     attached.worldToLocal(_cabinLocal);
-    const sh = attached.userData.ceilingHatch || { x: -0.68, z: 2.3, yCeiling: 2.6 };
-    // inside the cabin the light rides under the ceiling over the viewer; in the cockpit and passage it hangs in the hatch shaft
-    const inCabin = _cabinLocal.y < sh.yCeiling - 0.2;
-    lightTarget.set(inCabin ? Math.max(-1.5, Math.min(1.5, _cabinLocal.x)) : sh.x, inCabin ? sh.yCeiling - 0.35 : sh.yCeiling - 0.6, inCabin ? Math.max(-3.4, Math.min(3.4, _cabinLocal.z)) : sh.z);
+    const bh = attached.userData.bulkheadHatch || { x: 0, y: 0.925, z: -4, r: 0.375 };
+    // inside the cabin (past the bulkhead plane) the light rides under the ceiling over the viewer; in the cockpit it hangs in the aisle just beyond the hatch
+    const inCabin = _cabinLocal.z > bh.z + 0.05;
+    lightTarget.set(inCabin ? Math.max(-1.5, Math.min(1.5, _cabinLocal.x)) : bh.x, 2.25, inCabin ? Math.max(-3.4, Math.min(3.4, _cabinLocal.z)) : bh.z + 1.0);
     attached.localToWorld(lightTarget);
     group.worldToLocal(lightTarget);
     const k = 1 - Math.exp(-6 * Math.min(0.1, dt));

@@ -1,0 +1,396 @@
+{
+  "date": "2026-11-08T14:21:15.492Z",
+  "branch": "## role1-builder",
+  "protectedFilesVerified": 121,
+  "outsideAllowed": [],
+  "files": [
+    {
+      "status": " M",
+      "path": "public/assets/models/builder/hangar/layout.json"
+    },
+    {
+      "status": " M",
+      "path": "sandbox/role1.hangar.js"
+    },
+    {
+      "status": " M",
+      "path": "src/builder/tests/hangar-models.test.mjs"
+    },
+    {
+      "status": " M",
+      "path": "src/builder/tools/blender/hangar/README.md"
+    },
+    {
+      "status": " M",
+      "path": "src/builder/tools/blender/hangar/build.py"
+    },
+    {
+      "status": " M",
+      "path": "src/builder/tools/blender/hangar/inspect.mjs"
+    },
+    {
+      "status": " M",
+      "path": "src/builder/tools/blender/hangar/refs/LICENSES.md"
+    },
+    {
+      "status": " M",
+      "path": "src/builder/tools/blender/hangar/report.mjs"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/console_island_v4.glb"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/engineering_consoles_v4.glb"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/kit/rear_tower_v4.glb"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/kit/rear_tower_v4_far.glb"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/kit/wrap_stair_v4.glb"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/kit/wrap_track_v4.glb"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/launcher_slot_v4.glb"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/console_island_v4_body_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/console_island_v4_body_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/console_v4_hardware_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/console_v4_hardware_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/console_v4_shell_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/console_v4_shell_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/grating_average_v4.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/launcher_slot_v4_body_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/launcher_slot_v4_body_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/rear_tower_v4_body_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/rear_tower_v4_body_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/rear_tower_v4_far_body_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/rear_tower_v4_far_body_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_body_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_body_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_far_body_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_far_body_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_far_seam_cover_end_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_far_seam_cover_end_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_far_seam_cover_start_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_far_seam_cover_start_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_seam_cover_end_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_seam_cover_end_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_seam_cover_start_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_deck_v4_seam_cover_start_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_stair_v4_body_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_stair_v4_body_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_track_v4_body_color.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/textures/wrap_track_v4_body_orm.jpg"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/wrap_deck_v4.glb"
+    },
+    {
+      "status": "??",
+      "path": "public/assets/models/builder/hangar/wrap_deck_v4_far.glb"
+    },
+    {
+      "status": "??",
+      "path": "sandbox/role1.hangar.camera-v4.js"
+    },
+    {
+      "status": "??",
+      "path": "sandbox/role1.hangar.collars-v4.js"
+    },
+    {
+      "status": "??",
+      "path": "sandbox/role1.hangar.consoles-v4.js"
+    },
+    {
+      "status": "??",
+      "path": "sandbox/role1.hangar.render-v4.js"
+    },
+    {
+      "status": "??",
+      "path": "sandbox/role1.hangar.v4.js"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/additions_v4.py"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/audit-v4.mjs"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/camera-check-v4.mjs"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/collarArc.mjs"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/detail_v4.py"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/inspect-v4.mjs"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/build-v4.log"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/builder-v4-test.log"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/camera-check-v4.json"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/camera-check-v4.log"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/changed-v4.json"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/contract-v3.json"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/hangar-v4-test.log"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/inspection-v4.json"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/inspection-v4.log"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/models-v4-test.log"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/protected-v3.json"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-back-closed.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-back-retracted.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-collar-apollo.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-collar-reliable.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-collar-workhorse.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-console-bank.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-far-orbit-60.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-left-closed.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-left-retracted.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-right-closed.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-right-retracted.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-slot-view.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-smoke-bank.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-smoke-desk.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-smoke-overview.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-smoke-slot.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-station_builder-close.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-station_launch-close.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-station_testfire-close.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-station_window-close.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-turnaround-reveal.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/shots/v4-wrap-overview.png"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/smoke-v4.json"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/smoke-v4.log"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/refs/static-v4-check.log"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/report-v4.mjs"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/smoke-v4.mjs"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/textures/blue_metal_plate_nor_gl_512_v4.jpg"
+    },
+    {
+      "status": "??",
+      "path": "src/builder/tools/blender/hangar/textures/hangar_concrete_floor_nor_gl_512_v4.jpg"
+    }
+  ]
+}

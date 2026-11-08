@@ -1,12 +1,12 @@
-"""Apollo aft access hatch, passage to the living cabin and the animated 5-point harnesses (only used for --type apollo).
+"""Apollo aft access hatch, collar to the living cabin and the animated 5-point harnesses (only used for --type apollo).
 
 All in GAME coordinates (eye of the commander = origin, +Y toward the head, -Z toward the apex, +Z behind the back = the aft bulkhead / floor).
-The round pressure hatch sits in the aft bulkhead behind the head end of the centre couch, the passage runs on in +Z to the ceiling hatch shaft of the cabin.
+The round pressure hatch sits in the aft bulkhead behind the head end of the centre couch, a 0.25 m collar meets the cabin's -Z bulkhead hatch.
 
 Nodes written (names survive GLTFLoader):
   door_aft            the hinged door (pivot at the hinge on the wall side, local y = hinge axis, local z = out toward the crew); runtime renames it aftHatch
-  ladderTop_aft       eye in front of the open hatch looking down the passage; runtime renames it ladderTop
-  wp_couch wp_over wp_front wp_mouth wp_mid passageEnd   float-path waypoints (empties): the player's eye (commander, origin),
+  ladderTop_aft       eye in front of the open hatch looking through it; runtime renames it ladderTop
+  wp_couch wp_over wp_front wp_mouth passageEnd   float-path waypoints (empties): the player's eye (commander, origin),
                                                           straight up over the own helmet, across above the centre crew's head, into the hatch
   hs<i>_* harness<i>  per couch: buckle + cap + 2 shoulder, 2 lap and 1 crotch strap as two-segment chains (animated by cockpit.userData.harness)
 """
@@ -17,7 +17,7 @@ import cc_core as C
 
 R_HOLE = 0.375          # clear radius of the hatch (0.75 m)
 R_PASS = 0.385          # passage radius (0.77 m clear)
-LP = 1.25               # passage length from the floor plane to the cabin shaft
+LP = 0.25               # collar length from the flange to the cabin bulkhead (no corridor)
 FLANGE = 0.045
 
 
@@ -163,55 +163,24 @@ def build(ctx, root, mats):
     for x in (x0 + 0.03, x1 - 0.03):
         gr.strut('pass_steel', Vector((x, y, zf)), Vector((x, y, zf - 0.075)), 0.011, 0.011, 8)
 
-    # ------------------------------------------------------------------------------ passage
+    # ------------------------------------------------------------------------------ short collar (no corridor): a steel sleeve, 0.25 m, to the cabin bulkhead
     z0, z1 = zf + 0.02, zf + LP
     ps = Part('passage', parent=root)
-    lathe_z(ps, 'pass_wall', [(R_PASS, z0), (R_PASS, z1 - 0.2), (0.335, z1)], c0, 40)
-    for zz in (zf + 0.25, zf + 0.62, zf + 0.99):
-        ring_z(ps, 'pass_rib', R_PASS - 0.004, 0.02, hc, zz, 40)
-    # end flange against the cabin shaft: ring plate, bolts
-    lathe_z(ps, 'pass_rib', [(0.34, z1 - 0.03), (0.34, z1 + 0.012), (0.5, z1 + 0.012), (0.5, z1 - 0.03)], c0, 40)
-    ring_z(ps, 'pass_steel', 0.36, 0.014, hc, z1 - 0.034, 40)
+    lathe_z(ps, 'pass_wall', [(R_PASS, z0), (R_PASS, z1 - 0.02)], c0, 40)
+    ring_z(ps, 'pass_rib', R_PASS - 0.004, 0.02, hc, zf + 0.12, 40)
+    # end flange against the cabin bulkhead: ring plate, bolts
+    lathe_z(ps, 'pass_rib', [(R_PASS - 0.03, z1 - 0.03), (R_PASS - 0.03, z1 + 0.004), (0.5, z1 + 0.004), (0.5, z1 - 0.03)], c0, 40)
     for i in range(16):
         a = 2 * math.pi * (i + 0.5) / 16
-        p = Vector((hc.x + 0.44 * math.cos(a), hc.y + 0.44 * math.sin(a), z1 - 0.03))
+        p = Vector((hc.x + 0.45 * math.cos(a), hc.y + 0.45 * math.sin(a), z1 - 0.03))
         ps.strut('pass_steel', p, p + Vector((0, 0, -0.014)), 0.011, 0.009, 6)
-    # ladder rails + rungs in the cabin ladder's plane (rails at x = hx +- 0.2, y = hy), stand-off braces to the wall
-    for sx in (-1, 1):
-        x = hc.x + sx * 0.20
-        ps.strut('pass_yellow', Vector((x, hc.y, z0 + 0.05)), Vector((x, hc.y, z1 + 0.27)), 0.0225, n=10)
-        for zz in (zf + 0.2, zf + 0.7, zf + 1.15):
-            yw = hc.y + math.sqrt(R_PASS ** 2 - 0.2 ** 2)
-            ps.strut('pass_steel', Vector((x, hc.y, zz)), Vector((x, yw, zz)), 0.011, 0.011, 8)
-            ps.box('pass_steel', 0.05, 0.02, 0.05, x, yw - 0.006, zz, bevel=0.004)
-    cab_floor = zf + LP + 0.72 + 2.6
-    k = 0
-    while True:
-        zr = cab_floor - (0.3 + 0.28 * k)
-        k += 1
-        if zr > z1 - 0.03:
-            continue
-        if zr < z0 + 0.06:
-            break
-        ps.strut('pass_steel', Vector((hc.x - 0.2, hc.y, zr)), Vector((hc.x + 0.2, hc.y, zr)), 0.0165, n=10)
-    # two handrails along the wall, stand-offs every 0.45 m
-    for sx in (-1, 1):
-        px, py = hc.x + sx * 0.238, hc.y - 0.238
-        ps.strut('pass_rail', Vector((px, py, z0 + 0.12)), Vector((px, py, z1 - 0.12)), 0.0165, n=10)
-        for zz in (z0 + 0.2, zf + 0.62, z1 - 0.2):
-            wx, wy = hc.x + sx * R_PASS * 0.707, hc.y - R_PASS * 0.707
-            ps.strut('pass_steel', Vector((px, py, zz)), Vector((wx, wy, zz)), 0.011, 0.011, 8)
-    # one LED strip light on the +Y wall
-    ps.box('pass_dark', 0.075, 0.012, 0.95, hc.x, hc.y + R_PASS - 0.012, zf + 0.62, bevel=0.0)
-    ps.box('led', 0.05, 0.006, 0.9, hc.x, hc.y + R_PASS - 0.021, zf + 0.62, bevel=0.0)
-    stencil(ps, 'pass_label', 'CABIN', hc.x + 0.12, hc.y - R_PASS + 0.01, zf + 0.12, 0.02)
 
     # ------------------------------------------------------------------------------ empties: ladderTop + float path
     lt = Part('ladderTop_aft', pos=Vector((hc.x, hc.y - 0.05, zf - 0.80)), rot=Matrix(((-1, 0, 0), (0, 1, 0), (0, 0, -1))), parent=root)   # faces +Z (looking down the passage), up = head (+Y)
     for nm, p in (('wp_couch', (0.0, 0.0, 0.0)), ('wp_over', (0.0, hc.y - 0.08, zf - 0.75)), ('wp_front', (hc.x, hc.y - 0.05, zf - 0.55)),
-                  ('wp_mouth', (hc.x, hc.y, zf + 0.05)), ('wp_mid', (hc.x, hc.y, zf + LP * 0.55)), ('passageEnd', (hc.x, hc.y, zf + LP))):
+                  ('wp_mouth', (hc.x, hc.y, zf + 0.05)), ('passageEnd', (hc.x, hc.y, zf + LP))):
         Part(nm, pos=Vector(p), parent=root)
-    C.log(f'aft hatch centre game ({hc.x:.2f},{hc.y:.2f},{hc.z:.2f}) passage end z={zf + LP:.2f}')
+    C.log(f'aft hatch centre game ({hc.x:.2f},{hc.y:.2f},{hc.z:.2f}) collar end z={zf + LP:.2f}')
     harness(ctx, root)
 
 

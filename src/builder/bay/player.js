@@ -1,9 +1,8 @@
 // First-person engineer: walking, running and jumping with WASD / Shift / Space, mouse look through core input,
 // a real rigged human body (CesiumMan, CC-BY 4.0) that walks when you walk and shows when you look down, and a
-// handheld tablet. Collides with the hall wall, the platform railing and the stations.
+// handheld tablet. The scene says what is solid: collide(position, radius) pushes the engineer out of it.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { HALL } from './room.js';
 import { box, canvasTexture, cylinder, drawScreen, std } from './util.js';
 
 const EYE = 1.65;
@@ -13,7 +12,7 @@ const RADIUS = 0.35;
 const JUMP = 3.4; // m/s upwards
 const BODY_HEIGHT = 1.72;
 
-export function createPlayer(scene, camera, { stations = [], obstacles = [], start = { x: 11.5, z: 2.5 }, yaw = Math.PI / 2, gravity = 9.8 } = {}) {
+export function createPlayer(scene, camera, { collide: solid = () => {}, start = { x: 11.5, z: 2.5 }, yaw = Math.PI / 2, gravity = 9.8 } = {}) {
   const pos = new THREE.Vector3(start.x, 0, start.z);
   const vel = new THREE.Vector3();
   const look = { yaw, pitch: -0.08 };
@@ -92,20 +91,7 @@ export function createPlayer(scene, camera, { stations = [], obstacles = [], sta
   setTablet({ lines: ['WASD walk · Shift run · Space jump', 'E uses the machine in front of you.'] });
 
   // ----- collisions -----
-  const colliders = stations.map((s) => ({ x: s.position.x, z: s.position.z, r: s.isDesk ? 1.1 : 1.25 }));
-  function collide() {
-    const r = Math.hypot(pos.x, pos.z);
-    const wallR = HALL.radius - 0.7;
-    if (r > wallR) { pos.x *= wallR / r; pos.z *= wallR / r; }
-    const pitR = HALL.pitRadius + 0.55;
-    if (r < pitR) { const k = pitR / Math.max(r, 1e-3); pos.x *= k; pos.z *= k; }
-    for (const c of colliders.concat(obstacles)) {
-      const dx = pos.x - c.x, dz = pos.z - c.z;
-      const d = Math.hypot(dx, dz);
-      const min = c.r + RADIUS;
-      if (d < min && d > 1e-4) { pos.x = c.x + (dx / d) * min; pos.z = c.z + (dz / d) * min; }
-    }
-  }
+  const collide = () => solid(pos, RADIUS);
 
   function update(dt, { forward = 0, right = 0, run = false, jump = false, lookDelta = { x: 0, y: 0 }, sensitivity = 1, invertY = false, frozen = false } = {}) {
     if (!frozen) {

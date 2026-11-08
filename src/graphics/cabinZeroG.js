@@ -42,13 +42,13 @@ function mats(m) {
 
 /**
  * @param group the cabin group (static children still unmerged)
- * @param ctx { m, bag, label, anchors: [{name, box}], dims: { hw, hl, H, HX, HZ, HH, SHAFT, WALL_H } }
+ * @param ctx { m, bag, label, anchors: [{name, box}], dims: { hw, hl, H, WALL_H, BH } }
  * @returns { handrails, floatColliders, loose, zeroG, update }
  */
 export function addZeroGDressing(group, ctx) {
   const { m, bag, label, anchors, dims } = ctx;
   const z = mats(m);
-  const { hw, hl, H, HX, HZ, HH, SHAFT, WALL_H } = dims;
+  const { hw, hl, H, WALL_H, BH } = dims;
   const handrails = [];
   const add = (...o) => group.add(...o);
 
@@ -75,10 +75,8 @@ export function addZeroGDressing(group, ctx) {
       rail([x0, 2.42, zr], [x1, 2.42, zr], [0, 0.085, 0], { standoffs: 3 });
     }
   }
-  // around the ceiling hatch: left side, front and back of the opening
-  rail([HX - 0.58, 2.42, HZ - 0.4], [HX - 0.58, 2.42, HZ + 0.4], [0, 0.085, 0]);
-  rail([HX - 0.3, 2.42, HZ - 0.62], [HX + 0.3, 2.42, HZ - 0.62], [0, 0.085, 0]);
-  rail([HX - 0.3, 2.42, HZ + 0.62], [HX + 0.3, 2.42, HZ + 0.62], [0, 0.085, 0]);
+  // either side of the bulkhead hatch: vertical grab rails, standing off the -Z wall
+  [-1, 1].forEach((sd) => rail([BH.x + sd * 0.72, 0.62, -hl + 0.085], [BH.x + sd * 0.72, 1.6, -hl + 0.085], [0, 0, -0.085], { standoffs: 2 }));
   // wall rails in front of every wall station and rack (the face of its bounding box)
   const sideAnchors = anchors.filter((a) => !/suitLocker|bunk/.test(a.name)).filter((a) => Math.abs((a.box.min.x + a.box.max.x) / 2) > 1.3 && a.box.max.y - a.box.min.y > 0.5);
   sideAnchors.forEach((a, i) => {
@@ -309,17 +307,17 @@ export function addZeroGDressing(group, ctx) {
     if (mode === 'settle' && loose.every((o, i) => st[i].t > 2.5)) mode = 'rest';
   };
 
-  // ---- float colliders (cabin-local boxes): shell, ceiling around the hatch, hatch shaft + passage, and every station / rack / prop
+  // ---- float colliders (cabin-local boxes): shell, bulkhead with the hatch opening, and every station / rack / prop
   const bx = (a, b, c, d, e, f) => ({ min: V(a, b, c), max: V(d, e, f) });
-  const x0 = HX - HH, x1 = HX + HH, z0 = HZ - HH, z1 = HZ + HH;
+  const hx0 = BH.x - BH.r, hx1 = BH.x + BH.r, hy0 = BH.y - BH.r, hy1 = BH.y + BH.r;
   const colliders = [
     bx(-hw - 0.5, -0.5, -hl - 0.5, hw + 0.5, 0, hl + 0.5),                    // floor
     bx(-hw - 0.5, 0, -hl - 0.5, -hw, 3.1, hl + 0.5), bx(hw, 0, -hl - 0.5, hw + 0.5, 3.1, hl + 0.5),         // side walls
-    bx(-hw, 0, -hl - 0.5, hw, 3.1, -hl), bx(-hw, 0, hl, hw, 3.1, hl + 0.5),                                  // end walls
-    bx(-hw, H, -hl, x0, H + 0.5, hl), bx(x1, H, -hl, hw, H + 0.5, hl), bx(x0, H, -hl, x1, H + 0.5, z0), bx(x0, H, z1, x1, H + 0.5, hl), // ceiling with the hatch opening
+    bx(-hw, 0, hl, hw, 3.1, hl + 0.5),                                                                         // +Z end wall
+    bx(-hw, 0, -hl - 0.5, hx0, 3.1, -hl), bx(hx1, 0, -hl - 0.5, hw, 3.1, -hl),                                // -Z bulkhead around the hatch
+    bx(hx0, 0, -hl - 0.5, hx1, hy0, -hl), bx(hx0, hy1, -hl - 0.5, hx1, 3.1, -hl),                             // sill and header
+    bx(-hw, H, -hl, hw, H + 0.5, hl),                                                                         // ceiling
     bx(-hw, WALL_H, -hl, -1.55, H, hl), bx(1.55, WALL_H, -hl, hw, H, hl),                                     // chamfers
-    bx(x0 - 0.03, H, z0 - 0.03, x1 + 0.03, H + SHAFT + 1.4, z0), bx(x0 - 0.03, H, z1, x1 + 0.03, H + SHAFT + 1.4, z1 + 0.03),   // hatch shaft and passage (square envelope)
-    bx(x0 - 0.03, H, z0, x0, H + SHAFT + 1.4, z1), bx(x1, H, z0, x1 + 0.03, H + SHAFT + 1.4, z1),
   ];
   for (const a of anchors) {
     const b = a.box;

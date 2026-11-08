@@ -32,9 +32,9 @@ export const CABIN = {
   },
 };
 
-// Walk boxes (cabin-local, floor to ceiling, half sizes): the ladder under the flight-deck hatch (cabin.js HX, HZ) is 0.5 m x 0.2 m.
-export const CABIN_BOXES = [{ x: -0.68, z: 2.3, hx: 0.25, hz: 0.1 }];
-export const LADDER_BOTTOM_FALLBACK = { x: -0.68, z: 1.68 }; // cabin.js: ladderBottom = (HX, HZ - 0.62)
+// Walk boxes (cabin-local, floor to ceiling, half sizes): the flight-deck bulkhead hatch and its step at the -Z wall (cabin.js BH) is 1.1 m x 0.4 m.
+export const CABIN_BOXES = [{ x: 0, z: -3.8, hx: 0.55, hz: 0.2 }];
+export const LADDER_BOTTOM_FALLBACK = { x: 0, z: -3.2 }; // cabin.js: ladderBottom = (0, -hl + 0.8)
 
 export const AIRLOCK_CYCLE_SECONDS = 3;
 // Real procedure: suits run at low pressure, so astronauts breathe pure O₂ first to purge nitrogen (no "bends").

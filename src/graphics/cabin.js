@@ -1,7 +1,8 @@
 // The walkable crew cabin of the Mars lander (Role 3). 4 m wide (x -2..2), 8 m long (z -4..4), origin = middle of the
-// floor, +Y up, pilot seat at -Z, airlock at +Z. Walls are 2.15 m high, then a 45 degree chamfer to the 2.6 m ceiling.
+// floor, +Y up, flight-deck bulkhead hatch at -Z, airlock at +Z. Walls are 2.15 m high, then a 45 degree chamfer to the 2.6 m ceiling.
 // Role 2 reads group.userData.stations / .props / .setAlarm, and calls userData.onFrame each frame (see surface/index.js).
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { pbr, interiorEnvironment } from './interiors.js';
 import { sharedUniforms } from './shared.js';
 import { addZeroGDressing } from './cabinZeroG.js';
@@ -17,11 +18,12 @@ const W = 4, L = 8, H = 2.6, WALL_H = 2.15;
 const WIN_ROUND = (r, n = 28) => Array.from({ length: n }, (_, i) => [Math.cos(i / n * Math.PI * 2) * r, Math.sin(i / n * Math.PI * 2) * r]);
 const WIN_TRAP = (size) => [[-size * 0.5, -size * 0.45], [size * 0.5, -size * 0.45], [size * 0.32, size * 0.45], [-size * 0.32, size * 0.45]];
 const WINDOWS = [
-  { wall: 'front', x: -0.62, y: 1.9, z: -L / 2, ry: 0, kind: 'trap', size: 0.27 },
-  { wall: 'front', x: 0.62, y: 1.9, z: -L / 2, ry: 0, kind: 'trap', size: 0.27 },
   { wall: 'left', x: -W / 2, y: 1.55, z: 1.46, ry: Math.PI / 2, kind: 'round', size: 0.33 },
   { wall: 'right', x: W / 2, y: 1.55, z: 1.55, ry: -Math.PI / 2, kind: 'round', size: 0.33 },
 ];
+// The pressure-bulkhead hatch in the -Z wall (round, on the aisle, sill 0.55 m): 0.75 m clear like the Apollo aft hatch it meets.
+const BH = { x: 0, r: 0.375, sill: 0.55, y: 0.55 + 0.375 };
+const BH_HOLE = { wall: 'front', x: BH.x, y: BH.y, z: -L / 2, ry: 0, kind: 'round', size: 2 * BH.r };
 const HATCH_WIN = { wall: 'right', x: W / 2, y: 1.42, z: -3.62, size: 0.23 };   // the window in the side hatch door
 // Wall plane coordinates: s along the wall, v up. at(s, v) -> world, sv(world) -> [s, v]; the texture u runs with s.
 const WALLS = {
@@ -35,7 +37,7 @@ function wallPanel(name) {
   const wall = WALLS[name];
   const shape = new THREE.Shape([new THREE.Vector2(0, 0), new THREE.Vector2(wall.len, 0), new THREE.Vector2(wall.len, WALL_H), new THREE.Vector2(0, WALL_H)]);
   const rot = new THREE.Object3D();
-  for (const w of [...WINDOWS, HATCH_WIN].filter((q) => q.wall === name)) {
+  for (const w of [...WINDOWS, HATCH_WIN, BH_HOLE].filter((q) => q.wall === name)) {
     const pts = w.kind === 'trap' ? WIN_TRAP(w.size) : WIN_ROUND(w.size / 2);
     rot.rotation.y = w.ry ?? 0;
     rot.updateMatrixWorld(true);
@@ -68,14 +70,10 @@ function wallPanel(name) {
 }
 const hw = W / 2, hl = L / 2, cx = hw - 0.45;
 
-// Ceiling hatch to the flight deck and the ladder below it. The hatch is 0.64 m square, centred at (HX, HZ), left of the
-// aisle, 1.5 m in front of the airlock and over 1 m from every other station's approach. The climber faces +Z on the ladder.
-const HX = -0.68, HZ = 2.3, HH = 0.32, SHAFT = 0.72;
-/** The flat ceiling as four quads around the hatch opening (same UV mapping as one big quad). */
+/** The flat ceiling (one quad; same UV mapping as before). */
 function ceilingPieces() {
-  const x0 = HX - HH, x1 = HX + HH, z0 = HZ - HH, z1 = HZ + HH;
   const q = (a, b2, c, d) => [[a, H, c], [b2, H, c], [b2, H, d], [a, H, d]];
-  return [q(-cx, x0, -hl, hl), q(x1, cx, -hl, hl), q(x0, x1, -hl, z0), q(x0, x1, z1, hl)];
+  return [q(-cx, cx, -hl, hl)];
 }
 
 // ---- Materials, built once -------------------------------------------------------------------------------------
@@ -131,7 +129,7 @@ function materials() {
       side: mk(panelTextures(L, WALL_H, [], 'side')),
       left: mk(panelTextures(L, WALL_H, [{ text: 'DECK 2', x: 4.3, y: 0.28, size: 40 }, { text: 'STOW', x: 7.0, y: 0.3, size: 40 }], 'left')),
       right: mk(panelTextures(L, WALL_H, [{ text: 'COMMS', x: 2.7, y: 0.28, size: 40 }, { text: 'SAMPLES', x: 4.9, y: 0.28, size: 36 }, { text: 'GALLEY', x: 6.2, y: 0.28, size: 36 }], 'right')),
-      front: mk(panelTextures(W, WALL_H, [{ text: 'FLIGHT DECK', x: 2, y: 0.3, size: 44 }], 'front')),
+      front: mk(panelTextures(W, WALL_H, [], 'front')),
       back: mk(panelTextures(W, WALL_H, [{ text: 'EVA ONLY', x: 3.35, y: 0.5, size: 40 }], 'back')),
     },
   };
@@ -220,63 +218,6 @@ const cableBundle = (s, points, colors, radius = 0.01) => {
     s.add(tube(points.map((p) => [p[0] + off, p[1] + (i % 2) * radius, p[2]]), radius, pbr(c, 0.6, 0.1), 20));
   });
 };
-
-
-/** Ceiling hatch (framed opening, open lid with seal and latch, lit shaft) and a free-standing ladder down to the floor. */
-function hatchAndLadder(group, m) {   // returns the two meshes that cap the shaft
-  const b = (w, h, d, mat, x, y, z, r = 0.01) => box(w, h, d, mat, x, y, z, r);
-  const x0 = HX - HH, x1 = HX + HH, z0 = HZ - HH, z1 = HZ + HH;
-  // Frame on the ceiling underside: four bars, a hazard-yellow border and corner bolts.
-  const fw = 0.07;
-  group.add(b(2 * HH + 2 * fw, 0.07, fw, m.rib, HX, H - 0.035, z0 - fw / 2), b(2 * HH + 2 * fw, 0.07, fw, m.rib, HX, H - 0.035, z1 + fw / 2));
-  group.add(b(fw, 0.07, 2 * HH, m.rib, x0 - fw / 2, H - 0.035, HZ), b(fw, 0.07, 2 * HH, m.rib, x1 + fw / 2, H - 0.035, HZ));
-  group.add(b(2 * HH + 2 * fw, 0.012, 0.025, m.paintLine, HX, H - 0.074, z0 - fw - 0.0125, 0), b(2 * HH + 2 * fw, 0.012, 0.025, m.paintLine, HX, H - 0.074, z1 + fw + 0.0125, 0));
-  group.add(b(0.025, 0.012, 2 * HH + 2 * fw + 0.05, m.paintLine, x0 - fw - 0.0125, H - 0.074, HZ, 0), b(0.025, 0.012, 2 * HH + 2 * fw + 0.05, m.paintLine, x1 + fw + 0.0125, H - 0.074, HZ, 0));
-  [x0 - fw / 2, x1 + fw / 2].forEach((x) => [z0 - fw / 2, z1 + fw / 2].forEach((z) => group.add(cyl(0.014, 0.014, m.metal, x, H - 0.077, z, 'y', 8))));
-  // Shaft above the opening: four walls, a lit cap (the flight deck's light) and a lit strip.
-  const sh = SHAFT, wy = H + sh / 2;
-  group.add(b(2 * HH, sh, 0.03, m.paintGrey, HX, wy, z0 - 0.015, 0), b(2 * HH, sh, 0.03, m.paintGrey, HX, wy, z1 + 0.015, 0));
-  group.add(b(0.03, sh, 2 * HH + 0.06, m.paintGrey, x0 - 0.015, wy, HZ, 0), b(0.03, sh, 2 * HH + 0.06, m.paintGrey, x1 + 0.015, wy, HZ, 0));
-  // The cap closes the shaft when the cabin stands alone (Mars interior). They stay separate meshes: attached to the cockpit they are hidden.
-  const caps = [b(2 * HH + 0.06, 0.03, 2 * HH + 0.06, m.dark, HX, H + sh + 0.015, HZ, 0), b(0.5, 0.012, 0.5, lit('#cfe0ff', 1.6), HX, H + sh - 0.004, HZ, 0)];
-  caps.forEach((c) => { c.userData.dynamic = true; group.add(c); });
-  group.add(b(0.025, 0.012, 2 * HH, lit('#ffcf70', 1.8), x0 + 0.02, H + 0.25, HZ, 0));
-  // Lid: hinged on the +X edge and swung open (about 98 degrees), seal and latch on its underside.
-  const lid = new THREE.Group();
-  lid.name = 'ceilingHatchLid';
-  lid.position.set(x1, H + 0.05, HZ);
-  lid.rotation.z = -(Math.PI / 2 + 0.17);
-  const lw = 2 * HH - 0.02;
-  lid.add(b(lw, 0.05, lw, m.paint, -lw / 2, 0, 0, 0.01));
-  lid.add(b(lw - 0.12, 0.008, lw - 0.12, m.paintGrey, -lw / 2, -0.028, 0, 0.004));
-  lid.add(b(lw - 0.03, 0.02, 0.03, m.rubber, -lw / 2, -0.03, lw / 2 - 0.03, 0.006), b(lw - 0.03, 0.02, 0.03, m.rubber, -lw / 2, -0.03, -lw / 2 + 0.03, 0.006));
-  lid.add(b(0.03, 0.02, lw - 0.09, m.rubber, -lw + 0.03, -0.03, 0, 0.006), b(0.03, 0.02, lw - 0.09, m.rubber, -0.03, -0.03, 0, 0.006));
-  lid.add(b(0.2, 0.012, 0.1, m.dark, -lw + 0.2, -0.04, 0, 0.004));
-  lid.add(cyl(0.012, 0.05, m.metal, -lw + 0.27, -0.065, 0, 'y', 8), cyl(0.012, 0.05, m.metal, -lw + 0.13, -0.065, 0, 'y', 8));
-  lid.add(cyl(0.016, 0.18, m.orange, -lw + 0.2, -0.09, 0, 'x', 10));
-  lid.add(b(0.04, 0.012, 0.03, lit('#ffb347', 1.8), -lw + 0.2, -0.04, 0.06, 0));
-  group.add(lid);
-  [z0 + 0.06, z1 - 0.06].forEach((z) => group.add(cyl(0.02, 0.1, m.metal, x1 + 0.015, H + 0.05, z, 'z', 10)));
-  // Floor marking under the hatch (a yellow outline).
-  const sq = (x, z, w, d) => group.add(new THREE.Mesh(quad([[x - w / 2, 0.007, z - d / 2], [x + w / 2, 0.007, z - d / 2], [x + w / 2, 0.007, z + d / 2], [x - w / 2, 0.007, z + d / 2]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.paintLine));
-  const fz0 = HZ - 0.95, fz1 = HZ + 0.1, fx0 = HX - 0.5, fx1 = HX + 0.5;
-  sq(HX, fz0, fx1 - fx0, 0.04); sq(HX, fz1, fx1 - fx0, 0.04); sq(fx0, (fz0 + fz1) / 2, 0.04, fz1 - fz0); sq(fx1, (fz0 + fz1) / 2, 0.04, fz1 - fz0);
-
-  // Ladder: two yellow rails in the plane z = HZ, rungs every 0.28 m, floor feet and ceiling braces (free-standing).
-  const rx = 0.2, top = H + 0.45;
-  const rail = (x) => {
-    group.add(b(0.045, top, 0.045, m.paintLine, x, top / 2, HZ, 0.012));
-    group.add(b(0.16, 0.02, 0.16, m.dark, x, 0.01, HZ, 0.005), b(0.12, 0.012, 0.12, m.metal, x, 0.026, HZ, 0.004));
-    group.add(rod([x, H - 0.1, HZ], [x, H - 0.03, z1 + 0.03], 0.014, m.metal, 8));
-  };
-  rail(HX - rx); rail(HX + rx);
-  for (let y = 0.3; y < H + 0.4; y += 0.28) {
-    group.add(cyl(0.017, 2 * rx, m.metal, HX, y, HZ, 'x', 10));
-    group.add(cyl(0.021, 0.012, m.dark, HX - rx + 0.06, y, HZ, 'x', 8), cyl(0.021, 0.012, m.dark, HX + rx - 0.06, y, HZ, 'x', 8));
-  }
-  group.add(cyl(0.014, 2 * rx, m.orange, HX, H + 0.1, HZ - 0.12, 'x', 8));
-  return caps;
-}
 
 
 // ---- Windows, hatches and the docking tunnel -------------------------------------------------------------------
@@ -442,8 +383,6 @@ function buildCabin() {
   alarmLight.position.set(0, H - 0.4, 0);
   group.add(alarmLight);
 
-  const shaftCaps = hatchAndLadder(group, m);
-
   // ---- Windows (five): 2 small trapezoids forward, 2 round on the side walls, 1 round in the side hatch ----
   WINDOWS.forEach(({ wall, ...w }) => addWindow(group, m, D, w));
   // Docking tunnel in the ceiling over the couches: dark collar ring, recessed hatch, latches and a ratchet handle.
@@ -533,67 +472,67 @@ function buildCabin() {
     s.add(lamp);
   };
 
-  // PILOT SEAT: three Apollo-style couches abreast (tube frames, slung off-white fabric), the commander's in the middle.
-  addAt(stations, 'pilotSeat', 0, -3.3, Math.PI, (s) => {
-    const rail = (p0, p1, r = 0.013) => s.add(rod(p0, p1, r, m.metal, 8));
-    const couch = (cxp, commander) => {
-      [-1, 1].forEach((sd) => {
-        const x = cxp + sd * 0.27;
-        rail([x, 0.34, -0.3], [x, 0.4, 0.24]); rail([x, 0.34, -0.3], [x, 1.12, -0.55]); rail([x, 0.4, 0.24], [x, 0.14, 0.36]);
-        rail([x, 0.34, -0.3], [x, 0.03, -0.22]); rail([x, 0.4, 0.2], [x, 0.03, 0.2]);
-        s.add(b(0.07, 0.02, 0.1, m.rubber, x, 0.01, -0.22, 0), b(0.07, 0.02, 0.1, m.rubber, x, 0.01, 0.2, 0));
-        // Arm: a tube on two struts with a pad.
-        const ax = cxp + sd * 0.285;
-        rail([ax, 0.62, -0.2], [ax, 0.6, 0.16], 0.011); rail([ax, 0.62, -0.18], [x, 0.4, -0.18], 0.009); rail([ax, 0.6, 0.14], [x, 0.4, 0.14], 0.009);
-        s.add(b(0.06, 0.035, 0.26, m.seat, ax, 0.66, -0.02, 0.016));
-        // Slung fabric stretched to the rails, with an edge band where it wraps the tube.
-        s.add(b(0.03, 0.02, 0.6, m.webbing, cxp + sd * 0.245, 0.405, -0.03, 0));
-        s.add(place(b(0.03, 0.84, 0.02, m.webbing, cxp + sd * 0.245, 0.74, -0.43, 0), -0.31));
-      });
-      rail([cxp - 0.27, 0.4, 0.24], [cxp + 0.27, 0.4, 0.24]); rail([cxp - 0.27, 1.12, -0.55], [cxp + 0.27, 1.12, -0.55]);
-      rail([cxp - 0.27, 0.34, -0.3], [cxp + 0.27, 0.34, -0.3]); rail([cxp - 0.27, 0.14, 0.36], [cxp + 0.27, 0.14, 0.36]);
-      s.add(b(0.5, 0.025, 0.56, m.seat, cxp, 0.395, -0.03, 0));
-      s.add(place(b(0.5, 0.84, 0.025, m.seat, cxp, 0.74, -0.43, 0), -0.31));
-      s.add(place(b(0.5, 0.02, 0.3, m.seat, cxp, 0.27, 0.3, 0), 1.14));
-      s.add(place(b(0.3, 0.2, 0.09, m.seat, cxp, 1.17, -0.57, 0.04), -0.31));
-      [-1, 1].forEach((sd) => { rail([cxp + sd * 0.1, 1.0, -0.5], [cxp + sd * 0.1, 1.12, -0.55], 0.008); });
-      // Harness: shoulder straps, lap belts and a buckle.
-      [-1, 1].forEach((sd) => {
-        s.add(place(b(0.045, 0.56, 0.008, m.webbing, cxp + sd * 0.12, 0.76, -0.425, 0), -0.31));
-        s.add(b(0.2, 0.008, 0.045, m.webbing, cxp + sd * 0.17, 0.415, 0.02, 0));
-      });
-      s.add(b(0.07, 0.012, 0.06, m.metal, cxp, 0.42, 0.06, 0));
-      s.add(b(0.4, 0.008, 0.02, m.velcro, cxp, 0.41, 0.28, 0));
-      s.add(new THREE.Mesh(quad([[cxp - 0.5, 0.006, -0.65], [cxp + 0.5, 0.006, -0.65], [cxp + 0.5, 0.006, 0.45], [cxp - 0.5, 0.006, 0.45]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.blob));
-      if (commander) {
-        s.add(cyl(0.014, 0.17, m.metal, cxp + 0.285, 0.77, 0.1, 'y', 8), sphere(0.03, m.dark, cxp + 0.285, 0.87, 0.1), b(0.02, 0.02, 0.012, lit('#f87171', 2.4), cxp + 0.285, 0.9, 0.12, 0));
-        s.add(b(0.06, 0.05, 0.14, m.dark, cxp - 0.285, 0.7, 0.08, 0.012), place(b(0.025, 0.06, 0.1, m.orange, cxp - 0.285, 0.74, 0.08, 0.01), 0.3));
-      }
-    };
-    couch(0, true); couch(-0.7, false); couch(0.7, false);
-    // Console: lower housing, sloped panel, three screens, switch banks, lamp row, glare shield.
-    s.add(b(1.6, 0.74, 0.34, m.dark, 0, 0.37, 0.58, 0.02));
-    [-1, 1].forEach((x) => s.add(b(0.08, 0.9, 0.34, m.paintGrey, x * 0.82, 0.45, 0.58, 0.02)));
-    s.add(b(1.6, 0.05, 0.36, m.paintGrey, 0, 0.74, 0.56, 0.015));
-    s.add(place(b(1.56, 0.62, 0.05, m.blueGrey, 0, 1.08, 0.7, 0.02), -0.28));
-    s.add(b(1.64, 0.08, 0.22, m.rib, 0, 1.44, 0.66, 0.02));
-    [[-0.5, 0.46, 0.3, drawSystems], [0, 0.56, 0.34, drawPilotNav], [0.5, 0.46, 0.3, drawWave]].forEach(([x, w, h, draw]) => {
-      const mesh = place(screen(w, h, draw, 1.3), -0.28, Math.PI, 0);
-      mesh.position.set(x, 1.12, 0.675);
-      s.add(mesh, place(b(w + 0.04, h + 0.04, 0.025, m.dark, x, 1.12, 0.708, 0.008), -0.28));
-    });
-    // Switch banks on the sloped panel and lamps along the lower edge.
-    for (let i = 0; i < 12; i++) {
-      s.add(place(b(0.018, 0.045, 0.012, i % 3 ? m.metal : m.red, -0.7 + i * 0.045, 0.87, 0.62, 0.003), -0.28));
-      s.add(place(b(0.018, 0.045, 0.012, i % 4 ? m.metal : m.orange, 0.2 + i * 0.045, 0.87, 0.62, 0.003), -0.28));
+  // PILOT SEAT station = the flight-deck bulkhead hatch. The anchor sits at (0, -3.3) with no rotation, so local z = world z + 3.3 and the
+  // bulkhead wall is at local z = wz. The round plug door (hinge on +X, vertical axis) opens into the cabin: cabin.userData.openBulkheadHatch(t).
+  let bulkheadDoor = null;
+  addAt(stations, 'pilotSeat', 0, -3.3, 0, (s) => {
+    const wz = -hl + 3.3, hy = BH.y, hx = BH.x;
+    const ring = slab(circlePts(0.5, 40), circlePts(BH.r, 40), 0.05, m.rib);        // thick frame ring standing 50 mm off the wall
+    ring.position.set(hx, hy, wz);
+    const border = slab(circlePts(0.56, 40), circlePts(0.5, 40), 0.006, m.paintLine);   // painted yellow border on the wall
+    border.position.set(hx, hy, wz + 0.001);
+    s.add(ring, border, place(torus(0.5, 0.012, m.metal, hx, hy, wz + 0.052)));
+    for (let i = 0; i < 16; i++) {
+      const a = (i + 0.5) / 16 * Math.PI * 2;
+      s.add(cyl(0.013, 0.012, m.metal, hx + Math.cos(a) * 0.44, hy + Math.sin(a) * 0.44, wz + 0.056, 'z', 8));
     }
-    const lamps = ['#22d3ee', '#fbbf24', '#34d399', '#f87171'];
-    for (let i = 0; i < 14; i++) s.add(b(0.03, 0.03, 0.012, lit(lamps[i % 4], 2.2), -0.65 + i * 0.1, 0.62, 0.43, 0));
-    dynamicLamp(s, '#f87171', 2.8, 0.28, 0.5, 0.43); dynamicLamp(s, '#fbbf24', 2.8, 0.58, 0.5, 0.43);
-    s.add(b(0.5, 0.18, 0.012, m.modules, 0, 0.44, 0.405, 0));
-    const strip = new THREE.Mesh(moduleFace(0.5, 0.17, 11), m.modules);
-    strip.position.set(0, 0.44, 0.413);
-    s.add(strip);
+    // hinge knuckles on +X, a stop pad on -X, a threshold step under the sill, a status lamp above
+    [-0.22, 0.22].forEach((dy) => { s.add(b(0.07, 0.12, 0.07, m.metal, hx + 0.5, hy + dy, wz + 0.04, 0.01), cyl(0.014, 0.2, m.dark, hx + 0.46, hy + dy, wz + 0.07, 'y', 8)); });
+    s.add(b(0.08, 0.08, 0.05, m.metal, hx - 0.5, hy + 0.1, wz + 0.04, 0.008));
+    s.add(b(1.0, 0.04, 0.34, m.paintGrey, hx, 0.3, wz + 0.17, 0.008), b(0.04, 0.3, 0.3, m.dark, hx - 0.45, 0.15, wz + 0.17, 0.004), b(0.04, 0.3, 0.3, m.dark, hx + 0.45, 0.15, wz + 0.17, 0.004));
+    s.add(b(0.07, 0.04, 0.02, lit('#34d399', 2), hx - 0.2, hy + 0.66, wz + 0.012, 0), b(0.07, 0.04, 0.02, lit('#f87171', 1.4), hx + 0.2, hy + 0.66, wz + 0.012, 0));
+    // stencil FLIGHT DECK above the hatch (its own plane: the panel texture caps letters at 40 mm)
+    const sc = makeCanvas(1024, 128), sx = sc.getContext('2d');
+    stencil(sx, 'FLIGHT DECK', 512, 64, 92, 'rgba(60,54,44,0.9)');
+    const sm = pbr(0xffffff, 0.8, 0, { map: canvasTexture(sc), transparent: true, depthWrite: false });
+    const sp = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.1375), sm);
+    sp.position.set(hx, 1.8, wz + 0.002);
+    s.add(sp);
+    // the door: its own group, pivot at the hinge, local -x across the leaf; its meshes stay unmerged (dynamic)
+    const door = new THREE.Group();
+    door.name = 'bulkheadHatchDoor';
+    const hd = 0.44;                           // hinge to hatch centre
+    door.position.set(hx + hd, hy, wz);
+    const leaf = new THREE.Group();            // the leaf, centred on the hatch when closed
+    leaf.position.x = -hd;
+    door.add(leaf);
+    leaf.add(cyl(0.365, 0.05, m.paint, 0, 0, 0.025, 'z', 40));
+    leaf.add(cyl(0.405, 0.016, m.paintGrey, 0, 0, 0.058, 'z', 40));
+    leaf.add(place(torus(0.34, 0.012, m.metal, 0, 0, 0.068)));
+    leaf.add(cyl(0.065, 0.04, m.metal, 0, 0, 0.08, 'z', 20), b(0.34, 0.03, 0.03, m.metal, 0, 0, 0.1, 0.01), b(0.03, 0.34, 0.03, m.metal, 0, 0, 0.1, 0.01));
+    for (let i = 0; i < 12; i++) {
+      const a = i / 12 * Math.PI * 2 + 0.26, px = Math.cos(a) * 0.37, py = Math.sin(a) * 0.37;
+      leaf.add(place(b(0.075, 0.03, 0.026, m.metal, px, py, 0.074, 0.006), 0, 0, a));
+    }
+    leaf.add(cyl(0.03, 0.04, m.metal, 0.22, 0.2, 0.08, 'z', 14), cyl(0.016, 0.03, m.red, 0.22, 0.2, 0.11, 'z', 10));
+    leaf.add(b(0.14, 0.02, 0.01, m.dark, 0, -0.2, 0.068, 0), b(0.2, 0.012, 0.01, m.dark, 0, 0.2, 0.068, 0));
+    door.traverse((o) => { if (o.isMesh) o.userData.dynamic = true; });
+    // collapse the leaf to one mesh per material (about 12 draw calls fewer than the loose parts)
+    leaf.updateMatrixWorld(true);
+    const byMat = new Map();
+    leaf.children.slice().forEach((o) => {
+      const g = (o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone());
+      for (const n of Object.keys(g.attributes)) if (!['position', 'normal', 'uv'].includes(n)) g.deleteAttribute(n);
+      if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+      o.updateMatrix();
+      g.applyMatrix4(o.matrix);
+      if (!byMat.has(o.material)) byMat.set(o.material, []);
+      byMat.get(o.material).push(g);
+      o.removeFromParent();
+    });
+    for (const [mat, gs] of byMat) { const mm = new THREE.Mesh(gs.length === 1 ? gs[0] : mergeGeometries(gs), mat); mm.userData.dynamic = true; leaf.add(mm); }
+    s.add(door);
+    bulkheadDoor = door;
   });
 
   // O2 STATION: refill panel with gauges, manifold, hoses and bottles.
@@ -935,17 +874,18 @@ function buildCabin() {
   rackAnchor('ventL', -1.72, 1.5, left, (s) => { vent(s, m, 0.4, 0.2, 0, 0.5, -0.25); label(s, m, 0.2, 0.05, 6, 0, 1.15, -0.245); });
   rackAnchor('ventR', 1.72, 1.65, right, (s) => { vent(s, m, 0.3, 0.2, 0, 0.5, -0.25); });
 
-  // Eye positions for Role 2's climb (cabin-local, empty Object3Ds, +Y up). ladderBottom: standing at the foot of the ladder,
-  // facing into the cabin (-Z). ladderTopCabin: on the top rungs inside the hatch, facing the ladder (+Z).
+  // Eye positions for Role 2's egress (cabin-local, empty Object3Ds, +Y up; rotation.y = PI faces +Z, into the cabin). The old ladder names are kept:
+  // ladderBottom = standing 0.8 m in front of the bulkhead in the aisle; ladderTopCabin = just inside the bulkhead hatch, coming out of it.
   group.updateMatrixWorld(true);
-  const anchors = group.children.filter((o) => /^(station|prop|deco):/.test(o.name)).map((o) => ({ name: o.name, box: new THREE.Box3().setFromObject(o) }));
-  const zg = addZeroGDressing(group, { m, bag, label, anchors, dims: { hw, hl, H, HX, HZ, HH, SHAFT, WALL_H } });
+  const anchors = group.children.filter((o) => /^(station|prop|deco):/.test(o.name) && o.name !== 'station:pilotSeat').map((o) => ({ name: o.name, box: new THREE.Box3().setFromObject(o) }));
+  const zg = addZeroGDressing(group, { m, bag, label, anchors, dims: { hw, hl, H, WALL_H, BH } });
   const ladderBottom = new THREE.Object3D();
   ladderBottom.name = 'ladderBottom';
-  ladderBottom.position.set(HX, 1.65, HZ - 0.62);
+  ladderBottom.position.set(BH.x, 1.65, -hl + 0.8);
+  ladderBottom.rotation.y = Math.PI;
   const ladderTopCabin = new THREE.Object3D();
   ladderTopCabin.name = 'ladderTopCabin';
-  ladderTopCabin.position.set(HX, H - 0.12, HZ - 0.26);
+  ladderTopCabin.position.set(BH.x, BH.y + 0.3, -hl + 0.3);
   ladderTopCabin.rotation.y = Math.PI;
   group.add(ladderBottom, ladderTopCabin);
 
@@ -953,18 +893,20 @@ function buildCabin() {
 
   // Fixed meshes are merged, so only the dimmable lights and blinking lamps stay live.
   let alarm = false;
-  // Zero-g route (Role 2/4): the cabin can hang under the Apollo cockpit's aft passage. Attached, it adds no THREE.Light (shaders bake the light
-  // count), the shaft is open and the windows show the live scene: cockpit.userData.attachCabin() calls these.
+  // Zero-g route (Role 2/4): the cabin can sit behind the Apollo cockpit's aft hatch. Attached, it adds no THREE.Light (shaders bake the light
+  // count) and the windows show the live scene: cockpit.userData.attachCabin() calls these.
   const ownLights = [...warm, alarmLight];
   const windowViews = [];
   group.traverse((o) => { if (o.userData.windowView) windowViews.push(o); });
-  group.userData.ceilingHatch = { x: HX, z: HZ, yCeiling: H, yTop: H + SHAFT, half: HH };
+  group.userData.bulkheadHatch = { x: BH.x, y: BH.y, z: -hl, r: BH.r };   // cabin-local centre of the round hatch in the -Z bulkhead
+  const openRange = 1.75;
+  group.userData.openBulkheadHatch = (t = 1) => { const u = Math.min(1, Math.max(0, t)); if (bulkheadDoor) bulkheadDoor.rotation.y = openRange * u * u * (3 - 2 * u); return !!bulkheadDoor; };
+  group.userData.openBulkheadHatch(0);
   group.userData.handrails = zg.handrails;           // [{ a, b }] cabin-local segment ends of every grab rail
-  group.userData.floatColliders = zg.floatColliders; // [{ min, max }] cabin-local boxes: shell, ceiling around the hatch, shaft and passage, furniture
+  group.userData.floatColliders = zg.floatColliders; // [{ min, max }] cabin-local boxes: shell, bulkhead with the hatch opening, furniture
   group.userData.looseItems = zg.loose;
   group.userData.zeroG = (on = true) => zg.zeroG(on);  // loose items drift (true) or fall back to their places (false)
   group.userData.setLights = (on) => ownLights.forEach((l) => (on ? group.add(l) : l.removeFromParent()));
-  group.userData.setShaft = (closed) => shaftCaps.forEach((c) => { c.visible = closed; });
   group.userData.setWindowViews = (on) => windowViews.forEach((v) => { v.visible = on; });
   group.userData.ladderBottom = ladderBottom;
   group.userData.ladderTopCabin = ladderTopCabin;

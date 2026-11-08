@@ -71,7 +71,7 @@ function warm(graphics) {
   }));
 }
 
-// The Apollo cabin hangs under the cockpit when the crew float out in ORBIT (cockpit.userData.attachCabin). Building it takes about 300 ms and its
+// The Apollo cabin stands behind the cockpit (through its aft hatch) when the crew float out in ORBIT (cockpit.userData.attachCabin). Building it takes about 300 ms and its
 // shaders about as long, so both happen here: the cabin goes into createCabin()'s pool, and its materials are compiled in a throw-away scene with the
 // same lights as the flight's space view (1 sun, 1 ambient, the cockpit's 3 point lights and the entry plasma's), because the light counts are baked
 // into the shaders. Nothing is shown: the scene is never rendered.

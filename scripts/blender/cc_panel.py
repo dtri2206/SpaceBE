@@ -6,7 +6,8 @@ from cc_core import *
 import cc_core as C
 
 PX = 1600                       # texture pixels per metre on the plate
-PANEL_C = Vector((0.0, -0.20, -0.52))
+PANEL_X = 0.15                  # the console is centred this far to the commander's right: in the Apollo hull the left wall closes in on the console's upper left corner, so a centred console sank into it
+PANEL_C = Vector((PANEL_X, -0.20, -0.52))
 BTN_A = [('hatch', '1 HATCH'), ('cabin', '2 CABIN'), ('o2', '3 O2'), ('arm', '4 ARM|ENGINE')]
 BTN_B = [('fire', 'FIRE'), ('dump', 'DUMP'), ('rcs-a', 'RCS-A'), ('rcs-b', 'RCS-B'), ('main', 'MAIN'), ('apu', 'APU'),
          ('pwr', 'PWR'), ('comms', 'COMMS'), ('dock', 'DOCK'), ('para', 'PARA'), ('entry', 'ENTRY')]
@@ -17,7 +18,7 @@ DIM = (0.55, 0.55, 0.53)
 class PCtx:
     def __init__(self, ctx):
         self.ctx = ctx
-        n = (-PANEL_C).normalized()
+        n = (-Vector((0.0, PANEL_C.y, PANEL_C.z))).normalized()       # the plane keeps its tilt about X only (no yaw), so the shift does not turn it
         v = Vector((0, n.z, -n.y)).normalized()
         self.n, self.v, self.x = n, v, Vector((1, 0, 0))
         self.R = Matrix(((1, v.x, n.x), (0, v.y, n.y), (0, v.z, n.z)))
@@ -140,11 +141,12 @@ def build(ctx, root, mats):
     rows['uCut'], rows['uAssist'], rows['uRetro'] = 0.145, 0.275, 0.385
     rows['uTick'], rows['vTick'] = -0.31, -0.012
     if analog:
-        disp = {'displayLeft': (-0.215, 0.150, 0.150, 0.150, 'LEFT'), 'centreDisplay': (0.0, 0.115, 0.300, 0.242, 'TRAJECTORY'), 'displayRight': (0.215, 0.150, 0.150, 0.150, 'RIGHT')}
+        # the three displays and their bezels stand clear of each other (8 mm between bezels) and of the gauge columns
+        disp = {'displayLeft': (-0.230, 0.150, 0.120, 0.120, 'LEFT'), 'centreDisplay': (0.0, 0.115, 0.260, 0.2097, 'TRAJECTORY'), 'displayRight': (0.230, 0.150, 0.120, 0.120, 'RIGHT')}
         rows['uT'] = [-0.405 + i * 0.0725 for i in range(12)]; rows['vT'] = -0.255
         rows['tNames'] = ['SM RCS', 'CM RCS', 'PYRO', 'FUEL', 'O2 FAN', 'COOL', 'HTR', 'INV', 'BUS A', 'BUS B', 'LAMPS', 'ECS']
-        rows['gauges'] = [(u, v, i) for i, (u, v) in enumerate([(-0.335, 0.205), (-0.415, 0.205), (-0.335, 0.125), (-0.415, 0.125), (-0.335, 0.045), (-0.415, 0.045),
-                                                              (0.335, 0.205), (0.415, 0.205), (0.335, 0.125), (0.415, 0.125), (0.335, 0.045), (0.415, 0.045)])]
+        rows['gauges'] = [(u, v, i) for i, (u, v) in enumerate([(-0.343, 0.205), (-0.413, 0.205), (-0.343, 0.125), (-0.413, 0.125), (-0.343, 0.045), (-0.413, 0.045),
+                                                              (0.343, 0.205), (0.413, 0.205), (0.343, 0.125), (0.413, 0.125), (0.343, 0.045), (0.413, 0.045)])]
         rows['gnames'] = ['CABIN P', 'O2 FLOW', 'BUS V', 'FUEL', 'BATT', 'TEMP']
     else:
         sz = 0.2
@@ -172,6 +174,10 @@ def build(ctx, root, mats):
     uv_plate = uvr(0, 0, plate_cv.w, plate_cv.h)
     uv_wing = uvr(0, wy, wing_cv.w, wing_cv.h)
     uv_gauge = [uvr(gx + (i % 3) * 200, wy + (i // 3) * 200, 192, 192) for i in range(6)]
+    # a flat swatch of the plate colour in the spare corner of the atlas: the Apollo closeouts reuse material 'plate' (same lighting as the console) with all UVs on it
+    FX, FY, FS = 1500, 8, 32
+    atlas.col[FY:FY + FS, FX:FX + FS] = plate_cv.col[plate_cv.h // 2, 10]
+    ctx.flat_uv = ((FX + FS / 2) / SZ, 1 - (FY + FS / 2) / SZ)
     img = make_image('panel_atlas', atlas.col)
     material('plate', (1, 1, 1), 0.7, image=img)
     # emissive-looking lamps and displays
@@ -234,17 +240,18 @@ def build(ctx, root, mats):
                         panel.box('lens_off', 0.02, 0.004, 0.003, ua, vv + 0.013, 0.008, bevel=0)
     # --- displays (quad with 0..1 UVs, black placeholder; the runtime draws the pages)
     for key, (u, v, w, h, title) in disp.items():
-        pd = part_at(P, key, u, v, 0.0016)
+        pd = part_at(P, key, u, v, 0.0065)                # the glass sits 3 mm behind the front of its bezel, 5.7 mm proud of the plate: never sunk into the wall
         pd.quad('disp', w, h, 0, 0, 0)
-        panel.box('bezel', w + 0.026, 0.012, 0.012, u, v + h / 2 + 0.013, 0.004, bevel=0.003)
-        panel.box('bezel', w + 0.026, 0.012, 0.012, u, v - h / 2 - 0.013, 0.004, bevel=0.003)
-        panel.box('bezel', 0.012, h + 0.026, 0.012, u - w / 2 - 0.013, v, 0.004, bevel=0.003)
-        panel.box('bezel', 0.012, h + 0.026, 0.012, u + w / 2 + 0.013, v, 0.004, bevel=0.003)
+        panel.box('bezel', w + 0.022, h + 0.022, 0.005, u, v, 0.0015, bevel=0.001)               # backing: no plate showing around the glass
+        panel.box('bezel', w + 0.022, 0.011, 0.010, u, v + h / 2 + 0.0055, 0.0045, bevel=0.002)
+        panel.box('bezel', w + 0.022, 0.011, 0.010, u, v - h / 2 - 0.0055, 0.0045, bevel=0.002)
+        panel.box('bezel', 0.011, h, 0.010, u - w / 2 - 0.0055, v, 0.0045, bevel=0.002)
+        panel.box('bezel', 0.011, h, 0.010, u + w / 2 + 0.0055, v, 0.0045, bevel=0.002)
     # --- gauges (analog)
     for (u, v, kq) in rows['gauges']:
         pg = part_at(P, 'gauge%d_%d' % (int((u + 1) * 100), int((v + 1) * 100)), u, v, 0.002)
-        pg.quad('plate', 0.066, 0.066, 0, 0, 0.0, uvr=uv_gauge[kq % 6])
-        ring = [Vector((0.036 * math.cos(2 * math.pi * j / 20), 0.036 * math.sin(2 * math.pi * j / 20), 0.002)) for j in range(20)]
+        pg.quad('plate', 0.058, 0.058, 0, 0, 0.0, uvr=uv_gauge[kq % 6])
+        ring = [Vector((0.031 * math.cos(2 * math.pi * j / 20), 0.031 * math.sin(2 * math.pi * j / 20), 0.002)) for j in range(20)]
         pg.add('chrome', sweep(ring, circle_profile(0.003, 5), closed=True))
     # --- buttons
     btn_ids = []

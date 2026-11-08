@@ -914,3 +914,5 @@ def build(ctx, root, mats, groups, tops, z_end):
         C.log(f'apollo walls {style}:', Wl.count)
     top, r_top = tops['small']
     tunnel_probe(ctx, T, z_end, r_top)
+    import cc_closeout
+    cc_closeout.build(ctx, root, mats)

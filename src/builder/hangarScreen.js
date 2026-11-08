@@ -41,7 +41,7 @@ export function createHangarScreen({ assembly, catalog, sections, materials, eng
   const chipStats = h('span', 'bay-chip-stats');
   const chipFunds = h('span', 'bay-chip-funds');
   chip.append(chipShip, chipStats, chipFunds);
-  const hint = h('div', 'bay-hint', 'Click to look around · WASD walk · Shift run · Space jump · E use a machine · H handbook · Esc menu');
+  const hint = h('div', 'bay-hint', 'Click to look around · WASD walk · Shift run · Space jump · E sit at a console · H handbook · Esc menu');
   const toast = h('div', 'bay-toast');
   const testStatus = h('div', 'bay-test-status hud-panel hud-caution');
   testStatus.hidden = true;

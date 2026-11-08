@@ -261,6 +261,87 @@ Người dùng muốn làm lại giao diện trang thiết kế:
     - Thẻ Whipple và tấm giáp sửa theo vật lý; tấm tản nhiệt rẻ nhất.
   - **Gợi ý cho Role 3:** khoang demo Apollo (bản quét CC0 của Smithsonian). Phương án thay thế: Orion.
 
+## 9. Đợt 6 (2026-11-08): hangar kiểu VAB High Bay 3 (ĐÃ CHỐT, Codex dựng mô hình)
+
+- **Người dùng muốn:** sảnh tròn hiện tại nhìn giả, quá thấp (cao 15 m, trong khi tàu cao 8–36 m). Làm lại theo ảnh thật VAB High Bay 3 có SLS bên trong: giàn giáo thép khổng lồ, sàn công tác, có góc nhìn từ mặt đất ngước lên thấy cả con tàu.
+- **Đã chốt:**
+  - Gian cao cố định khoảng 80 m.
+  - Các tầng sàn cách nhau khoảng 6 m, mỗi tầng hai nửa trượt ôm sát thân tàu, mép vàng cắt theo bán kính S/M/L. Tầng cao hơn đỉnh tàu hoặc ngang tầng có booster thì rút vào.
+  - Người chơi đi bộ dưới mặt đất. Có thang máy trong tháp giàn giáo lên các tầng sàn.
+  - **Tầng phi hành đoàn** là tầng ngang cửa khoang lái của con tàu đang lắp: có cầu dẫn (crew access arm) bắc tới cửa. Đi qua cầu, bấm E ở cửa → Readiness Poll → xác nhận → sàn rút ra (khoảng 1–2 s, âm thanh rầm rầm, khói) → sang phần bay của Role 2 như hiện nay.
+  - Dãy 7 bàn máy tính đặt trên sàn nhà cạnh bệ tàu, quay mặt về tàu.
+- **Chia việc:**
+  - Codex dựng mô hình Blender theo mô-đun (dùng nhân bản InstancedMesh) và `layout.json`, kèm sandbox `sandbox/role1.hangar.html`. Codex chạy trong VS Code **chung thư mục** với Claude. Vì vậy Codex không chạy lệnh git nào làm thay đổi trạng thái (không add, commit, checkout, stash, push), không chạy `npm install`, chỉ ghi vào `tools/blender/hangar/`, `public/assets/models/builder/hangar/`, `sandbox/role1.hangar.*` và `tests/hangar-models.test.mjs`. Dev server của Codex dùng cổng 5280; cổng 5173 là của người dùng. Claude kiểm tra rồi commit (đứng tên Myklede, không có dòng Co-Authored-By).
+  - Claude kiểm tra rồi lắp vào game: hangarScene, thang máy, sàn rút, cầu dẫn, bàn máy, âm thanh và khói.
+  - Prompt gửi Codex: `C:/Users/Thainguyen/Downloads/CODEX-PROMPT-VAB-HANGAR.md`.
+
+- **Codex 1 xong** (commit `4d303c8`, chưa push): khung VAB đúng như đã chốt, gồm 24 GLB, `layout.json`, sandbox và test. Nhưng trông "nhựa": thanh hộp đơn giản, một vật liệu phẳng, ánh sáng đều.
+- **Codex 2 (người dùng chốt 2026-11-08):** tăng độ chân thật.
+  - Khoảng 1 triệu tam giác, ≥ 60 FPS, tối đa 20 MB.
+  - Texture CC0 (ambientCG, Poly Haven), nướng AO và vết bẩn.
+  - Ánh sáng tối và sâu như ảnh Artemis.
+  - Ưu tiên kết cấu thép thật, sàn lưới và lan can, mép sàn ôm tàu; đồ lặt vặt ít.
+  - Sandbox phải dựng đúng chuỗi xử lý ảnh của game (bloom, tone mapping, HDRI).
+  - Prompt: `C:/Users/Thainguyen/Downloads/CODEX2-PROMPT-VAB-DETAIL.md`.
+
+- **Codex 2 xong** (commit `2db32c9`, nhãn `hangar-v2-backup` là bản dự phòng): người dùng rất ưng phần chi tiết khi nhìn gần, nhưng còn hai lỗi:
+  - nhìn xa bị nhoè và lấp lánh: vẽ ở 60 % độ phân giải, sàn lưới tạo vân nhiễu;
+  - đèn quá chói: độ sáng 1,15, quá nhiều đèn loá.
+- **Codex 3 (người dùng chốt 2026-11-08):**
+  - Sửa chói và nhoè: độ phân giải 1.0 có tự giảm, bản xa không dùng lưới lỗ, ít đèn loá.
+  - Vành sàn ôm đúng thân tàu ở từng tầng: tấm điền hình nêm trượt vào theo góc, có vết cắt cho booster. Có hàm `fitCollar` để dùng lại trong game.
+  - Sandbox vẽ con tàu thật bằng code builder (chỉ đọc, không sửa): chọn tàu mẫu và hình dáng thì tàu lớn và vành sàn đổi theo ngay.
+  - Cụm bàn cong 4 máy ở tầng trệt: thời tiết và cửa sổ phóng sang sao Hỏa, máy build tàu, thử động cơ và mô phỏng bay, bàn chỉ huy Go/No-Go. Người ngồi quay lưng về phía tàu; đứng dậy quay người lại là thấy toàn cảnh tàu từ dưới nhìn lên.
+  - Prompt: `C:/Users/Thainguyen/Downloads/CODEX3-PROMPT-VAB-CONSOLES.md`.
+
+- **Codex v3 xong** (commit `b90cab3`, nhãn `hangar-v3`).
+  - Hết chói; vẽ ở 100 % độ phân giải, tự hạ tối thiểu 80 %.
+  - Vành sàn ôm đúng thân tàu; sandbox vẽ tàu thật; 4 bàn máy và hoạt cảnh quay người.
+  - Claude sửa lỗi không kéo chuột được: module đồ hoạ của game tự tạo canvas phủ kín màn hình, nên sandbox phải ẩn nó.
+- **Codex v4 (người dùng chốt 2026-11-08):**
+  - Mỗi tầng là bệ ôm 3/4 vòng (270°) quanh tàu, chừa khe nhìn 90° quay về phía bàn máy và cửa (−Z). Từ bàn máy quay lại thấy trọn tàu qua khe.
+  - Mỗi tầng chia 3 mảnh rút ra: trái và phải trượt ngang, mảnh sau lùi về phía sau. Thêm tháp hoặc giàn phía sau.
+  - Thêm chi tiết kim loại như ảnh NASA: dầm vàng, ống đỏ, hộp thiết bị trắng, tủ điện cam, cột xanh, cầu thang giữa các tầng.
+  - Làm đẹp 4 bàn máy theo Firing Room thật.
+  - Camera sandbox bay tự do (WASD, Q/E, chuột phải) và có góc máy sẵn cho cụm bàn máy.
+  - Giữ `?v=2` và `?v=3`.
+  - Prompt: `C:/Users/Thainguyen/Downloads/CODEX4-PROMPT-VAB-WRAP.md`.
+- **Codex v4 xong** (commit `87c79e4`, nhãn `hangar-v4-codex`, mở bằng `?v=4`): đủ chức năng nhưng người dùng chưa ưng:
+  - khe nhìn thẳng ra cửa (nhìn trực diện);
+  - mép sàn là 36 tấm hình nan quạt;
+  - cầu thang dồn ở góc sau, không thấy từ bàn máy;
+  - hai khối xám chắn chân tàu.
+- **v5 (người dùng chốt 2026-11-08, Claude làm cùng đội sub-agent Opus 5.5 mức high):**
+  - **Khe trống là góc phần tư trước-trái** (x < 0, z < 0): hai mép sàn thẳng vuông góc gặp nhau ở tàu, nhìn chéo vào như ảnh `vab_work_platforms_with_sls.webp`.
+  - **Mép sàn là đường cong liền mạch** ôm thân tàu ở từng tầng, có vòng vàng; khoét cong theo booster.
+  - **3 mảnh mỗi tầng:** trước-phải trượt +X, sau-phải lùi +Z, sau-trái trượt −X.
+  - **Cụm 4 bàn máy dưới đất trên đường chéo trong khe**, người ngồi quay lưng với tàu.
+    - Đứng dậy quay lại thì ngước lên thấy trọn tàu.
+    - Khoảng cách: đủ xa để thấy cả tàu, đủ gần để thấy tàu khổng lồ.
+    - Chụp thử 15, 18 và 22 m, người dùng chọn bằng mắt.
+  - Thang máy dời sang góc trước-phải.
+  - Làm hết chi tiết:
+    - cầu thang và lối đi có lan can tới tàu;
+    - cầu dẫn phi hành đoàn sát mép khe;
+    - lan can, dầm vàng, mặt dưới sàn;
+    - hộp trắng, tủ cam, ống đỏ, cột xanh;
+    - bệ đỡ đẹp nhìn chéo.
+  - Lúc ngồi: trước mặt là tường thật, tối.
+  - **Cách làm:**
+    - Claude dựng khung `sandbox/role1.hangar.v5.js` (commit `e12a966`).
+    - 4 agent làm song song, mỗi agent một mảnh, có file JSON riêng trong `public/assets/models/builder/hangar/v5/`: sàn và vòng cong (decks), lối lên tàu (access), bàn máy và camera (stage), bệ đỡ (launcher).
+    - Chạy Blender và trình duyệt qua khoá `v5lock.mjs`, mỗi lúc một cái, vì máy 14 GB.
+    - Sau đó agent kiểm tra soát lại, Claude tổng kiểm tra.
+    - Đề bài chung: `src/builder/tools/blender/hangar/V5-BRIEF.md`.
+
+- **Đưa VAB vào game (người dùng chốt 2026-11-08, "Tui rất ưng thiết kế rồi"):** bỏ sảnh tròn cũ, HANGAR giờ là gian VAB v5.
+  - Code game: `hangarScene.js` viết lại; phần chuyển từ sandbox nằm ở `bay/vab/` (`load.js` nạp layout + mảnh, `hall.js` nhân bản InstancedMesh + LOD + sàn trượt + va chạm, `collars.js`, `access.js` cầu dẫn, `mount.js` bệ phóng mảnh, `consoles.js` 4 bàn máy, `shipOutline.js` đo hình tàu, `smoke.js` khói). Game không import gì từ `sandbox/`.
+  - Tàu đúng kích thước thật (không ×1,5), đứng trên bệ mảnh ở ML_TOP = 7. Gian giữ 44 × 44 m (người dùng huỷ việc nới tường gấp đôi).
+  - Chỉ còn 4 bàn máy (dãy 22 m): WINDOW & WEATHER → thẻ Bệ phóng; SPACECRAFT DESIGN → trang thiết kế; ENGINE TEST & SIM → thử động cơ; LAUNCH DIRECTOR → Go/No-Go. Bỏ các bàn propulsion, structures, crew, warehouse; sổ tay vẫn mở bằng phím H.
+  - Bấm E ở bàn: ngồi quay lưng về tàu, mở giao diện. Đóng giao diện: đứng dậy quay người, ngước lên thấy cả tàu.
+  - Phóng: CONFIRM trong Go/No-Go → đứng dậy quay lại, sàn rút từ trên xuống (~1,5 s), âm thanh có sẵn (`cockpit.lock`, `engine.rumble` chậm, `impact.small`), khói ở ray sàn → PRELAUNCH. Thử động cơ cũng rút sàn và cầu dẫn, xong thì đóng lại.
+  - Xoá `bay/room.js`, `bay/stations.js`, `bay/screen.js`. Thang máy và đi lên cầu dẫn để đợt sau.
+
 ## 5. Việc tồn đọng
 
 - **Đã làm cho Role 3 (2026-11-08):**
