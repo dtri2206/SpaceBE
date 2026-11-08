@@ -401,6 +401,9 @@ function placeDebris() {
 
 const state0Orbit = () => placeDebris();
 const FREE_STATES = ['LAUNCH', 'ORBIT', 'ENTRY', 'LANDING'];
+// Role 3: the Apollo console sits 0.27 m right of the commander (scripts/blender/cc_panel.py PANEL_X), so the cockpit look starts turned onto it.
+const APOLLO_LOOK_YAW = -0.28;
+const isApolloCabin = (ship = getShip()) => ship?.stats?.cabin?.type === 'capsule_apollo' || (ship?.parts || []).some((p) => p.type === 'capsule_apollo');
 const stick = () => (mission.stick ??= createStickState(mission.manualAscent));
 const hasStick = () => stick().has || mission.debrisWin.active;
 const DEBRIS_LESSON = 'Real ISS crews have dodged orbital debris more than 30 times since 1999. About 36,000 tracked pieces larger than 10 cm circle the Earth.';
@@ -663,7 +666,7 @@ export default {
     const view = buildSpaceView(fc.planetId);
     s = {
       state, fc, view, surface: null, mode: null,
-      look: { yaw: 0, pitch: 0 }, orbit: createOrbit(state === 'LAUNCH' ? ZOOM_PAD : ZOOM_DEFAULT), cam: createChaseState(), chase: false, zoom: { k: 0, target: 0 }, zoomCache: new Map(), brakePulse: 0, stateName: state, freeHold: null, manualTrack: false, debugDir: null, pacer: createPacer(), events: createEventDetector(), warpInfo: { warp: 1 },
+      look: { yaw: isApolloCabin() ? APOLLO_LOOK_YAW : 0, pitch: 0 }, orbit: createOrbit(state === 'LAUNCH' ? ZOOM_PAD : ZOOM_DEFAULT), cam: createChaseState(), chase: false, zoom: { k: 0, target: 0 }, zoomCache: new Map(), brakePulse: 0, stateName: state, freeHold: null, manualTrack: false, debugDir: null, pacer: createPacer(), events: createEventDetector(), warpInfo: { warp: 1 },
       corridor: fc.planetId === 'mars' && fc.altitude > atmosphereTop(fc.planet) ? computeCorridor(fc) : null,
       sinceTelemetry: 0, engineSound: false, done: false, indicators: createCockpitIndicators(), steering: createSteeringDisplay(), steeringPlan: createGuidanceReference(),
     };
