@@ -13,11 +13,12 @@ import { state as gfx } from './shared.js';
 
 const BASE = '/assets/models/cockpit/';
 // builder part type -> cabin model. The generic cones have no exterior model: Mk1 = Mercury, Mk2 = Dragon, Mk3 = Apollo.
-export const CAPSULE_MODELS = {
-  capsule_vostok: 'vostok', capsule_mercury: 'mercury', capsule_gemini: 'gemini', capsule_apollo: 'apollo', capsule_soyuz: 'soyuz',
-  capsule_shenzhou: 'shenzhou', capsule_orion: 'orion', capsule_dragon: 'dragon', capsule_starliner: 'starliner', capsule_gaganyaan: 'gaganyaan',
-  capsule_newshepard: 'newshepard', capsule_mengzhou: 'mengzhou', capsule_s: 'mercury', capsule_m: 'dragon', capsule_l: 'apollo',
-};
+// The game uses ONE crew cockpit for every capsule (the user's decision, 2026-11-08): the Apollo room with the hatch to the cabin.
+const CAPSULE_TYPES = [
+  'capsule_vostok', 'capsule_mercury', 'capsule_gemini', 'capsule_apollo', 'capsule_soyuz', 'capsule_shenzhou', 'capsule_orion', 'capsule_dragon',
+  'capsule_starliner', 'capsule_gaganyaan', 'capsule_newshepard', 'capsule_mengzhou', 'capsule_s', 'capsule_m', 'capsule_l',
+];
+export const CAPSULE_MODELS = Object.fromEntries(CAPSULE_TYPES.map((t) => [t, 'apollo']));
 const STYLES = ['small', 'panoramic', 'cupola'];
 const HATCHES = ['side', 'inward', 'top'];
 const ALBEDO = 0.2; // the pad's sun and sky lights are strong: keep the cabin lining at the contrast of the Blender renders

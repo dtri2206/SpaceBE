@@ -9,7 +9,7 @@
 // windows (manualControl.js): F when offered, mouse to aim, Space to lock, Esc to give it back. Only the ascent window for now.
 // Failures emit flight:failed; Role 4's story module charges the penalty and shows the ending.
 import * as THREE from 'three';
-import { assets, createLaunchSite, createSpaceScene, getTerrainHeight, graphics, cinematic } from '/src/graphics/index.js';
+import { assets, capsuleIdFor, createLaunchSite, createSpaceScene, getTerrainHeight, graphics, cinematic } from '/src/graphics/index.js';
 import { audio } from '/src/audio/index.js';
 import { G0, PLANETS, contract, economy, events, getShip, input, requestState, save, ui } from '/src/core/index.js';
 import { astronaut } from '/src/surface/astronaut.js';
@@ -406,9 +406,9 @@ function placeDebris() {
 
 const state0Orbit = () => placeDebris();
 const FREE_STATES = ['LAUNCH', 'ORBIT', 'ENTRY', 'LANDING'];
-// Role 3: the Apollo console sits 0.27 m right of the commander (scripts/blender/cc_panel.py PANEL_X), so the cockpit look starts turned onto it.
+// Role 3: the Apollo console (used by every capsule ship) sits 0.27 m right of the commander (scripts/blender/cc_panel.py PANEL_X), so the cockpit look starts turned onto it.
 const APOLLO_LOOK_YAW = -0.28;
-const isApolloCabin = (ship = getShip()) => ship?.stats?.cabin?.type === 'capsule_apollo' || (ship?.parts || []).some((p) => p.type === 'capsule_apollo');
+const isApolloCabin = (ship = getShip()) => capsuleIdFor(ship) === 'apollo'; // every capsule ship flies from the Apollo room
 const stick = () => (mission.stick ??= createStickState(mission.manualAscent));
 const hasStick = () => stick().has || mission.debrisWin.active;
 const DEBRIS_LESSON = 'Real ISS crews have dodged orbital debris more than 30 times since 1999. About 36,000 tracked pieces larger than 10 cm circle the Earth.';

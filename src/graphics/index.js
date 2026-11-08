@@ -28,8 +28,9 @@ import { getTerrainHeight, DELTA } from './terrain.js';
 import { createMarsScene } from './marsSurface.js';
 import { createLaunchSite } from './launchSite.js';
 import { startWarmup } from './warmup.js';
+import { capsuleIdFor } from './capsuleCockpit.js';
 
-export { assets, cinematic, createLaunchSite, createMarsScene, DELTA, getTerrainHeight };
+export { assets, cinematic, createLaunchSite, createMarsScene, DELTA, getTerrainHeight, capsuleIdFor }; // capsuleIdFor(ship?) -> 'apollo' for any capsule ship, null for Dream Chaser / Starship (flight deck)
 
 const REST_VIGNETTE = { offset: 0.36, darkness: 0.5 };
 // A stray NaN/Inf pixel (the cockpit on the pad produced some at certain look angles) is spread over the whole frame by the
