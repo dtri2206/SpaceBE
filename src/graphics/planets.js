@@ -104,7 +104,7 @@ varying vec2 vUv;
 uniform sampler2D uMars;
 ${GLSL_NOISE}
 void main() {
-  vec3 c = texture2D(uMars, vUv).rgb;
+  vec3 c = texture2D(uMars, vUv).rgb * vec3(1., 1.2, 1.08); // the photo runs a little red: nudge it toward the ground hue
   float lum = dot(c, vec3(.2126, .7152, .0722));
   float fine = fbm(dirFromUv(vUv) * 60., 4) - .5;
   gl_FragColor = vec4(c, clamp(lum * 1.3 + fine * .08, 0., 1.)); // the photo has its own shading baked in, so relief stays gentle

@@ -117,6 +117,28 @@ const SYNTHS = {
     click(c, o, { time: 0.46, pitch: 1000, volume: 0.34, ring: 0.1 });
     tone(c, o, { frequency: 90, type: 'triangle', length: 0.14, time: 0.46, volume: 0.3, slide: 55 });
   } },
+  // Zero-g cabin (Role 3): ventilation loop, a soft push-off and a glove grabbing a handrail. All on the 'ui' bus.
+  'cabin.fans': { bus: 'ui', loop: (c, o) => {
+    const a = noiseLoop(c, o, { type: 'bandpass', frequency: 330, q: 0.45, volume: 0.045, wobble: 0.008, wobbleRate: 0.17 });
+    const b = noiseLoop(c, o, { type: 'bandpass', frequency: 1250, q: 0.7, volume: 0.011, wobble: 0.004, wobbleRate: 0.31 });
+    const hum = c.createOscillator(); const hg = c.createGain();
+    hum.type = 'sine'; hum.frequency.value = 118; hg.gain.value = 0.006;
+    hum.connect(hg).connect(o); hum.start();
+    return { nodes: [...a.nodes, ...b.nodes, hum] };
+  } },
+  // Push off a surface: a soft body thump with a short suit-fabric rustle.
+  'crew.push': { bus: 'ui', play: (c, o) => {
+    tone(c, o, { frequency: 110, type: 'sine', length: 0.16, volume: 0.22, slide: 55 });
+    noiseBurst(c, o, { type: 'lowpass', frequency: 700, sweep: 220, q: 0.6, attack: 0.01, length: 0.1, volume: 0.1 });
+    noiseBurst(c, o, { type: 'bandpass', frequency: 3200, q: 1.2, time: 0.03, attack: 0.02, length: 0.22, volume: 0.04 });
+    noiseBurst(c, o, { type: 'bandpass', frequency: 2300, q: 1.0, time: 0.17, attack: 0.02, length: 0.12, volume: 0.025 });
+  } },
+  // Glove closing on a metal rail: a light clack and a short high ring.
+  'handrail.grab': { bus: 'ui', play: (c, o) => {
+    click(c, o, { pitch: 2800, volume: 0.15, ring: 0.05 });
+    tone(c, o, { frequency: 420, type: 'triangle', length: 0.05, volume: 0.07, slide: 300 });
+    noiseBurst(c, o, { type: 'bandpass', frequency: 1800, q: 1.4, time: 0.012, attack: 0.008, length: 0.05, volume: 0.03 });
+  } },
   // Pressurise: valve pop, air hiss rising in pitch for about 1.4 s, then fading away over 2.8 s in total.
   'cockpit.pressurise': { bus: 'ui', play: (c, o) => {
     click(c, o, { pitch: 1400, volume: 0.15, ring: 0.05 });
@@ -136,6 +158,28 @@ const SYNTHS = {
     click(c, o, { pitch: 2600, volume: 0.26, ring: 0.04 });
     click(c, o, { time: 0.045, pitch: 1900, volume: 0.16, ring: 0.03 });
     tone(c, o, { frequency: 260, type: 'triangle', length: 0.04, volume: 0.1, slide: 150 });
+  } },
+  // Manual-control / debris-dodge window sounds ('ui' bus). Offer: rising two-tone chime. Lock: single confirm beep.
+  'cockpit.manualOffer': { bus: 'ui', play: (c, o) => {
+    tone(c, o, { frequency: 660, length: 0.16, volume: 0.09 });
+    tone(c, o, { frequency: 990, length: 0.28, time: 0.15, volume: 0.09 });
+    tone(c, o, { frequency: 1980, length: 0.2, time: 0.15, volume: 0.02 });
+  } },
+  'cockpit.lock': { bus: 'ui', play: (c, o) => {
+    tone(c, o, { frequency: 1320, type: 'square', length: 0.07, volume: 0.045 });
+    tone(c, o, { frequency: 1760, length: 0.16, time: 0.08, volume: 0.09 });
+  } },
+  // RCS puff: short filtered hiss with a soft valve tick; every call is an independent burst, so it retriggers freely.
+  'rcs.puff': { bus: 'ui', play: (c, o) => {
+    click(c, o, { pitch: 1500, volume: 0.08, ring: 0.02 });
+    noiseBurst(c, o, { type: 'bandpass', frequency: 3600, sweep: 2200, q: 0.8, time: 0.005, attack: 0.012, length: 0.16, volume: 0.1 });
+    noiseBurst(c, o, { type: 'highpass', frequency: 6000, q: 0.5, time: 0.005, attack: 0.01, length: 0.1, volume: 0.03 });
+  } },
+  // Debris passing close: noise whoosh whose band rises then falls, plus a Doppler-style tone dropping in pitch.
+  'debris.whoosh': { bus: 'world', play: (c, o) => {
+    noiseBurst(c, o, { type: 'bandpass', frequency: 500, sweep: 2600, q: 1.2, attack: 0.28, length: 0.45, volume: 0.28 });
+    noiseBurst(c, o, { type: 'bandpass', frequency: 2600, sweep: 380, q: 1.2, time: 0.42, attack: 0.03, length: 0.7, volume: 0.24 });
+    tone(c, o, { frequency: 520, type: 'triangle', length: 1.0, volume: 0.05, slide: 150 });
   } },
 };
 

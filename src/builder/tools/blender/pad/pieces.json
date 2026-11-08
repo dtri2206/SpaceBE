@@ -1,0 +1,828 @@
+{
+ "catch_tower": {
+  "file": "pad/catch_tower.glb",
+  "anchor": "centre of its base on the ground, face toward the rocket on -x",
+  "scale": {
+   "y": "H",
+   "xz": "D"
+  },
+  "notes": "tower = catch. body.y to (mount top + 1.05 H) / 26; pose_carriage moves in y; chopsticks turn about y.",
+  "tris": 3466,
+  "kb": 57,
+  "bbox": [
+   [
+    -10.48,
+    0.0,
+    -2.47
+   ],
+   [
+    2.47,
+    30.5,
+    2.47
+   ]
+  ],
+  "nodes": [
+   "body",
+   "head",
+   "pose_arm_qd",
+   "pose_carriage",
+   "pose_chopstick_a",
+   "pose_chopstick_b"
+  ],
+  "attach": {}
+ },
+ "crew_arm": {
+  "file": "pad/crew_arm.glb",
+  "anchor": "the hinge on the tower face, 0.7 m below the walkway floor (attach_floor); ship on -x",
+  "scale": {
+   "x": "gap"
+  },
+  "notes": "access = arm. Scale walkway in x to (gap - 1.5 m); white_room sits at its end; pose_arm turns about y.",
+  "tris": 544,
+  "kb": 14,
+  "bbox": [
+   [
+    -2.74,
+    0.05,
+    -0.95
+   ],
+   [
+    0.14,
+    3.1,
+    1.4
+   ]
+  ],
+  "nodes": [
+   "attach_floor",
+   "pose_arm",
+   "walkway",
+   "white_room"
+  ],
+  "attach": {
+   "floor": [
+    0,
+    0.7,
+    0
+   ]
+  }
+ },
+ "egress": {
+  "file": "pad/egress.glb",
+  "anchor": "nodes placed by art.js (basket: its origin on the wire; bunker on the ground)",
+  "scale": {
+   "none": "human"
+  },
+  "notes": "access = slidewire (basket, bunker); blastroom uses bunker.",
+  "tris": 504,
+  "kb": 26,
+  "bbox": [
+   [
+    -0.8,
+    0.0,
+    -2.47
+   ],
+   [
+    14.2,
+    2.6,
+    2.47
+   ]
+  ],
+  "nodes": [
+   "basket",
+   "bunker"
+  ],
+  "attach": {}
+ },
+ "holddown": {
+  "file": "pad/holddown.glb",
+  "anchor": "each node on its own base (heads at the grip height); the rocket on -x of it",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "clamps = hold (clamp_*), release (arm_saturn_*); tower = tsm and platform TSMs (tsm). Columns stretch in y.",
+  "tris": 896,
+  "kb": 28,
+  "bbox": [
+   [
+    -1.25,
+    0.0,
+    -6.4
+   ],
+   [
+    0.6,
+    3.33,
+    6.3
+   ]
+  ],
+  "nodes": [
+   "arm_saturn_base",
+   "arm_saturn_column",
+   "arm_saturn_head",
+   "clamp_base",
+   "clamp_column",
+   "clamp_head",
+   "mast_umbilical",
+   "post",
+   "tsm"
+  ],
+  "attach": {}
+ },
+ "lightning_tower": {
+  "file": "pad/lightning_tower.glb",
+  "anchor": "centre of its base on the ground; real size",
+  "scale": {
+   "none": "real"
+  },
+  "notes": "lightning = mast / catenary. Real size; wires from attach_wire.",
+  "tris": 3874,
+  "kb": 50,
+  "bbox": [
+   [
+    -8.25,
+    0.0,
+    -8.25
+   ],
+   [
+    8.25,
+    183.8,
+    8.25
+   ]
+  ],
+  "nodes": [
+   "attach_wire"
+  ],
+  "attach": {
+   "wire": [
+    0.0,
+    178.05,
+    0.0
+   ]
+  }
+ },
+ "ml1": {
+  "file": "pad/ml1.glb",
+  "anchor": "rocket axis at the pedestals' feet (the trench hardstand); tower on +x",
+  "scale": {
+   "base": "D",
+   "tower": "H+D"
+  },
+  "notes": "mount = mlp at LC-39B (NASA ML-1). Scale tower.y to the 1.10 H rule; the base keeps its height.",
+  "tris": 19307,
+  "kb": 228,
+  "bbox": [
+   [
+    -4.49,
+    0.0,
+    -6.07
+   ],
+   [
+    9.78,
+    25.5,
+    6.07
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "attach_tower",
+   "base",
+   "tower"
+  ],
+  "attach": {
+   "deck": [
+    0.0,
+    3.498,
+    0.0
+   ],
+   "tower": [
+    5.936,
+    3.498,
+    0.0
+   ]
+  },
+  "source": "NASA 3D Resources: Mobile Launcher (public domain)",
+  "scale_xz_m_per_unit": 14.0,
+  "scale_y_m_per_unit": 10.35
+ },
+ "mlp_saturn": {
+  "file": "pad/mlp_saturn.glb",
+  "anchor": "rocket axis, at the pedestals' feet (the trench hardstand)",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "mount = mlp with a tower on the deck (Saturn V). tower_fixed stands at attach_tower.",
+  "tris": 2188,
+  "kb": 50,
+  "bbox": [
+   [
+    -2.67,
+    0.0,
+    -3.8
+   ],
+   [
+    7.55,
+    5.08,
+    3.8
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "attach_tower",
+   "holddown",
+   "pedestals",
+   "tsm"
+  ],
+  "attach": {
+   "deck": [
+    0,
+    3.5,
+    0
+   ],
+   "tower": [
+    5.375,
+    3.5,
+    0
+   ]
+  }
+ },
+ "mlp_shuttle": {
+  "file": "pad/mlp_shuttle.glb",
+  "anchor": "rocket axis, at the pedestals' feet (the trench hardstand)",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "mount = mlp with the tower on the pad (Shuttle era). Hide node posts when the ship has no strap-ons.",
+  "tris": 3428,
+  "kb": 58,
+  "bbox": [
+   [
+    -4.67,
+    0.0,
+    -3.8
+   ],
+   [
+    4.67,
+    6.83,
+    3.8
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "pedestals",
+   "posts",
+   "rainbirds",
+   "tsm"
+  ],
+  "attach": {
+   "deck": [
+    0,
+    3.5,
+    0
+   ]
+  }
+ },
+ "mount_olm2": {
+  "file": "pad/mount_olm2.glb",
+  "anchor": "rocket axis, on the ground",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "mount = raised at Starbase Pad 2 (flame trench, no plate).",
+  "tris": 1224,
+  "kb": 77,
+  "bbox": [
+   [
+    -9.7,
+    0.0,
+    -9.7
+   ],
+   [
+    9.7,
+    5.3,
+    16.6
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "hardstand"
+  ],
+  "attach": {
+   "deck": [
+    0,
+    5.0,
+    0
+   ]
+  }
+ },
+ "mount_raised": {
+  "file": "pad/mount_raised.glb",
+  "anchor": "rocket axis, on the ground",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "mount = raised (Starbase Pad 1). Hide node plate when the pad has no water.",
+  "tris": 3440,
+  "kb": 61,
+  "bbox": [
+   [
+    -7.91,
+    0.0,
+    -7.91
+   ],
+   [
+    7.91,
+    5.85,
+    7.91
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "hardstand",
+   "plate"
+  ],
+  "attach": {
+   "deck": [
+    0,
+    5.0,
+    0
+   ]
+  }
+ },
+ "mst": {
+  "file": "pad/mst.glb",
+  "anchor": "centre of its base (the ship axis when closed round it); doors on -x",
+  "scale": {
+   "y": "H",
+   "xz": "D"
+  },
+  "notes": "tower = mst. body.y to 1.15 H; head rides on top; doors pose_door_a/b about y; bogies stay.",
+  "tris": 4336,
+  "kb": 46,
+  "bbox": [
+   [
+    -4.0,
+    0.02,
+    -4.0
+   ],
+   [
+    5.41,
+    24.6,
+    4.0
+   ]
+  ],
+  "nodes": [
+   "body",
+   "bogies",
+   "head",
+   "pose_door_a",
+   "pose_door_b"
+  ],
+  "attach": {}
+ },
+ "pedestal_lc34": {
+  "file": "pad/pedestal_lc34.glb",
+  "anchor": "rocket axis, on the ground",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "mount = pedestal at LC-34. deflector_wedge rolls on its rails (-x).",
+  "tris": 1514,
+  "kb": 44,
+  "bbox": [
+   [
+    -11.0,
+    0.0,
+    -7.91
+   ],
+   [
+    7.91,
+    4.2,
+    7.91
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "deflector_wedge",
+   "hardstand",
+   "holddown"
+  ],
+  "attach": {
+   "deck": [
+    0,
+    3.45,
+    0
+   ]
+  }
+ },
+ "pit": {
+  "file": "pad/pit.glb",
+  "anchor": "rocket axis, on the ground",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "mount = deflector (flame pit). soyuz_launcher stands on attach_ring.",
+  "tris": 900,
+  "kb": 48,
+  "bbox": [
+   [
+    -19.29,
+    0.0,
+    -8.21
+   ],
+   [
+    7.85,
+    5.33,
+    8.21
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "attach_ring",
+   "hardstand"
+  ],
+  "attach": {
+   "ring": [
+    0,
+    4.2,
+    0
+   ],
+   "deck": [
+    0,
+    1.2,
+    0
+   ]
+  }
+ },
+ "rss": {
+  "file": "pad/rss.glb",
+  "anchor": "the hinge column foot; mated, the box runs along -x beside the ship (+z side faces it)",
+  "scale": {
+   "y": "H",
+   "xz": "D"
+  },
+  "notes": "tower = rss (with tower_fixed). pose_rss turns about y on the hinge; rail is a 120 deg arc.",
+  "tris": 1732,
+  "kb": 42,
+  "bbox": [
+   [
+    -6.35,
+    0.0,
+    -5.77
+   ],
+   [
+    3.31,
+    19.0,
+    1.45
+   ]
+  ],
+  "nodes": [
+   "hinge",
+   "pose_rss",
+   "rail"
+  ],
+  "attach": {}
+ },
+ "slab": {
+  "file": "pad/slab.glb",
+  "anchor": "rocket axis, on the ground",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "mount = slab. The ship stands on attach_deck.",
+  "tris": 520,
+  "kb": 43,
+  "bbox": [
+   [
+    -7.91,
+    0.0,
+    -7.91
+   ],
+   [
+    7.91,
+    0.56,
+    7.91
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "hardstand"
+  ],
+  "attach": {
+   "deck": [
+    0,
+    0.45,
+    0
+   ]
+  }
+ },
+ "soyuz_gantry": {
+  "file": "pad/soyuz_gantry.glb",
+  "anchor": "centre of its base, face toward the rocket on -x (one half)",
+  "scale": {
+   "y": "H",
+   "xz": "D"
+  },
+  "notes": "tower = gantry: two copies (turned 180 deg about the ship). Hinge at attach_hinge (outer foot), turn about z.",
+  "tris": 2140,
+  "kb": 32,
+  "bbox": [
+   [
+    -1.57,
+    0.0,
+    -2.15
+   ],
+   [
+    1.17,
+    19.97,
+    2.15
+   ]
+  ],
+  "nodes": [
+   "attach_hinge",
+   "body",
+   "foot"
+  ],
+  "attach": {
+   "hinge": [
+    0.95,
+    0.3,
+    0
+   ]
+  }
+ },
+ "soyuz_launcher": {
+  "file": "pad/soyuz_launcher.glb",
+  "anchor": "rocket axis, 1.8 m below the ring top (attach_ring, where the ship stands)",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "clamps = tulip. pose_arm_k: hinge 0.3 m above the ring, local +x outward; rotate about local z (negative opens).",
+  "tris": 3344,
+  "kb": 70,
+  "bbox": [
+   [
+    -2.97,
+    0.05,
+    -2.97
+   ],
+   [
+    2.97,
+    5.5,
+    2.97
+   ]
+  ],
+  "nodes": [
+   "attach_ring",
+   "pose_arm_1",
+   "pose_arm_2",
+   "pose_arm_3",
+   "pose_arm_4"
+  ],
+  "attach": {
+   "ring": [
+    0,
+    1.8,
+    0
+   ]
+  }
+ },
+ "sphere": {
+  "file": "pad/sphere.glb",
+  "anchor": "centre of its base on the ground; real size",
+  "scale": {
+   "none": "real"
+  },
+  "notes": "propellant = auto / loadgo: LH2, Pad 39B (1.25 M gal). Real size.",
+  "tris": 5964,
+  "kb": 67,
+  "bbox": [
+   [
+    -23.6,
+    0.0,
+    -12.35
+   ],
+   [
+    16.23,
+    32.7,
+    12.35
+   ]
+  ],
+  "nodes": [],
+  "attach": {}
+ },
+ "sphere_lox": {
+  "file": "pad/sphere_lox.glb",
+  "anchor": "centre of its base on the ground; real size",
+  "scale": {
+   "none": "real"
+  },
+  "notes": "propellant = auto / loadgo: LOX, LC-39 (900,000 gal). Real size.",
+  "tris": 5868,
+  "kb": 66,
+  "bbox": [
+   [
+    -22.55,
+    0.0,
+    -11.33
+   ],
+   [
+    15.18,
+    30.6,
+    11.33
+   ]
+  ],
+  "nodes": [],
+  "attach": {}
+ },
+ "strongback": {
+  "file": "pad/strongback.glb",
+  "anchor": "centre of its foot, face toward the rocket on -x",
+  "scale": {
+   "y": "H",
+   "xz": "D"
+  },
+  "notes": "tower = strongback. pose_frame turns about z on the hinge (-4 deg = leaned back); scale body.y to 1.02 H.",
+  "tris": 2604,
+  "kb": 29,
+  "bbox": [
+   [
+    -1.67,
+    0.0,
+    -1.5
+   ],
+   [
+    3.92,
+    20.5,
+    1.5
+   ]
+  ],
+  "nodes": [
+   "base",
+   "body",
+   "pose_clamp_1",
+   "pose_clamp_2",
+   "pose_clamp_3",
+   "pose_frame"
+  ],
+  "attach": {}
+ },
+ "table_ela3": {
+  "file": "pad/table_ela3.glb",
+  "anchor": "rocket axis, on the ground",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "mount = mlp at ELA-3 (table on the duct). Hide node masts if a tower serves the ship.",
+  "tris": 4600,
+  "kb": 119,
+  "bbox": [
+   [
+    -10.51,
+    0.0,
+    -11.5
+   ],
+   [
+    10.51,
+    8.28,
+    17.47
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "hardstand",
+   "masts"
+  ],
+  "attach": {
+   "deck": [
+    0,
+    4.625,
+    0
+   ]
+  }
+ },
+ "tower_fixed": {
+  "file": "pad/tower_fixed.glb",
+  "anchor": "centre of its base on its deck, face toward the rocket on -x",
+  "scale": {
+   "y": "H",
+   "xz": "D"
+  },
+  "notes": "tower = fixed (and under rss). Scale body.y to the 1.10 H rule; head and top_mast ride on the top; arms by art.",
+  "tris": 7694,
+  "kb": 98,
+  "bbox": [
+   [
+    -4.63,
+    0.0,
+    -1.98
+   ],
+   [
+    2.1,
+    30.9,
+    1.98
+   ]
+  ],
+  "nodes": [
+   "body",
+   "head",
+   "pose_arm_1",
+   "pose_arm_2",
+   "pose_arm_3",
+   "top_mast"
+  ],
+  "attach": {}
+ },
+ "trench": {
+  "file": "pad/trench.glb",
+  "anchor": "rocket axis, on the ground",
+  "scale": {
+   "xyz": "D"
+  },
+  "notes": "mount = trench (with node table) or under mlp / ml1 (hide table). Show one of deflector_wedge, deflector_ramp.",
+  "tris": 2130,
+  "kb": 86,
+  "bbox": [
+   [
+    -10.62,
+    0.0,
+    -17.07
+   ],
+   [
+    10.62,
+    8.62,
+    17.54
+   ]
+  ],
+  "nodes": [
+   "attach_deck",
+   "attach_table",
+   "deflector_ramp",
+   "deflector_wedge",
+   "hardstand",
+   "table"
+  ],
+  "attach": {
+   "table": [
+    0,
+    3.7,
+    0
+   ],
+   "deck": [
+    0,
+    3.0,
+    0
+   ]
+  }
+ },
+ "water_tower": {
+  "file": "pad/water_tower.glb",
+  "anchor": "centre of its base on the ground; real size",
+  "scale": {
+   "none": "real"
+  },
+  "notes": "deluge = tower (and iop). Real size: place by the far-field rule.",
+  "tris": 2144,
+  "kb": 34,
+  "bbox": [
+   [
+    -30.0,
+    0.0,
+    -10.39
+   ],
+   [
+    10.39,
+    88.8,
+    10.39
+   ]
+  ],
+  "nodes": [],
+  "attach": {}
+ },
+ "weather_gear": {
+  "file": "pad/weather_gear.glb",
+  "anchor": "nodes placed by art.js, each on its own base",
+  "scale": {
+   "none": "human"
+  },
+  "notes": "weather = radar (radar, field_mill, wind_tower).",
+  "tris": 1696,
+  "kb": 19,
+  "bbox": [
+   [
+    -8.01,
+    0.0,
+    -1.8
+   ],
+   [
+    5.3,
+    10.17,
+    2.5
+   ]
+  ],
+  "nodes": [
+   "field_mill",
+   "radar",
+   "wind_tower"
+  ],
+  "attach": {}
+ }
+}

@@ -117,3 +117,51 @@ export function createManualWindow(id, cfg = config.windows[id], options = {}) {
   };
   return api;
 }
+
+// ---- who has the stick ----
+// 'auto' (flight computer) | 'free' (player flies outside a window, no score) | 'window' (the scored ascent window).
+// F toggles; a window offer starting while the player flies free converts straight into the window.
+// Free aim offsets live in the same angular frame as the window's (centred on the guidance direction); target is always 0,0.
+export function createStickState(win, options = {}) {
+  const degPerPixel = options.degPerPixel ?? config.degPerPixel;
+  const range = options.rangeDeg ?? config.rangeDeg;
+  const tol = options.toleranceDeg ?? config.toleranceDeg;
+  const tau = options.accuracyWindowSeconds ?? 2;
+  let free = false, planetId = null;
+  let aim = { yawDeg: 0, pitchDeg: 0 }, nose = null, onFrac = 0;
+  const reset = () => { aim = { yawDeg: 0, pitchDeg: 0 }; nose = null; onFrac = 0; };
+  const api = {
+    get mode() { return win.active ? 'window' : free ? 'free' : 'auto'; },
+    get free() { return free && !win.active; },
+    get has() { return api.mode !== 'auto'; },
+    // F (or the debug toggle). Returns what happened: 'window' | 'lock' | 'cancel' | 'free' | 'giveBack'.
+    toggle(ctx = {}) {
+      if (win.offered) { free = false; reset(); return win.take() ? 'window' : null; }
+      if (win.active) return win.lock() ? 'lock' : (win.cancel(), 'cancel');
+      if (free) { free = false; return 'giveBack'; }
+      reset(); free = true; planetId = ctx.planetId ?? null;
+      return 'free';
+    },
+    // the window offer starts: a free pilot goes straight into it. Returns 'converted' | 'offered' | null.
+    offer() {
+      if (!win.offer()) return null;
+      if (free && win.take()) { free = false; reset(); return 'converted'; }
+      return 'offered';
+    },
+    // Esc / Space / click outside a window while flying free (inside a window the caller uses win.lock/cancel)
+    giveBack() { if (!free || win.active) return false; free = false; return true; },
+    changedPlanet(id) { return free && planetId !== null && id !== planetId; },
+    // every frame while free: mouse in px, noseOffset in the guidance frame. Returns a window-like readout.
+    update(dtReal, { mouse = { x: 0, y: 0 }, noseOffset = null } = {}) {
+      aim = { yawDeg: clamp(aim.yawDeg + mouse.x * degPerPixel, range), pitchDeg: clamp(aim.pitchDeg - mouse.y * degPerPixel, range) };
+      nose = noseOffset;
+      const on = !!noseOffset && offsetAngleDeg(noseOffset, { yawDeg: 0, pitchDeg: 0 }) <= tol;
+      onFrac += (Math.min(dtReal, tau) / tau) * ((on ? 1 : 0) - onFrac); // running on-target fraction over ~2 s
+      return api.readout();
+    },
+    readout() {
+      return { id: 'free', state: 'free', label: 'MANUAL', timeLeft: null, aim: { ...aim }, target: { yawDeg: 0, pitchDeg: 0 }, nose: nose ? { ...nose } : null, accuracy: onFrac, lockReady: false, onTarget: onFrac > 0.5, events: [] };
+    },
+  };
+  return api;
+}

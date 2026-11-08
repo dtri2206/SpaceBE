@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import * as contract from '../../core/contract.js';
-import { CHECKLIST_STEPS, PHASE0_TIMING, boardingPath, buildPoll, createChecklist, hasNoGo, phase0Plan, pollLinesShown, promptAt, scrubAvailable, scrubFee } from '../phase0.js';
+import { CABIN_OPTIONS, CHECKLIST_STEPS, PHASE0_TIMING, boardingPath, buildPoll, createChecklist, hasNoGo, phase0Plan, aimInfo, buttonIdOfName, fallbackLabel, nextButtonId, pollLinesShown, promptAt, scrubAvailable, scrubFee } from '../phase0.js';
 
 const results = [];
 const test = (name, fn) => { try { fn(); results.push(['ok', name]); } catch (e) { results.push(['FAIL', name, e]); } };
@@ -111,6 +111,54 @@ test('boarding path: rises to the capsule height and ends beside it', () => {
   assert.ok(ys.every((y, i) => i === 0 || y >= ys[i - 1] - 3), 'mostly rising');
   assert.ok(Math.abs(ys.at(-1) - (3 + 14)) < 1);
   assert.ok(path.at(-1).position[2] > 0 && path.at(-1).position[2] < 6);
+});
+
+test('aim: node names map to checklist ids in both cockpits', () => {
+  for (const n of ['btn:hatch', 'btnhatch', 'btnCap.hatch', 'btnCaphatch', 'btnLamp.hatch', 'btnLamphatch']) assert.equal(buttonIdOfName(n), 'hatch', n);
+  assert.equal(buttonIdOfName('btn:arm'), 'arm');
+  for (const n of ['btn:fire', 'btnCap.fire', 'btnCap', 'btnLamp', 'hatch', '', null]) assert.equal(buttonIdOfName(n), null, String(n));
+});
+
+test('aim: next / blocked / done labels follow the checklist order', () => {
+  const c = createChecklist();
+  assert.equal(nextButtonId(c), 'hatch');
+  assert.deepEqual([aimInfo(c, 'hatch').kind, aimInfo(c, 'hatch').clickable, aimInfo(c, 'hatch').tone], ['next', true, 'ok']);
+  assert.equal(aimInfo(c, 'hatch').label, 'HATCH · click to close the hatch');
+  const b = aimInfo(c, 'cabin');
+  assert.deepEqual([b.kind, b.clickable, b.tone, b.label], ['blocked', false, 'warn', 'CABIN · close the hatch first']);
+  assert.equal(aimInfo(c, 'arm').label, 'ARM ENGINE · close the hatch first');
+  c.press(1);
+  assert.equal(aimInfo(c, 'hatch').kind, 'done');
+  assert.equal(aimInfo(c, 'cabin').kind, 'next'); assert.equal(aimInfo(c, 'o2').label, 'O2 · pressurise the cabin first');
+  c.complete();
+  assert.equal(aimInfo(c, 'arm').kind, 'none'); assert.equal(nextButtonId(c), null);
+  assert.equal(aimInfo(createChecklist(), 'bogus').kind, 'none');
+});
+
+test('aim: fallback label names the key only for that item', () => {
+  assert.equal(fallbackLabel(CHECKLIST_STEPS[0]), 'HATCH · press 1');
+  assert.equal(fallbackLabel(CHECKLIST_STEPS[3]), 'ARM ENGINE · press 4');
+});
+
+test('no on-screen copy mentions keys 1-4', () => {
+  const copy = JSON.parse(readFileSync(new URL('../phase0.json', import.meta.url))).copy;
+  assert.doesNotMatch(`${copy.checklistKeys} ${copy.checklistFact}`, /\b[1-4]\b|1–4/);
+});
+
+test('poll: pure oxygen + wiring fault adds an ECLSS NO-GO, only when asked for; no ShipSpec warning does', () => {
+  const clean = buildPoll(mock('ship.reliable'));
+  assert.ok(!clean.some((x) => x.station === 'ECLSS'));
+  const p = buildPoll(mock('ship.reliable'), { pureOxygenFault: true });
+  const e = p.find((x) => x.station === 'ECLSS');
+  assert.equal(e.go, false); assert.equal(e.reason, 'pure-oxygen cabin with a wiring fault'); assert.equal(p.filter((x) => !x.go).length, 1);
+  const cold = buildPoll(mock('ship.coldMorning'), { pureOxygenFault: true });
+  assert.ok(cold.find((x) => x.station === 'Weather' && !x.go) && cold.find((x) => x.station === 'ECLSS' && !x.go));
+});
+
+test('cabin options: air mix 20 s, pure oxygen 5 s, keys 1 and 2', () => {
+  assert.equal(CABIN_OPTIONS.air.simSeconds, 20); assert.equal(CABIN_OPTIONS.pure.simSeconds, 5);
+  assert.deepEqual([CABIN_OPTIONS.air.key, CABIN_OPTIONS.pure.key], ['1', '2']);
+  assert.ok(PHASE0_TIMING.fillAir > PHASE0_TIMING.fillPure && PHASE0_TIMING.fillAir <= 6 && PHASE0_TIMING.purge <= 6);
 });
 
 let failed = 0;

@@ -1,10 +1,13 @@
 // Role 4 cruise (spec §6.3 step 4): the trip from Earth orbit to Mars on a real Hohmann transfer, compressed in time.
 // Map with Earth, Mars and the ship, a day counter, time warp, growing comms delay, radiation dose (1.8 mSv/day, measured
 // by Curiosity's RAD on the way to Mars), a solar storm and an Apollo 13-style malfunction. Arrival requests ENTRY.
+// The crew's life support (Role 1 wave 5, all four roles agreed): with ShipSpec.stats.traits.life, ./life.js runs the
+// spare oxygen, CO₂ scrubbing and radiation shielding the player chose; without it the cruise is exactly as before.
 import * as THREE from 'three';
 import { assets, createSpaceScene, graphics } from '/src/graphics/index.js';
-import { PLANETS, events, getShip, input, requestState, ui } from '/src/core/index.js';
+import { PLANETS, events, getShip, input, requestState, save, ui } from '/src/core/index.js';
 import data from './data.json';
+import { createCruiseLife, leakFrom, seededRng } from './life.js';
 import './cruise.css';
 
 // Hohmann transfer from 1 AU to Mars' 1.524 AU orbit: half an ellipse, about 259 days.
@@ -149,7 +152,7 @@ function buildHud() {
   controls.append(el('span', 'hud-label', 'Time warp'));
   const warpButtons = data.daysPerSecond.map((d, i) => button(`${d} days/s`, () => setWarp(i), `Digit${i + 1}`));
   controls.append(...warpButtons);
-  if (new URLSearchParams(location.search).get('debug') === '1') controls.append(button('Skip to Mars', () => requestState('ENTRY'), 'Enter'));
+  if (new URLSearchParams(location.search).get('debug') === '1') controls.append(button('Skip to Mars', () => arrive(), 'Enter'));
   root.append(controls);
 
   const note = el('div', 'hud hud-panel role4-cruise-note');
@@ -242,8 +245,12 @@ function resolveStorm(sheltered) {
   if (s?.encounter?.type !== 'storm') return;
   const cfg = data.solarStorm;
   const hasShelter = !!getShip()?.stats?.hasShelter;
-  const dose = sheltered ? (hasShelter ? cfg.doseShelter : cfg.doseImprovised) : cfg.doseIgnored;
-  s.dose += dose;
+  let dose = sheltered ? (hasShelter ? cfg.doseShelter : cfg.doseImprovised) : cfg.doseIgnored;
+  if (s.life) {
+    // the dose behind the shielding the crew actually had (traits.life.radiation, g/cm²)
+    dose = s.life.storm(sheltered ? (hasShelter ? 'shelter' : 'improvised') : 'ignored', { refMsv: cfg.doseIgnored, refGcm2: cfg.doseRefGcm2 ?? 5, lambda: cfg.attenuationGcm2 ?? 8 });
+    s.dose = s.life.dose;
+  } else s.dose += dose;
   const text = (sheltered ? (hasShelter ? cfg.resultShelter : cfg.resultImprovised) : cfg.resultIgnored).replace('{dose}', dose);
   events.emit('flight:event', { type: 'solar_storm', t: s.t, data: { doseMsv: dose, sheltered, hasShelter } });
   graphics.setEffects({ vignette: 0 });
@@ -268,6 +275,7 @@ function malfunction() {
     act.append(button(opt.label, () => {
       if (s?.encounter?.type !== 'malfunction') return;
       s.encounter.attempts += 1;
+      s.life?.malfunctionAttempt(opt.correct); // a wrong move lets the damaged line vent more spare oxygen
       result.textContent = opt.result;
       result.className = `role4-cruise-text ${opt.correct ? 'hud-good' : 'hud-caution'}`;
       if (opt.correct) {
@@ -280,18 +288,73 @@ function malfunction() {
   m.append(act);
 }
 
+// ---------- the crew's life (./life.js) and its record for the hangar ----------
+
+/** This flight's record in save.partEffects (src/flight/effects/index.js), or null when it belongs to another ship. */
+function flightRecord() {
+  const flights = save.load().partEffects?.flights;
+  const rec = flights?.[flights.length - 1] ?? null;
+  return rec && (rec.name == null || rec.name === getShip()?.name) ? rec : null;
+}
+
+/** The cruise's life support, when the ship has traits.life (else null: the cruise as before). */
+function startLife() {
+  const life = getShip()?.stats?.traits?.life;
+  if (!life?.o2 || !life?.radiation) return null;
+  const rec = flightRecord();
+  const leak = leakFrom(rec?.state?.structure, { kPa: life.cabin?.o2kPa && life.cabin.o2MassShare >= 1 ? life.cabin.o2kPa : 101.3 });
+  const rng = seededRng(`${rec?.id ?? getShip()?.name ?? 'ship'}|cruise`);
+  return createCruiseLife(life, { tripDays: data.tripDays, rng, leak, cfg: { ...data.life, doseMsvPerDay: data.doseMsvPerDay } });
+}
+
+/** Append the cruise's notes (via: 'save', kept by the flight's recorder) and its summary (record.life.cruise). */
+function recordLife() {
+  if (!s?.life || s.lifeRecorded) return;
+  s.lifeRecorded = true;
+  try {
+    const all = save.load();
+    const flights = all.partEffects?.flights;
+    const rec = flightRecord();
+    if (!rec || !flights?.length) return;
+    const notes = s.life.notes().map((n) => ({ ...n, via: 'save', src: 'cruise' }));
+    const kept = (rec.notes ?? []).filter((n) => !(n.via === 'save' && n.src === 'cruise'));
+    const next = { ...rec, notes: [...kept, ...notes].slice(-300), life: { ...(rec.life ?? {}), cruise: s.life.summary() } };
+    save.update({ partEffects: { ...all.partEffects, flights: [...flights.slice(0, -1), next] } });
+  } catch { /* the record is a bonus; the cruise goes on */ }
+}
+
+/** Arrival (or the debug skip): the rest of the trip passes, the record is written, then ENTRY. */
+function arrive() {
+  if (!s) return;
+  if (s.life && !s.life.failed && s.life.day < data.tripDays) {
+    const failure = s.life.step(data.tripDays - s.life.day);
+    if (failure) { fail(failure); return; }
+  }
+  s.arrived = true;
+  recordLife();
+  requestState('ENTRY');
+}
+
+function fail(failure) {
+  if (s.failed) return;
+  s.failed = true;
+  recordLife();
+  events.emit('flight:failed', failure);
+}
+
 export default {
   enter() {
     if (!scene) buildScene();
     graphics.setSunDirection(new THREE.Vector3(0.7, 0.3, 0.4));
     graphics.setView(scene, camera);
     s = { day: 0, t: 0, warp: 1, dose: 0, sinceTelemetry: 0, encounter: null, stormDone: false, malfunctionDone: false, notesShown: new Set(), noteLeft: 0, autoFor: null, arrived: false, hud: buildHud() };
+    try { s.life = startLife(); } catch { s.life = null; }
     setWarp(1);
     render();
   },
 
   update(dt) {
-    if (!s) return;
+    if (!s || s.failed) return;
     s.t += dt;
     const enc = s.encounter;
     if (enc?.type === 'storm') {
@@ -303,12 +366,16 @@ export default {
     if (!enc) {
       const before = s.day;
       s.day = Math.min(data.tripDays, s.day + dt * data.daysPerSecond[s.warp]);
-      s.dose += (s.day - before) * data.doseMsvPerDay;
+      if (s.life) {
+        const failure = s.life.step(s.day - before); // seep, the cabin leak, CO₂, the dose behind this ship's shielding
+        s.dose = s.life.dose;
+        if (failure) { fail(failure); return; }
+      } else s.dose += (s.day - before) * data.doseMsvPerDay;
       const note = data.notes.find((n) => !s.notesShown.has(n.day) && s.day >= n.day);
       if (note) { s.notesShown.add(note.day); dropWarp(); showNote(note); }
       if (!s.stormDone && s.day >= data.solarStorm.day) { s.stormDone = true; dropWarp(); solarStorm(); }
       else if (!s.malfunctionDone && s.day >= data.malfunction.day) { s.malfunctionDone = true; dropWarp(); malfunction(); }
-      else if (!s.arrived && s.day >= data.tripDays) { s.arrived = true; requestState('ENTRY'); return; }
+      else if (!s.arrived && s.day >= data.tripDays) { arrive(); return; }
     }
 
     // Auto-warp: a slow warp over a quiet stretch longer than MAX_QUIET_SECONDS goes up one step, once per stretch.
@@ -333,12 +400,13 @@ export default {
     s.sinceTelemetry += dt;
     if (s.sinceTelemetry >= 0.5) {
       s.sinceTelemetry = 0;
-      events.emit('flight:telemetry', { t: s.t, phase: 'cruise', speed: speedMs, radiationMsv: s.dose });
+      events.emit('flight:telemetry', { t: s.t, phase: 'cruise', speed: speedMs, radiationMsv: s.dose, ...(s.life ? { co2: s.life.co2mmHg } : {}) }); // co2 in mmHg
     }
   },
 
   exit() {
     if (!s) return;
+    recordLife(); // left early (an ending, a debug jump): keep what happened so far
     graphics.setEffects({ vignette: 0, shake: 0 });
     s = null;
   },

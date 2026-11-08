@@ -1,0 +1,1751 @@
+{
+  "name": "Nose",
+  "short": "Nose",
+  "blurb": "The top of the ship: the escape tower, the cover, the crew capsule, its heat shield and everything the crew needs.",
+  "rows": [
+    {
+      "id": "escape",
+      "name": "Escape tower",
+      "role": "A solid rocket on top that pulls the capsule clear of a failing booster.",
+      "mode": "stack",
+      "pick": {
+        "families": [
+          "abort"
+        ]
+      }
+    },
+    {
+      "id": "fairing",
+      "name": "Nose cover / fairing",
+      "role": "What sits on the capsule's nose: a fairing, a cover or a nose cap.",
+      "mode": "stack",
+      "pick": {
+        "families": [
+          "fairing"
+        ]
+      }
+    },
+    {
+      "id": "module",
+      "name": "Orbital & cargo module",
+      "role": "A room on the capsule's nose: living space, a cargo hold, a docking port, or a spare retro-rocket.",
+      "mode": "stack",
+      "pick": {
+        "families": [
+          "orbital"
+        ]
+      }
+    },
+    {
+      "id": "capsule",
+      "name": "Crew capsule",
+      "role": "Where the crew rides. Required.",
+      "mode": "stack",
+      "pick": {
+        "flags": [
+          "capsule"
+        ]
+      }
+    },
+    {
+      "id": "shield",
+      "name": "Heat shield",
+      "role": "Protects the capsule when it falls back through the air.",
+      "mode": "stack",
+      "pick": {
+        "flags": [
+          "heatShield"
+        ]
+      }
+    },
+    {
+      "id": "payload",
+      "name": "Service module, trunk & adapter",
+      "role": "What joins the capsule to the stage below: a service module with power and thrusters, a trunk, an adapter, or a final solid motor.",
+      "mode": "stack",
+      "pick": {
+        "families": [
+          "service",
+          "stages",
+          "boosters"
+        ]
+      }
+    },
+    {
+      "id": "abort",
+      "name": "Abort engines",
+      "role": "Engines in the capsule wall that push it clear: an escape with no tower.",
+      "mode": "radial",
+      "host": "capsule",
+      "symmetry": 4,
+      "pick": {
+        "flags": [
+          "abortPusher"
+        ]
+      }
+    },
+    {
+      "id": "recovery",
+      "name": "Parachutes & floats",
+      "role": "Slowing down for the landing and staying afloat after splashdown.",
+      "mode": "radial",
+      "host": "capsule",
+      "pick": {
+        "flags": [
+          "parachute",
+          "floats"
+        ]
+      }
+    },
+    {
+      "id": "comms",
+      "name": "Antennas",
+      "role": "Talking to Earth.",
+      "mode": "radial",
+      "host": "capsule",
+      "pick": {
+        "flags": [
+          "antenna"
+        ]
+      }
+    },
+    {
+      "id": "crew",
+      "name": "Air, water, cooling & shelter",
+      "role": "Keeping the crew alive between the planets.",
+      "mode": "radial",
+      "host": "capsule",
+      "pick": {
+        "flags": [
+          "spareO2Tanks",
+          "scrubber",
+          "shelter",
+          "waterRecycler",
+          "radiator",
+          "airlock"
+        ]
+      }
+    },
+    {
+      "id": "attitude",
+      "name": "Steering in space",
+      "role": "Pointing the ship where there is no air.",
+      "mode": "radial",
+      "host": "capsule",
+      "pick": {
+        "flags": [
+          "rcs",
+          "reactionWheel",
+          "navigation"
+        ]
+      }
+    }
+  ],
+  "shapes": [
+    {
+      "id": "mercury",
+      "name": "Small capsule under an escape tower",
+      "real": "Mercury on Redstone and Atlas (USA, 1961–63)",
+      "desc": "One seat in a cone of dark shingles under a red truss tower. The tower's motor yanks the capsule clear if the booster fails and is thrown away on a good flight. Three small solid retro-rockets strapped to the heat shield start the fall home.",
+      "pros": [
+        "Light and cheap",
+        "Escape tower: up to +2 % ship reliability (the whole-ship bonus is capped at 6 %)"
+      ],
+      "cons": [
+        "One cramped seat and little power",
+        "Small heat shield: 45 m² of entry drag against 80 for a medium one",
+        "Pure-oxygen cabin"
+      ],
+      "diameter": "s",
+      "icon": "les_tower_mercury",
+      "stack": [
+        "les_tower_mercury",
+        {
+          "type": "capsule_mercury",
+          "options": {
+            "atmosphere": "pure_o2",
+            "suits": "pressure"
+          }
+        },
+        {
+          "type": "heat_shield_s",
+          "options": {
+            "ablator": "phenolic_glass"
+          }
+        },
+        "retropack_mercury"
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.75
+        },
+        {
+          "type": "drogue_chute",
+          "on": 1,
+          "angle": 235,
+          "yFrac": 0.8
+        },
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 60,
+          "yFrac": 0.85
+        },
+        {
+          "type": "rcs_pack",
+          "on": 1,
+          "angle": 300,
+          "yFrac": 0.3
+        }
+      ],
+      "sources": [
+        "https://www.drewexmachina.com/2019/04/09/project-mercury-choosing-the-men-their-machine/",
+        "https://parachutehistory.com/space/mercury",
+        "https://ntrs.nasa.gov/api/citations/19630012071/downloads/19630012071.pdf"
+      ]
+    },
+    {
+      "id": "fairing_capsule",
+      "name": "Metal sphere under a shroud",
+      "real": "Vostok on the R-7 (USSR, 1961–63)",
+      "desc": "A one-seat sphere coated all over in ablator, on a double-cone instrument module, inside a pointed shroud. No escape tower: the cosmonaut had an ejection seat, and on landing he ejected at 7 km and came down on his own parachute.",
+      "pros": [
+        "The sphere is its own heat shield",
+        "Light and cheap",
+        "Low drag under the shroud"
+      ],
+      "cons": [
+        "No escape tower: ejection seat only",
+        "Hard, unguided entry (8–9 g)",
+        "Batteries only: about ten days of power"
+      ],
+      "diameter": "m",
+      "icon": "capsule_vostok",
+      "stack": [
+        "vostok_shroud",
+        {
+          "type": "capsule_vostok",
+          "options": {
+            "couches": "ejection",
+            "landing": "hard_land"
+          }
+        },
+        {
+          "type": "vostok_instrument_module",
+          "options": {
+            "power": "batteries",
+            "engine": "main"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.7
+        },
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 60,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://www.fplib.org/partners/mwade/craft/vosok3ka.htm",
+        "https://thespacereview.com/article/1821/1",
+        "https://en.wikipedia.org/wiki/Vostok_1"
+      ]
+    },
+    {
+      "id": "voskhod",
+      "name": "Sphere for three with a spare retro-rocket",
+      "real": "Voskhod 2 on the R-7 (USSR, 1965)",
+      "desc": "Vostok's sphere rebuilt for a crew of two or three: a backup solid retro on its nose, shock-absorbing seats instead of the ejection seat, a rocket that fires on the parachute lines just before touchdown, and on Voskhod 2 an inflatable airlock for the first spacewalk.",
+      "pros": [
+        "A second way home: the backup retro",
+        "Soft landing on solid ground",
+        "The airlock that made the first spacewalk"
+      ],
+      "cons": [
+        "No escape system at all",
+        "Hard, unguided entry"
+      ],
+      "diameter": "m",
+      "icon": "voskhod_backup_retro",
+      "stack": [
+        "vostok_shroud",
+        "voskhod_backup_retro",
+        {
+          "type": "capsule_vostok",
+          "options": {
+            "couches": "shock",
+            "suits": "pressure",
+            "landing": "rockets"
+          }
+        },
+        {
+          "type": "vostok_instrument_module",
+          "options": {
+            "power": "batteries",
+            "engine": "main"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 2,
+          "angle": 180,
+          "yFrac": 0.7
+        },
+        {
+          "type": "volga_airlock",
+          "on": 2,
+          "angle": 90,
+          "yFrac": 0.5
+        },
+        {
+          "type": "antenna_low",
+          "on": 2,
+          "angle": 300,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://russianspaceweb.com/voskhod-design.html",
+        "https://www.fplib.org/partners/mwade/craftfam/vostok.htm"
+      ]
+    },
+    {
+      "id": "gemini",
+      "name": "Two-seat capsule on a white adapter",
+      "real": "Gemini on Titan II (USA, 1965–66)",
+      "desc": "No fairing and no tower: the capsule's own narrow nose holds the parachutes and a rendezvous radar, and a white flared adapter behind it carries fuel cells, oxygen and manoeuvring thrusters. The crew relied on ejection seats.",
+      "pros": [
+        "Brings its own main parachute",
+        "Fuel cells: 1 kW behind the capsule",
+        "No tower to carry"
+      ],
+      "cons": [
+        "No escape tower: ejection seats only",
+        "Blunt nose: more drag",
+        "Pure-oxygen cabin"
+      ],
+      "diameter": "m",
+      "icon": "capsule_gemini",
+      "stack": [
+        "nose_gemini_rr",
+        {
+          "type": "capsule_gemini",
+          "options": {
+            "couches": "ejection",
+            "atmosphere": "pure_o2",
+            "suits": "pressure"
+          }
+        },
+        {
+          "type": "heat_shield_s",
+          "options": {
+            "ablator": "silicone"
+          }
+        },
+        {
+          "type": "gemini_adapter",
+          "options": {
+            "power": "fuel_cells",
+            "engine": "thrusters_only"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 90,
+          "yFrac": 0.5
+        },
+        {
+          "type": "rcs_pack",
+          "on": 1,
+          "angle": 0,
+          "yFrac": 0.75
+        },
+        {
+          "type": "drogue_chute",
+          "on": 1,
+          "angle": 200,
+          "yFrac": 0.8
+        }
+      ],
+      "sources": [
+        "https://ntrs.nasa.gov/api/citations/19680016105/downloads/19680016105.pdf",
+        "https://ntrs.nasa.gov/api/citations/19660020968/downloads/19660020968.pdf",
+        "https://commons.wikimedia.org/wiki/File:Gemini_Spacecraft_General_Arrangment-fr.png"
+      ]
+    },
+    {
+      "id": "apollo",
+      "name": "Command and service module under tower and cover",
+      "real": "Apollo on Saturn IB and Saturn V (USA, 1968–75)",
+      "desc": "The Moon ship: a blunt three-seat cabin under a cork-covered cover and a titanium escape tower, on a long silver service module with fuel cells, cryogenic oxygen, thruster quads and a big engine bell. Three ringsail mains and two drogues bring the cabin home.",
+      "pros": [
+        "Escape tower: up to +3 % ship reliability (the whole-ship bonus is capped at 6 %)",
+        "Lands safely on two of three mains",
+        "Service module: 2 kW, spare oxygen, thrusters and radiators"
+      ],
+      "cons": [
+        "The heaviest nose of its era",
+        "Tall nose high on the ship"
+      ],
+      "diameter": "l",
+      "icon": "les_tower_apollo",
+      "stack": [
+        {
+          "type": "les_tower_apollo"
+        },
+        {
+          "type": "bpc_apollo"
+        },
+        {
+          "type": "capsule_apollo",
+          "options": {
+            "atmosphere": "pad_mix",
+            "suits": "pressure",
+            "docking": "probe_drogue",
+            "couches": "shock"
+          }
+        },
+        {
+          "type": "heat_shield_l",
+          "options": {
+            "ablator": "avcoat"
+          }
+        },
+        {
+          "type": "apollo_sm",
+          "options": {
+            "power": "fuel_cells"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_cluster_3",
+          "on": 2,
+          "angle": 200,
+          "yFrac": 0.75
+        },
+        {
+          "type": "drogue_chute",
+          "on": 2,
+          "angle": 110,
+          "yFrac": 0.8,
+          "symmetry": 2
+        },
+        {
+          "type": "antenna_low",
+          "on": 2,
+          "angle": 45,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://web.archive.org/web/2016id_/https://www.hq.nasa.gov/alsj/CSM15_Launch_Escape_Subsystem_pp137-146.pdf",
+        "https://web.archive.org/web/2016id_/https://www.hq.nasa.gov/alsj/CSM07_Service_Module_Overview_pp53-60.pdf",
+        "https://ntrs.nasa.gov/api/citations/19740003586/downloads/19740003586.pdf"
+      ]
+    },
+    {
+      "id": "soyuz_7k",
+      "name": "First-generation three-module ship",
+      "real": "Soyuz 7K-OK (USSR, 1967–70)",
+      "desc": "The first Soyuz: an orbital module with a docking probe, the headlight-shaped descent module, and a service module with angled solar wings and a ring-shaped tank, all under an escape fairing. Its crews flew in overalls; Soyuz 1 crashed in 1967 when its main parachute stuck.",
+      "pros": [
+        "Escape tower: up to +3 % ship reliability (the whole-ship bonus is capped at 6 %)",
+        "A living module and an airlock",
+        "Lands on solid ground"
+      ],
+      "cons": [
+        "No pressure suits",
+        "A single main parachute",
+        "Early design: lower reliability"
+      ],
+      "diameter": "m",
+      "icon": "soyuz_7k_service_module",
+      "stack": [
+        {
+          "type": "las_soyuz",
+          "options": {
+            "motor": "ring",
+            "steering": "gridfins"
+          }
+        },
+        {
+          "type": "soyuz_orbital_module",
+          "options": {
+            "docking": "probe_drogue"
+          }
+        },
+        {
+          "type": "capsule_soyuz",
+          "options": {
+            "suits": "none",
+            "landing": "rockets",
+            "hatch": "top",
+            "couches": "shock"
+          }
+        },
+        {
+          "type": "heat_shield_s",
+          "options": {
+            "ablator": "phenolic_glass"
+          }
+        },
+        "soyuz_7k_service_module"
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 2,
+          "angle": 180,
+          "yFrac": 0.75
+        },
+        {
+          "type": "antenna_low",
+          "on": 2,
+          "angle": 90,
+          "yFrac": 0.6
+        },
+        {
+          "type": "drogue_chute",
+          "on": 2,
+          "angle": 235,
+          "yFrac": 0.8
+        }
+      ],
+      "sources": [
+        "https://russianspaceweb.com/soyuz-7k-ok.html",
+        "https://thespacereview.com/article/3229/2",
+        "https://en.wikipedia.org/wiki/Soyuz_7K-OK"
+      ]
+    },
+    {
+      "id": "soyuz",
+      "name": "Three modules under a fairing with an escape tower",
+      "real": "Soyuz TMA / MS (Russia, since 2002)",
+      "desc": "The escape tower stands on the fairing, and in an abort the whole front end flies away with the crew while four grid fins keep it straight. Inside: the orbital module with its docking probe, the descent module, and the service module with two solar wings.",
+      "pros": [
+        "The escape system that saved Soyuz T-10a and MS-10",
+        "Up to +3 % ship reliability (the whole-ship bonus is capped at 6 %)",
+        "Lands on solid ground with soft-landing rockets"
+      ],
+      "cons": [
+        "Cramped descent module",
+        "Tall nose high on the ship"
+      ],
+      "diameter": "m",
+      "icon": "las_soyuz",
+      "stack": [
+        {
+          "type": "las_soyuz",
+          "options": {
+            "motor": "ring",
+            "steering": "gridfins"
+          }
+        },
+        {
+          "type": "soyuz_orbital_module",
+          "options": {
+            "docking": "ssvp"
+          }
+        },
+        {
+          "type": "capsule_soyuz",
+          "options": {
+            "suits": "pressure",
+            "landing": "rockets",
+            "hatch": "top",
+            "couches": "shock"
+          }
+        },
+        {
+          "type": "heat_shield_s",
+          "options": {
+            "ablator": "phenolic_glass"
+          }
+        },
+        {
+          "type": "soyuz_service_module",
+          "options": {
+            "engine": "main_backup",
+            "power": "solar_wings"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 2,
+          "angle": 180,
+          "yFrac": 0.75
+        },
+        {
+          "type": "drogue_chute",
+          "on": 2,
+          "angle": 235,
+          "yFrac": 0.8
+        },
+        {
+          "type": "antenna_low",
+          "on": 2,
+          "angle": 90,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://russianspaceweb.com/soyuz_sas.html",
+        "https://www.russianspaceweb.com/soyuz-landing.html",
+        "https://en.wikipedia.org/wiki/Soyuz_(spacecraft)"
+      ]
+    },
+    {
+      "id": "shenzhou",
+      "name": "Three-module ship under a finned escape fairing",
+      "real": "Shenzhou on Long March 2F (China, since 2003)",
+      "desc": "The Soyuz layout built larger: an orbital module with its own solar wings, a wider re-entry module and a service module with four engines, inside a 3.8 m fairing topped by an 8 m escape tower with four grid fins.",
+      "pros": [
+        "Escape tower: up to +3 % ship reliability (the whole-ship bonus is capped at 6 %)",
+        "The orbital module keeps working after the crew leaves",
+        "Lands on solid ground"
+      ],
+      "cons": [
+        "Heavy",
+        "Tall, wide nose"
+      ],
+      "diameter": "m",
+      "icon": "las_shenzhou",
+      "stack": [
+        {
+          "type": "las_shenzhou",
+          "options": {
+            "steering": "gridfins"
+          }
+        },
+        {
+          "type": "shenzhou_orbital_module",
+          "options": {
+            "docking": "apas"
+          }
+        },
+        {
+          "type": "capsule_shenzhou",
+          "options": {
+            "suits": "pressure",
+            "landing": "rockets",
+            "hatch": "top"
+          }
+        },
+        {
+          "type": "heat_shield_s"
+        },
+        {
+          "type": "shenzhou_service_module"
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 2,
+          "angle": 180,
+          "yFrac": 0.75
+        },
+        {
+          "type": "antenna_low",
+          "on": 2,
+          "angle": 90,
+          "yFrac": 0.6
+        },
+        {
+          "type": "drogue_chute",
+          "on": 2,
+          "angle": 235,
+          "yFrac": 0.8
+        }
+      ],
+      "sources": [
+        "http://www.astronautix.com/s/shenzhou.html",
+        "https://en.wikipedia.org/wiki/Shenzhou_(spacecraft)"
+      ]
+    },
+    {
+      "id": "big_cabin",
+      "name": "Big cabin under an abort fairing, on a European service module",
+      "real": "Orion on SLS (USA and Europe, Artemis, since 2022)",
+      "desc": "A 5 m four-seat cabin inside the ogive fairing of the strongest escape system built, on ESA's service module with four solar wings and 33 engines. Eleven parachutes bring it home: three to pull off the forward cover, two drogues, three pilots and three mains.",
+      "pros": [
+        "Abort fairing: up to +3.5 % ship reliability (the whole-ship bonus is capped at 6 %)",
+        "Service module: 3 kW, spare oxygen, backup engines",
+        "Big shield: gentle entry"
+      ],
+      "cons": [
+        "The most expensive nose",
+        "Heavy"
+      ],
+      "diameter": "l",
+      "icon": "las_orion",
+      "stack": [
+        {
+          "type": "las_orion",
+          "options": {
+            "motor": "reverse"
+          }
+        },
+        {
+          "type": "capsule_orion",
+          "options": {
+            "suits": "pressure"
+          }
+        },
+        {
+          "type": "heat_shield_l",
+          "options": {
+            "ablator": "avcoat_blocks"
+          }
+        },
+        {
+          "type": "orion_esm"
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_cluster_3",
+          "on": 1,
+          "angle": 200,
+          "yFrac": 0.8
+        },
+        {
+          "type": "drogue_chute",
+          "on": 1,
+          "angle": 110,
+          "yFrac": 0.85,
+          "symmetry": 2
+        },
+        {
+          "type": "antenna_medium",
+          "on": 1,
+          "angle": 45,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.nasa.gov/wp-content/uploads/2023/02/orion-reference-guide-111022.pdf",
+        "https://www.nasa.gov/wp-content/uploads/2017/12/orion_parachutes.pdf",
+        "https://www.nasa.gov/missions/artemis/nasa-identifies-cause-of-artemis-i-orion-heat-shield-char-loss"
+      ]
+    },
+    {
+      "id": "crew_dragon",
+      "name": "Capsule with pusher abort engines and a trunk",
+      "real": "Crew Dragon on Falcon 9 (USA, since 2020)",
+      "desc": "No tower: eight engines in four pods in the capsule wall push it clear. A hinged cap covers the docking port, a PICA-3 shield is underneath, and a trunk with solar cells and radiators rides below. Two drogues and four mains bring it home.",
+      "pros": [
+        "Nothing to throw away",
+        "Lands on three of four mains",
+        "Abort pods: up to +2.5 % ship reliability (the whole-ship bonus is capped at 6 %)"
+      ],
+      "cons": [
+        "Toxic hypergolic propellant in the pods",
+        "Tall capsule: side area high on the ship"
+      ],
+      "diameter": "m",
+      "icon": "capsule_dragon",
+      "stack": [
+        {
+          "type": "nosecap_dragon"
+        },
+        {
+          "type": "capsule_dragon",
+          "options": {
+            "docking": "nds",
+            "suits": "pressure"
+          }
+        },
+        {
+          "type": "heat_shield_m",
+          "options": {
+            "ablator": "pica"
+          }
+        },
+        {
+          "type": "crew_trunk_m"
+        }
+      ],
+      "radial": [
+        {
+          "type": "abort_pusher_pod",
+          "on": 1,
+          "angle": 45,
+          "yFrac": 0.12,
+          "symmetry": 4
+        },
+        {
+          "type": "chute_cluster_4",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.85
+        },
+        {
+          "type": "drogue_chute",
+          "on": 1,
+          "angle": 90,
+          "yFrac": 0.88,
+          "symmetry": 2
+        },
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 0,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://www.nasa.gov/specials/ccp-press-kit/main.html",
+        "https://en.wikipedia.org/wiki/SpaceX_Dragon_2"
+      ]
+    },
+    {
+      "id": "starliner",
+      "name": "Blunt capsule on a service module with abort engines",
+      "real": "Starliner on Atlas V (USA, since 2019)",
+      "desc": "A weldless capsule with its parachutes under a forward heat shield, on a service module whose four big engines are the escape system. It lands on the ground on six airbags.",
+      "pros": [
+        "Pusher escape in the service module: up to +2.5 % ship reliability (the whole-ship bonus is capped at 6 %)",
+        "Lands on solid ground on airbags"
+      ],
+      "cons": [
+        "A troubled test record: lower reliability",
+        "Expensive"
+      ],
+      "diameter": "l",
+      "icon": "capsule_starliner",
+      "stack": [
+        {
+          "type": "capsule_starliner",
+          "options": {
+            "docking": "nds",
+            "suits": "pressure",
+            "landing": "airbags"
+          }
+        },
+        {
+          "type": "heat_shield_l",
+          "options": {
+            "ablator": "bla"
+          }
+        },
+        {
+          "type": "starliner_sm",
+          "options": {
+            "power": "body_cells"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_cluster_3",
+          "on": 0,
+          "angle": 200,
+          "yFrac": 0.8
+        },
+        {
+          "type": "drogue_chute",
+          "on": 0,
+          "angle": 110,
+          "yFrac": 0.85,
+          "symmetry": 2
+        },
+        {
+          "type": "antenna_low",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.boeing.com/space/starliner",
+        "https://www.nasa.gov/nasas-boeing-crew-flight-test-mission-overview/"
+      ]
+    },
+    {
+      "id": "gaganyaan",
+      "name": "Capsule under a finned escape tower",
+      "real": "Gaganyaan on LVM3 (India; TV-D1 abort test 2023)",
+      "desc": "A double-walled three-seat capsule inside a crew-module fairing with four grid fins, under a tower with separate motors for low and high aborts, on a service module with five engines. Ten parachutes in sequence bring it to a splashdown.",
+      "pros": [
+        "Escape tower: up to +3 % ship reliability (the whole-ship bonus is capped at 6 %)",
+        "Cheap for its size"
+      ],
+      "cons": [
+        "New: lower reliability",
+        "Heavy"
+      ],
+      "diameter": "m",
+      "icon": "las_gaganyaan",
+      "stack": [
+        {
+          "type": "las_gaganyaan",
+          "options": {
+            "motor": "staged",
+            "steering": "gridfins"
+          }
+        },
+        {
+          "type": "capsule_gaganyaan",
+          "options": {
+            "suits": "pressure"
+          }
+        },
+        {
+          "type": "heat_shield_s"
+        },
+        {
+          "type": "gaganyaan_sm"
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_cluster_3",
+          "on": 1,
+          "angle": 200,
+          "yFrac": 0.8
+        },
+        {
+          "type": "drogue_chute",
+          "on": 1,
+          "angle": 110,
+          "yFrac": 0.85,
+          "symmetry": 2
+        },
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 45,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.isro.gov.in/Gaganyaan_TV-D1_Mission.html",
+        "https://www.isro.gov.in/media_isro/pdf/TVD1/TVD1-Brochure.pdf",
+        "https://www.isro.gov.in/Gaganyaan.html"
+      ]
+    },
+    {
+      "id": "new_shepard",
+      "name": "Suborbital capsule with a built-in escape motor",
+      "real": "New Shepard (Blue Origin, USA, since 2015)",
+      "desc": "A six-seat capsule with the biggest windows flown, riding bare on its booster. An escape motor in its base pushes it clear; three mains and a last-moment retro-thrust bring it down on land. Built for a ten-minute hop, it has no shield for orbital speed.",
+      "pros": [
+        "Escape motor built in: up to +2 % ship reliability (the whole-ship bonus is capped at 6 %)",
+        "Light for six seats",
+        "Huge windows"
+      ],
+      "cons": [
+        "No shield for orbital speed",
+        "Blunt bare nose: more drag"
+      ],
+      "diameter": "m",
+      "icon": "capsule_newshepard",
+      "stack": [
+        {
+          "type": "capsule_newshepard",
+          "options": {
+            "windows": "panoramic",
+            "landing": "rockets"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_cluster_3",
+          "on": 0,
+          "angle": 200,
+          "yFrac": 0.85
+        },
+        {
+          "type": "antenna_low",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/New_Shepard"
+      ]
+    },
+    {
+      "id": "mengzhou",
+      "name": "Big reusable capsule under a fairing",
+      "real": "Mengzhou prototype on Long March 5B (China, 2020)",
+      "desc": "The full-size prototype of China's next crew ship, flown to orbit without a tower under the 5.2 m Long March 5 fairing. Its capsule carries its own heat shield; it came back above 9 km/s and landed on airbags under three parachutes.",
+      "pros": [
+        "Room for up to seven",
+        "Fairing: low drag and one debris hit absorbed",
+        "Lands on solid ground on airbags"
+      ],
+      "cons": [
+        "No escape tower on this flight",
+        "Prototype: lower reliability"
+      ],
+      "diameter": "l",
+      "icon": "capsule_mengzhou",
+      "stack": [
+        {
+          "type": "fairing_cz5",
+          "options": {
+            "acoustic": "blankets"
+          }
+        },
+        {
+          "type": "capsule_mengzhou",
+          "options": {
+            "landing": "airbags",
+            "suits": "pressure"
+          }
+        },
+        {
+          "type": "mengzhou_sm"
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_cluster_3",
+          "on": 1,
+          "angle": 200,
+          "yFrac": 0.8
+        },
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 45,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Mengzhou_(spacecraft)",
+        "https://english.spacechina.com/n17212/c4011707/content.html"
+      ]
+    },
+    {
+      "id": "starship",
+      "name": "Steel nose with flaps and tiles",
+      "real": "Starship upper stage (SpaceX, test flights since 2023)",
+      "desc": "No capsule and no fairing: the stainless-steel nose of the ship itself, with heat tiles on its windward side and two forward flaps. The whole ship falls belly-first to brake, then flips and lands on its engines. Its crew cabin has not flown yet.",
+      "pros": [
+        "Pointed nose: low drag",
+        "Belly-first entry: the biggest braking area of any nose",
+        "Steel is cheap"
+      ],
+      "cons": [
+        "Tiles can crack on the climb",
+        "Still in testing: reliability 97 %",
+        "No escape system"
+      ],
+      "diameter": "l",
+      "icon": "starship_nose",
+      "stack": [
+        {
+          "type": "starship_nose",
+          "options": {
+            "docking": "nds"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "rcs_pack",
+          "on": 0,
+          "angle": 90,
+          "yFrac": 0.4
+        },
+        {
+          "type": "antenna_low",
+          "on": 0,
+          "angle": 270,
+          "yFrac": 0.45
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/SpaceX_Starship"
+      ]
+    },
+    {
+      "id": "bare_capsule",
+      "name": "Bare capsule",
+      "real": "A capsule flown as its own nose, the cheapest crew nose",
+      "desc": "The capsule itself is the nose: no fairing, no tower, no trunk.",
+      "pros": [
+        "Lightest nose",
+        "Cheapest"
+      ],
+      "cons": [
+        "More drag on the way up",
+        "No escape system"
+      ],
+      "diameter": "m",
+      "icon": "capsule_m",
+      "stack": [
+        "capsule_m",
+        "heat_shield_m"
+      ],
+      "radial": [
+        {
+          "type": "parachute",
+          "on": 0,
+          "angle": 180,
+          "yFrac": 0.32
+        },
+        {
+          "type": "antenna_low",
+          "on": 0,
+          "angle": 90,
+          "yFrac": 0.35
+        },
+        {
+          "type": "rcs_pack",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.25
+        }
+      ],
+      "sources": []
+    },
+    {
+      "id": "cargo_dragon",
+      "name": "Cargo capsule with a nose cone and solar wings",
+      "real": "Dragon 1 on Falcon 9 (USA, 2010–20)",
+      "desc": "The first commercial ship to reach the station: a capsule under a nose cone that is thrown away after launch, berthed by the station's arm, on a short trunk with two solar wings. The real Dragon 1 carried only cargo; Crew Dragon grew out of it.",
+      "pros": [
+        "Light: no abort engines",
+        "Solar wings: 1.5 kW",
+        "Lands on two of three mains"
+      ],
+      "cons": [
+        "No escape system",
+        "Berths with a robot arm: cannot dock itself"
+      ],
+      "diameter": "m",
+      "icon": "nose_dragon1",
+      "stack": [
+        {
+          "type": "nose_dragon1"
+        },
+        {
+          "type": "capsule_dragon",
+          "options": {
+            "docking": "cbm"
+          }
+        },
+        {
+          "type": "heat_shield_m",
+          "options": {
+            "ablator": "pica"
+          }
+        },
+        {
+          "type": "dragon1_trunk",
+          "options": {
+            "engine": "thrusters_only"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_cluster_3",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.85
+        },
+        {
+          "type": "drogue_chute",
+          "on": 1,
+          "angle": 90,
+          "yFrac": 0.88,
+          "symmetry": 2
+        },
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 0,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/SpaceX_Dragon_1"
+      ]
+    },
+    {
+      "id": "progress",
+      "name": "Supply-ship nose on a capsule, no tower",
+      "real": "Progress MS on Soyuz-2 (Russia, since 2015)",
+      "desc": "Progress is Soyuz with the descent module swapped for tanks and no crew aboard. Here its cargo module rides on the nose of a Mk1 capsule, which takes the place of that tank module, on the Soyuz service module, all under the Soyuz-2 shroud with no escape tower.",
+      "pros": [
+        "A spare oxygen supply in the hold",
+        "Cheaper and lighter than Soyuz: no tower"
+      ],
+      "cons": [
+        "No escape system",
+        "One small seat"
+      ],
+      "diameter": "m",
+      "icon": "progress_cargo_module",
+      "stack": [
+        "nose_blunt_m",
+        {
+          "type": "progress_cargo_module",
+          "options": {
+            "docking": "ssvp"
+          }
+        },
+        "capsule_s",
+        "heat_shield_s",
+        {
+          "type": "soyuz_service_module",
+          "options": {
+            "power": "solar_wings"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 2,
+          "angle": 180,
+          "yFrac": 0.6
+        },
+        {
+          "type": "antenna_low",
+          "on": 2,
+          "angle": 90,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://www.russianspaceweb.com/progress-ms.html",
+        "https://en.wikipedia.org/wiki/Progress_MS"
+      ]
+    },
+    {
+      "id": "cygnus",
+      "name": "Cargo cylinder on a capsule, under a big fairing",
+      "real": "Cygnus on Falcon 9 (USA, NG-20 onward, since 2024)",
+      "desc": "Cygnus's pressurised module, packed with supplies, rides on the nose of a Mk1 capsule; its service module with two round fan-shaped solar arrays sits below; a Falcon 9 fairing covers it all. The real Cygnus carries no crew; NASA's Gateway habitat HALO is built from the same module.",
+      "pros": [
+        "The packed hold counts as a storm shelter",
+        "A spare oxygen supply",
+        "2 kW of round solar arrays"
+      ],
+      "cons": [
+        "No escape system",
+        "Very tall nose under the fairing"
+      ],
+      "diameter": "l",
+      "icon": "cygnus_pcm",
+      "stack": [
+        {
+          "type": "fairing_composite_l",
+          "options": {
+            "pushers": "pneumatic",
+            "acoustic": "blankets"
+          }
+        },
+        {
+          "type": "cygnus_pcm",
+          "options": {
+            "docking": "cbm"
+          }
+        },
+        "capsule_s",
+        "heat_shield_s",
+        "cygnus_sm"
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 2,
+          "angle": 180,
+          "yFrac": 0.6
+        },
+        {
+          "type": "antenna_low",
+          "on": 2,
+          "angle": 90,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Cygnus_(spacecraft)",
+        "https://cdn.northropgrumman.com/-/media/Project/Northrop-Grumman/ngc/what-we-do/space/cygnus/NG-23-Mission-Overview-Handout.pdf"
+      ]
+    },
+    {
+      "id": "htv",
+      "name": "Big cargo carrier on a capsule, under a metal fairing",
+      "real": "HTV Kounotori on H-IIB (Japan, 2009–20)",
+      "desc": "Japan's HTV: a pressurised hold with a square hatch for whole racks and an open bay below, riding on the nose of a Mk1 capsule, on its avionics and propulsion section, under the stretched H-IIB fairing. All nine real HTVs reached the station and none carried a crew; HTV-7 brought a small return capsule back to Earth in 2018.",
+      "pros": [
+        "The biggest hold: counts as a storm shelter",
+        "A spare oxygen supply",
+        "Nine of nine flights succeeded"
+      ],
+      "cons": [
+        "No escape system",
+        "Heavy and tall"
+      ],
+      "diameter": "l",
+      "icon": "htv_logistics",
+      "stack": [
+        {
+          "type": "fairing_h2b",
+          "options": {
+            "acoustic": "blankets"
+          }
+        },
+        {
+          "type": "htv_logistics",
+          "options": {
+            "docking": "cbm",
+            "stowage": "racks"
+          }
+        },
+        {
+          "type": "capsule_s"
+        },
+        {
+          "type": "heat_shield_s"
+        },
+        {
+          "type": "htv_propulsion",
+          "options": {
+            "power": "body_cells"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 2,
+          "angle": 180,
+          "yFrac": 0.6
+        },
+        {
+          "type": "antenna_low",
+          "on": 2,
+          "angle": 90,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://www.mhi.co.jp/technology/review/pdf/e471/e471058.pdf",
+        "https://global.jaxa.jp/countdown/h2bf2/overview/h2b_e.html"
+      ]
+    },
+    {
+      "id": "atv",
+      "name": "Self-docking cargo carrier on a capsule, under a 5.4 m fairing",
+      "real": "ATV on Ariane 5 (Europe, 2008–14)",
+      "desc": "Europe's ATV: a cargo carrier with a Russian docking probe on its nose and tanks of water and air, riding on a Mk1 capsule, on the propulsion section with four solar wings in an X, under the Ariane 5 fairing. The real ATV carried no crew; ESA studied a version with a return capsule, and its propulsion section became Orion's service module.",
+      "pros": [
+        "Counts as a storm shelter",
+        "A spare oxygen supply",
+        "2.5 kW from four wings"
+      ],
+      "cons": [
+        "No escape system",
+        "Heavy and tall"
+      ],
+      "diameter": "l",
+      "icon": "atv_icc",
+      "stack": [
+        {
+          "type": "nose_pointed_l",
+          "options": {
+            "acoustic": "blankets"
+          }
+        },
+        {
+          "type": "atv_icc",
+          "options": {
+            "docking": "ssvp"
+          }
+        },
+        "capsule_s",
+        "heat_shield_s",
+        "atv_propulsion"
+      ],
+      "radial": [
+        {
+          "type": "chute_single_main",
+          "on": 2,
+          "angle": 180,
+          "yFrac": 0.6
+        },
+        {
+          "type": "antenna_low",
+          "on": 2,
+          "angle": 90,
+          "yFrac": 0.6
+        }
+      ],
+      "sources": [
+        "https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/ATV/ATV_configuration",
+        "https://en.wikipedia.org/wiki/Automated_Transfer_Vehicle"
+      ]
+    },
+    {
+      "id": "dream_chaser",
+      "name": "Folded spaceplane under a fairing",
+      "real": "Dream Chaser on Vulcan (Sierra Space, USA; first flight targeted for late 2026)",
+      "desc": "A small lifting body with its wings folded, nose-up inside a 5.4 m fairing, on its Shooting Star cargo module with solar arrays. It glides home and lands on a runway. The cargo version has not flown yet; a crewed version for seven was proposed to NASA.",
+      "pros": [
+        "Heat protection built into the belly",
+        "Glides to a runway: no parachutes needed"
+      ],
+      "cons": [
+        "Not yet flown: reliability 98.5 %",
+        "A glider falls fast through thin air",
+        "No escape system"
+      ],
+      "diameter": "l",
+      "icon": "dream_chaser",
+      "stack": [
+        {
+          "type": "nose_pointed_l",
+          "options": {
+            "acoustic": "blankets"
+          }
+        },
+        {
+          "type": "dream_chaser",
+          "options": {
+            "docking": "cbm"
+          }
+        },
+        "shooting_star"
+      ],
+      "radial": [
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 90,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.sierraspace.com/dream-chaser-spaceplane/",
+        "https://www.nasa.gov/missions/station/nasa-sierra-space-modify-commercial-resupply-services-contract/"
+      ]
+    },
+    {
+      "id": "dawn_stack",
+      "name": "Payload stack with a kick motor",
+      "real": "Dawn on a Delta II 7925H (2007); Pathfinder and both Mars rovers flew the same way",
+      "desc": "The aluminium 9.5-ft Delta II fairing that Dawn flew, with its cone-on-cone nose, over the capsule, which sits on the payload attach fitting, on a Star 48-class solid motor, on the spin table that spins it up before it fires.",
+      "pros": [
+        "The kick motor adds two tonnes of propellant",
+        "Spin-stabilised: no guidance needed for the burn"
+      ],
+      "cons": [
+        "Solid motor: low Isp, one burn",
+        "No escape tower",
+        "Tall nose high on the ship"
+      ],
+      "diameter": "m",
+      "icon": "kick_motor_s",
+      "stack": [
+        "nose_biconic_m",
+        "capsule_m",
+        "heat_shield_m",
+        "paf_m",
+        "kick_motor_s",
+        "spin_table_clamp"
+      ],
+      "radial": [
+        {
+          "type": "parachute",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.32
+        },
+        {
+          "type": "antenna_high",
+          "on": 1,
+          "angle": 270,
+          "yFrac": 0.3
+        },
+        {
+          "type": "star_tracker",
+          "on": 1,
+          "angle": 0,
+          "yFrac": 0.4
+        },
+        {
+          "type": "reaction_wheel",
+          "on": 1,
+          "angle": 90,
+          "yFrac": 0.3
+        }
+      ],
+      "sources": [
+        "https://www.ulalaunch.com/docs/default-source/rockets/deltaiipayloadplannersguide2007.pdf"
+      ]
+    },
+    {
+      "id": "mars_rover",
+      "name": "Mars entry stack under a wide fairing",
+      "real": "Curiosity (2011) and Perseverance (2020) on Atlas V 541",
+      "desc": "The 5.4 m Atlas V fairing over a large capsule in a PICA aeroshell, with the flat cruise stage of solar cells and radiators that flew both rovers to Mars. A disk-gap-band parachute opens at Mach 1.7. The real stack rode the other way up: cruise stage on the rocket, heat shield facing forward.",
+      "pros": [
+        "Cruise stage: power, thrusters and radiators for the trip",
+        "Big PICA shield: gentle entry",
+        "Fairing: one debris hit absorbed"
+      ],
+      "cons": [
+        "No escape tower",
+        "Wide fairing high on the ship"
+      ],
+      "diameter": "l",
+      "icon": "cruise_stage_mars",
+      "stack": [
+        {
+          "type": "nose_hammerhead_m",
+          "options": {
+            "acoustic": "blankets"
+          }
+        },
+        "capsule_l",
+        {
+          "type": "heat_shield_l",
+          "options": {
+            "ablator": "pica"
+          }
+        },
+        {
+          "type": "cruise_stage_mars",
+          "options": {
+            "power": "body_cells",
+            "engine": "thrusters_only"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "parachute",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.6
+        },
+        {
+          "type": "antenna_medium",
+          "on": 1,
+          "angle": 60,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.ulalaunch.com/docs/default-source/rockets/atlasvusersguide2010.pdf",
+        "https://ntrs.nasa.gov/api/citations/20220006688/downloads/Development%20and%20Sizing%20of%20the%20Mars%202020%20Thermal%20Protection%20System_AIAA%20Aviation%202022.pdf"
+      ]
+    },
+    {
+      "id": "new_glenn",
+      "name": "Capsule under a 7 m fairing",
+      "real": "New Glenn (Blue Origin); its second flight sent NASA's ESCAPADE probes toward Mars on 13 Nov 2025",
+      "desc": "The widest fairing flying, two carbon halves 7 m across, over a large capsule and its heat shield.",
+      "pros": [
+        "Room for anything",
+        "Fairing: one debris hit absorbed"
+      ],
+      "cons": [
+        "No escape tower",
+        "Big side area high on the ship",
+        "New rocket: lower reliability"
+      ],
+      "diameter": "l",
+      "icon": "fairing_newglenn",
+      "stack": [
+        {
+          "type": "fairing_newglenn",
+          "options": {
+            "pushers": "pneumatic",
+            "acoustic": "blankets"
+          }
+        },
+        {
+          "type": "capsule_l"
+        },
+        {
+          "type": "heat_shield_l"
+        }
+      ],
+      "radial": [
+        {
+          "type": "parachute",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.6
+        },
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 60,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.universetoday.com/145296/every-part-of-blue-origins-new-glenn-rocket-is-gigantic-including-its-nose-cone/"
+      ]
+    },
+    {
+      "id": "hope",
+      "name": "Capsule under a hinged metal fairing",
+      "real": "Hope (UAE Mars orbiter) on H-IIA 202, Tanegashima, July 2020",
+      "desc": "Kawasaki's aluminium-honeycomb fairing, whose halves swing open on hinges, over a capsule on a payload attach fitting.",
+      "pros": [
+        "Cheap, proven fairing",
+        "Low drag"
+      ],
+      "cons": [
+        "No escape tower",
+        "Metal fairing: heavier than carbon"
+      ],
+      "diameter": "m",
+      "icon": "fairing_h2",
+      "stack": [
+        {
+          "type": "fairing_h2"
+        },
+        {
+          "type": "capsule_s"
+        },
+        {
+          "type": "heat_shield_s"
+        },
+        {
+          "type": "paf_m"
+        }
+      ],
+      "radial": [
+        {
+          "type": "parachute",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.32
+        },
+        {
+          "type": "antenna_high",
+          "on": 1,
+          "angle": 270,
+          "yFrac": 0.3
+        }
+      ],
+      "sources": [
+        "https://global.kawasaki.com/en/corp/rd/magazine/179/pdf/n179en06.pdf"
+      ]
+    },
+    {
+      "id": "mom",
+      "name": "Capsule under a bulbous fairing",
+      "real": "Mars Orbiter Mission (Mangalyaan) on PSLV-XL, November 2013",
+      "desc": "ISRO's 3.2 m riveted-aluminium fairing bulging out over a narrower rocket, with a small capsule inside. Mangalyaan reached Mars on its first try in 2014.",
+      "pros": [
+        "Cheap",
+        "Room for a capsule wider than the rocket"
+      ],
+      "cons": [
+        "No escape tower",
+        "Blunt bulb: more drag than an ogive"
+      ],
+      "diameter": "m",
+      "icon": "fairing_pslv",
+      "stack": [
+        {
+          "type": "fairing_pslv"
+        },
+        {
+          "type": "capsule_s"
+        },
+        {
+          "type": "heat_shield_s"
+        },
+        {
+          "type": "paf_m"
+        }
+      ],
+      "radial": [
+        {
+          "type": "parachute",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.32
+        },
+        {
+          "type": "antenna_high",
+          "on": 1,
+          "angle": 270,
+          "yFrac": 0.3
+        }
+      ],
+      "sources": [
+        "https://www.isro.gov.in/mission_PSLV_C4.html"
+      ]
+    },
+    {
+      "id": "electron",
+      "name": "Tiny capsule under a carbon clamshell",
+      "real": "Rocket Lab Electron; CAPSTONE to the Moon, June 2022",
+      "desc": "The smallest fairing flying, a 1.2 m carbon clamshell, scaled to the small size over a one-seat capsule.",
+      "pros": [
+        "Least drag of all",
+        "Light and cheap"
+      ],
+      "cons": [
+        "No escape tower",
+        "Small capsule and shield"
+      ],
+      "diameter": "s",
+      "icon": "nose_pointed_s",
+      "stack": [
+        {
+          "type": "nose_pointed_s",
+          "options": {
+            "pushers": "pneumatic"
+          }
+        },
+        "capsule_s",
+        "heat_shield_s"
+      ],
+      "radial": [
+        {
+          "type": "parachute",
+          "on": 1,
+          "angle": 180,
+          "yFrac": 0.32
+        },
+        {
+          "type": "antenna_low",
+          "on": 1,
+          "angle": 60,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://rocketlabcorp.com/assets/Rocket-Lab-Electron-Payload-User-Guide-8.0.pdf"
+      ]
+    }
+  ]
+}

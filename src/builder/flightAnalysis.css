@@ -1,0 +1,55 @@
+/* The flight analysis (investigation.js createFlightAnalysis): the investigation board's sibling, in its style. Calm by
+   default: a part is one line (its most telling line, cut to the width) and its wear; a click opens the rest. */
+.fa-root {
+  width: min(840px, 60vw);
+  font-size: 15px;
+  line-height: 1.5;
+  gap: 8px;
+}
+.fa-head.has-back { grid-template-columns: 1fr auto auto auto; }
+.fa-back { font-size: var(--hud-text-sm); }
+.fa-outcome { font-size: 14px; }
+.fa-outcome.is-home { color: var(--hud-green); }
+.fa-outcome.is-lost { color: color-mix(in srgb, var(--hud-red) 70%, var(--hud-ink)); }
+
+.fa-summary { display: flex; flex-direction: column; gap: 2px; }
+.fa-sum { margin: 0; color: var(--hud-ink); font-size: 15.5px; }
+.fa-hint { margin: 2px 0 0; color: var(--hud-muted); font-size: var(--hud-text-sm); }
+
+.fa-section { gap: 2px; padding-top: 5px; }
+.fa-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.fa-table th { font-weight: 400; color: var(--hud-muted); font-size: var(--hud-text-xs); letter-spacing: 0.1em; text-transform: uppercase; text-align: left; padding: 0 10px 2px 0; }
+.fa-table th.fa-c-part, .fa-row td.fa-part { width: 30%; }
+.fa-table th.fa-c-wear, .fa-row td.fa-wear { width: 140px; text-align: right; padding-right: 0; }
+.fa-row td { vertical-align: top; padding: 4px 10px 4px 0; border-top: 1px solid color-mix(in srgb, var(--hud-line) 30%, transparent); }
+.fa-row:first-child td, .fa-cols + .fa-row td { border-top: 0; }
+.fa-row.has-more, .fa-row[data-part] { cursor: pointer; }
+.fa-row:hover td { background: color-mix(in srgb, var(--hud-cyan) 5%, transparent); }
+.fa-row.is-open td { background: color-mix(in srgb, var(--hud-amber) 7%, transparent); padding-top: 7px; padding-bottom: 8px; }
+
+.fa-part { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fa-chev { display: inline-block; width: 14px; color: var(--hud-muted); font-size: 12px; }
+.fa-name { font-weight: 600; color: var(--hud-ink); }
+.fa-row.is-open .fa-name { color: var(--hud-amber); }
+
+.fa-line { color: var(--hud-ink); }
+.fa-line + .fa-line { margin-top: 2px; }
+/* closed: one line, cut to the column */
+.fa-headline { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fa-line.is-bad { color: color-mix(in srgb, var(--hud-amber) 75%, var(--hud-ink)); }
+.fa-line.is-good { color: color-mix(in srgb, var(--hud-green) 55%, var(--hud-ink)); }
+/* what the choices not made would have done: quieter, with a thin rule on the left */
+.fa-if { margin-top: 5px; padding-left: 9px; border-left: 2px solid color-mix(in srgb, var(--hud-cyan) 45%, transparent); color: var(--hud-muted); font-size: 14px; }
+.fa-if.is-bad { border-left-color: color-mix(in srgb, var(--hud-amber) 60%, transparent); }
+.fa-if.is-good { border-left-color: color-mix(in srgb, var(--hud-green) 60%, transparent); }
+
+.fa-wearline { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+.fa-delta { font-size: 16px; color: var(--hud-ink); font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 84px; text-align: right; }
+.fa-delta.is-none { color: var(--hud-muted); }
+.fa-total { font-size: var(--hud-text-sm); color: var(--hud-muted); white-space: nowrap; min-width: 84px; }
+.fa-trend-cap { font-size: var(--hud-text-xs); color: var(--hud-muted); white-space: nowrap; min-width: 84px; }
+.fa-spark { flex: none; }
+.fa-spark rect { fill: color-mix(in srgb, var(--hud-cyan) 45%, transparent); }
+.fa-spark rect.is-last { fill: var(--hud-cyan); }
+
+.inv-foot { display: flex; justify-content: flex-end; padding-top: 6px; }

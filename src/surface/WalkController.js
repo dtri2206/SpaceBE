@@ -27,13 +27,14 @@ export const WALK_TUNING = {
 };
 
 export class WalkController {
-  constructor({ onNotice, gravity, getGroundHeight = () => 0, bounds = null, colliders = [], mode = 'suit', start = { x: 0, z: 0 }, yaw = 0 } = {}) {
+  constructor({ onNotice, gravity, getGroundHeight = () => 0, bounds = null, colliders = [], boxes = [], mode = 'suit', start = { x: 0, z: 0 }, yaw = 0 } = {}) {
     if (!(gravity > 0)) throw new Error('WalkController: pass gravity (PLANETS.<planet>.g from core)');
     this.onNotice = onNotice ?? (() => {});
     this.gravity = gravity;
     this.getGroundHeight = getGroundHeight;
     this.bounds = bounds; // { minX, maxX, minZ, maxZ, ceiling? } for the cabin
     this.colliders = colliders; // [{ x, z, r }] vertical cylinders you can't walk through (lander legs, big rocks)
+    this.boxes = boxes; // [{ x, z, hx, hz }] upright boxes (half sizes) you can't walk through
     this.mode = mode; // 'suit' | 'cabin'
     const g = getGroundHeight(start.x, start.z);
     this.pos = { x: start.x, y: g, z: start.z }; // feet position
@@ -137,6 +138,14 @@ export class WalkController {
         const into = this.vel.x * nx + this.vel.z * nz;
         if (into < 0) { this.vel.x -= into * nx; this.vel.z -= into * nz; }
       }
+    }
+
+    // boxes (cabin ladder etc.): { x, z, hx, hz } half sizes, floor to ceiling; push out along the shallowest axis
+    for (const c of this.boxes) {
+      const px = c.hx + T.radius - Math.abs(this.pos.x - c.x), pz = c.hz + T.radius - Math.abs(this.pos.z - c.z);
+      if (px <= 0 || pz <= 0) continue;
+      if (px < pz) { const sx = this.pos.x >= c.x ? 1 : -1; this.pos.x += sx * px; if (this.vel.x * sx < 0) this.vel.x = 0; }
+      else { const sz = this.pos.z >= c.z ? 1 : -1; this.pos.z += sz * pz; if (this.vel.z * sz < 0) this.vel.z = 0; }
     }
 
     // ground

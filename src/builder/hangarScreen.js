@@ -1,11 +1,15 @@
 // The engineering-bay UI layer (state HANGAR): the walking HUD (crosshair, prompt, status chip, toasts) and the
 // stations: the vehicle design page (any design machine), the test console, the range terminal and the handbook.
+// No hints while building (src/builder/CLAUDE.md §6): the screens show the ship's own numbers, hard blocks only, and
+// never the trip's need; the investigation board reveals it after a failed flight.
 import { createDesignPage } from './designPage.js';
 import { createHandbook } from './handbook.js';
+import { staticFireFee } from './asBuilt.js';
 import { fmtInt, fmtKN, fmtMass, fmtMoney, fmtMoneyShort, fmtPct } from './format.js';
 
-export const DESIGN_STATIONS = ['integration', 'propulsion', 'structures', 'crew', 'warehouse'];
-const STATION_FAMILY = { propulsion: 'engines', structures: 'structure', crew: 'command', warehouse: null, integration: null };
+export const DESIGN_STATIONS = ['integration', 'propulsion', 'structures', 'crew', 'warehouse', 'launchwindow'];
+// which card each desk opens on the design page (the integration console and the warehouse show the whole vehicle)
+const STATION_START = { propulsion: { card: 'tail' }, structures: { card: 'body' }, crew: { card: 'nose' }, launchwindow: { card: 'pad' }, warehouse: {}, integration: {} };
 
 const h = (tag, className, text) => {
   const el = document.createElement(tag);
@@ -21,7 +25,7 @@ const btn = (className, label, onClick, attrs = {}) => {
   return b;
 };
 
-export function createHangarScreen({ assembly, catalog, materials, engines, launch, text, scene, getMoney, insolvencyFloor = 0, icons, stations, hooks }) {
+export function createHangarScreen({ assembly, catalog, sections, materials, engines, launch, text, scene, scene3d, g0, getMoney, insolvencyFloor = 0, icons, stations, hooks }) {
   const el = h('div', 'bay-root hud');
   el.dataset.screen = 'hangar';
   el.dataset.stub = 'hangar'; // check:boot looks for [data-stub] in every state
@@ -63,18 +67,22 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
 
   // ---------- the design page ----------
   const design = createDesignPage({
-    assembly, catalog, materials, engines, text, icons, getMoney,
+    assembly, catalog, sections, materials, engines, text, icons, scene3d, g0, getMoney,
     hooks: {
       onChange: () => hooks.onChange?.(),
       onSound: (id) => hooks.onSound?.(id),
       onToast: (m, kind) => say(m, kind),
       onClose: () => closeStation(),
       onGonogo: () => hooks.onGonogo?.(),
-      onTest: () => hooks.onStartTest?.(),
+      onTest: () => openStation('teststand'), // the test console, where a static fire is paid for and started
       onPresets: () => hooks.onPresets?.(),
       onWorkbench: (id) => hooks.onWorkbench?.(id),
       onRename: () => openRename(),
+      onConfirm: (q, yes) => openConfirm(q, yes),
       onMore: () => openMore(),
+      onOpen3d: (s, c) => hooks.onView?.(s, c),
+      onClose3d: () => hooks.onViewRestore?.(),
+      onNeedArt: (ids) => hooks.onNeedArt?.(ids),
       compute: () => last,
     },
   });
@@ -97,26 +105,26 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
     const { spec, breakdown, blocks } = result;
     const s = spec.stats;
     const grid = h('div', 'bld-stat-grid');
-    const fee = breakdown.slot?.fee ?? 0;
+    const fee = breakdown.launchFee ?? breakdown.slot?.fee ?? 0;
+    const price = Number.isFinite(result.price) ? result.price : s.cost;
+    const owedNow = result.pending ?? 0;
     const stat = (label, value, st = 'ok') => {
       const el_ = h('div', 'bld-stat');
       el_.dataset.state = st;
       el_.append(h('span', 'bld-stat-label', label), h('span', 'bld-stat-value', value));
       grid.append(el_);
     };
-    stat('Cost', `${fmtMoney(s.cost)}${fee ? ` + ${fmtMoneyShort(fee)} pad` : ''}`, s.cost + fee > getMoney() ? 'bad' : 'ok');
+    stat(result.reuse ? 'Refurbishment' : 'Cost', `${fmtMoney(price)}${fee ? ` + ${fmtMoneyShort(fee)} pad` : ''}${owedNow ? ` + ${fmtMoneyShort(owedNow)} owed` : ''}`, price + fee + owedNow > getMoney() ? 'bad' : 'ok');
     stat('Mass wet / dry', `${fmtMass(s.wetMass)} / ${fmtMass(s.dryMass)}`);
     stat('Propellant', fmtMass(s.fuelMass), s.fuelMass > 0 ? 'ok' : 'bad');
     stat('Thrust at sea level', fmtKN(s.thrust * (s.ispVac ? s.ispSL / s.ispVac : 1)), s.thrust > 0 ? 'ok' : 'bad');
-    stat('Δv', `${fmtInt(s.deltaV)} m/s`, s.deltaV >= breakdown.roundTrip ? 'good' : s.deltaV >= breakdown.oneWay ? 'ok' : 'bad');
-    stat('TWR on Earth', s.twrEarth.toFixed(2), s.twrEarth >= 1.2 ? 'ok' : s.twrEarth >= 1 ? 'warn' : 'bad');
-    stat('Reliability', fmtPct(s.reliability), s.reliability >= 0.9 ? 'good' : s.reliability >= 0.8 ? 'ok' : 'bad');
-    stat('Stability', breakdown.copY < breakdown.comY ? 'Stable' : 'Unstable', breakdown.copY < breakdown.comY ? 'ok' : 'bad');
+    stat('Δv', `${fmtInt(s.deltaV)} m/s`); // the ship's own number only: what the trip needs stays hidden
+    stat('TWR on Earth', s.twrEarth.toFixed(2), s.twrEarth >= 1 ? 'ok' : 'bad');
+    stat('Reliability', fmtPct(s.reliability));
+    stat('Stability', breakdown.copY < breakdown.comY ? 'Stable' : 'Unstable');
+    if (result.reuse) stat('Flights / wear', `${result.reuse.flights} · ${fmtPct(result.reuse.mean)}`);
     const warnings = h('div', 'bld-warnings');
-    warnings.append(
-      ...blocks.map((id) => h('div', 'bld-warning hud-alert', `BLOCK: ${id.replace(/_/g, ' ')}`)),
-      ...spec.warnings.map((id) => h('div', 'bld-warning hud-caution', id.replace(/_/g, ' '))),
-    );
+    warnings.append(...blocks.map((id) => h('div', 'bld-warning hud-alert', `BLOCK: ${id.replace(/_/g, ' ')}`))); // hard blocks only
     const wrap = h('div', 'bay-stats');
     wrap.append(grid, warnings);
     return wrap;
@@ -127,10 +135,12 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
     body.replaceChildren();
     body.className = 'bay-station-body bay-station-body--test';
     const r = state.testResult;
-    const intro = h('p', 'bay-test-intro', 'The stand holds the vehicle down with four clamps. We light the engine, run it at full throttle, then release the clamps for two seconds: a vehicle that cannot lift here will not lift on the pad.');
+    const fee = staticFireFee(last?.breakdown);
+    const intro = h('p', 'bay-test-intro', 'The stand holds the vehicle down with four clamps. We load the propellant, light the engines, run them at full throttle and measure what the factory really delivered, then release the clamps for two seconds. Every liquid engine is checked, and every tank while it is loaded; a solid motor burns only once, so it cannot be fired here.');
     const actions = h('div', 'bay-detail-actions');
-    const fire = btn('hud-button hud-caution', 'STATIC FIRE + HOLD-DOWN TEST', () => hooks.onStartTest?.(), { tool: 'test' });
-    fire.disabled = !assembly.parts.some((p) => catalog.get(p.type)?.engine) || !(last?.spec.stats.fuelMass > 0);
+    const fire = btn('hud-button hud-caution', `STATIC FIRE · ${fmtMoneyShort(fee)}`, () => hooks.onStartTest?.(), { tool: 'test' });
+    fire.title = 'A test day on the stand: crew, propellant and the range. Paid now.';
+    fire.disabled = !assembly.parts.some((p) => catalog.get(p.type)?.engine) || !(last?.spec.stats.fuelMass > 0) || getMoney() < fee;
     const poll = btn('hud-button hud-good', 'READINESS POLL →', () => hooks.onGonogo?.(), { tool: 'gonogo' });
     poll.disabled = !assembly.parts.length;
     actions.append(fire, poll);
@@ -138,35 +148,37 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
     if (last) body.append(statsGrid(last));
     if (r) {
       const res = h('div', 'bay-test-result hud-panel');
-      res.classList.add(r.lifted ? 'hud-good' : 'hud-alert');
+      res.classList.add(r.found?.length ? 'hud-caution' : r.lifted ? 'hud-good' : 'hud-alert');
       const line = (k, v, st) => { const row = h('div', 'bay-fact'); row.append(h('span', 'bay-fact-k', k), h('span', `bay-fact-v ${st ?? ''}`, v)); res.append(row); };
-      res.append(h('div', 'hud-label', 'Test report'));
+      const vs = (now, rated) => (Number.isFinite(rated) && rated > 0 ? ` (${signedPct(now / rated - 1)} vs rating)` : '');
+      res.append(h('div', 'hud-label', `Test report · static fire ${fmtMoney(r.fee ?? 0)}`));
+      if (r.version !== assembly.version || r.units !== hooks.unitsKey?.()) res.append(h('div', 'bay-fact', 'The vehicle has changed since this test: fire again to measure the new build.'));
       line('Hold-down release', r.lifted ? 'VEHICLE LIFTED' : 'VEHICLE STAYED ON THE STAND', r.lifted ? 'hud-good' : 'hud-alert');
-      line('Thrust at sea level', fmtKN(r.thrustSL));
+      line('Thrust at sea level, measured', `${fmtKN(r.thrustSL)}${vs(r.thrustSL, r.rated?.thrustSL)}`);
       line('Weight on the pad', fmtKN(r.weight));
       line('Thrust ÷ weight', `${r.twr.toFixed(2)} ${r.twr >= 1.2 ? '(brisk)' : r.twr > 1 ? '(barely)' : '(cannot lift)'}`);
       line('Net acceleration', `${r.netAccel.toFixed(2)} m/s²`);
+      line('Propellant loaded', `${fmtMass(r.fuelMass)}${vs(r.fuelMass, r.rated?.fuelMass)}`);
       line('Propellant flow', `${r.mdot.toFixed(0)} kg/s · full tank in ${fmtInt(r.burnTime)} s`);
-      line('Δv available', `${fmtInt(r.deltaV)} m/s`);
-      line('Reaches Mars', r.reachesMars ? 'yes' : `no, ${fmtInt(r.oneWay - r.deltaV)} m/s short`, r.reachesMars ? 'hud-good' : 'hud-alert');
-      line('Comes home on its own fuel', r.comesHome ? 'yes' : 'no (make methane on Mars)', r.comesHome ? 'hud-good' : 'hud-caution');
-      line('Aerodynamically stable', r.stable ? 'yes' : 'no: add fins low on the stack', r.stable ? 'hud-good' : 'hud-alert');
+      line('Δv of this ship as built', `${fmtInt(r.deltaV)} m/s${vs(r.deltaV, r.rated?.deltaV)}`);
+      line('Aerodynamically stable', r.stable ? 'yes' : 'no', r.stable ? 'hud-good' : 'hud-alert');
+      const found = h('div', 'bay-test-found');
+      if (r.found?.length) {
+        for (const d of r.found) {
+          const row = h('div', 'bay-test-defect');
+          row.append(h('span', null, d.text));
+          if (d.partId && !d.replaced) row.append(btn('hud-button', 'FIT A NEW UNIT', () => { d.replaced = true; hooks.onReplaceUnit?.(d.partId); }, { tool: 'replace', part: d.partId }));
+          found.append(row);
+        }
+        found.append(h('div', 'bay-fact', 'Fitting a new unit swaps in a fresh one from the factory, free: it comes with its own luck, so fire again to see how it came out.'));
+      } else found.append(h('div', 'bay-test-clean', 'Every engine came up to full thrust and ran clean. No leaks while loading.'));
+      res.append(found);
       body.append(res);
     }
   }
+  const signedPct = (x) => `${x >= 0 ? '+' : '−'}${Math.abs(x * 100).toFixed(1)} %`;
 
-  function renderLaunchWindow() {
-    body.replaceChildren();
-    body.className = 'bay-station-body bay-station-body--range';
-    const list = h('div', 'bld-list');
-    for (const slot of launch.slots) {
-      const item = btn('bld-list-item', null, () => { assembly.setLaunchSlot(slot.id); sound('ui.click'); changed(); renderLaunchWindow(); });
-      item.setAttribute('aria-pressed', String(assembly.launch.slot === slot.id));
-      item.append(h('span', null, `${slot.name} · ${fmtInt(slot.tempC)} °C`), h('span', 'bld-list-meta', `${slot.fee ? fmtMoneyShort(slot.fee) + ' pad fees' : 'no fees'} · ${slot.note}`));
-      list.append(item);
-    }
-    body.append(h('p', 'bay-test-intro', 'The range gives you three windows. The first is tomorrow at dawn, free, and cold. Seals that are not rated for cold lose their flexibility below 5 °C. That is the whole story of Challenger.'), list);
-  }
+  // the range terminal (launch window, site and pad equipment) is the Launch pad card of the design page now
 
   let handbook = null;
   function renderHandbook() {
@@ -181,9 +193,10 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
     if (!st) return;
     state.station = id;
     hud.classList.add('bay-hud--station');
+    hud.classList.toggle('bay-hud--design', DESIGN_STATIONS.includes(id));
     if (DESIGN_STATIONS.includes(id)) {
       panel.hidden = true;
-      design.show({ family: STATION_FAMILY[id] ?? null });
+      design.show(STATION_START[id] ?? {});
     } else {
       design.hide();
       title.textContent = st.name;
@@ -191,7 +204,6 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
       panel.hidden = false;
       panel.dataset.station = id;
       if (id === 'teststand') renderTest();
-      else if (id === 'launchwindow') renderLaunchWindow();
       else if (id === 'handbook') renderHandbook();
     }
     hooks.onStationOpen?.(id);
@@ -203,7 +215,7 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
     state.station = null;
     panel.hidden = true;
     design.hide();
-    hud.classList.remove('bay-hud--station');
+    hud.classList.remove('bay-hud--station', 'bay-hud--design');
     handbook?.dispose();
     handbook = null;
     closeDialog();
@@ -245,11 +257,12 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
       body: (b) => {
         const list = h('div', 'bld-list');
         const item = (label, meta, fn) => { const r = btn('bld-list-item', null, () => { closeDialog(); fn(); }); r.append(h('span', null, label), h('span', 'bld-list-meta', meta)); list.append(r); };
+        item('Preset vehicles', 'Reliable, Workhorse, Cold Morning, Thin Skin', () => hooks.onPresets?.());
         item('Blueprints', 'save and load your designs', () => hooks.onBlueprints?.());
         item('Share code', 'copy a code for a friend, or paste one', () => hooks.onShare?.());
-        item('Launch window', `${launch.slots.find((s) => s.id === assembly.launch.slot)?.name ?? ''} · change the date and the weather`, () => openStation('launchwindow'));
         item('Redo', 'put back what you undid', () => { if (assembly.redo()) { sound('ui.click'); changed(); } });
-        item('Clear the stand', 'start again from nothing', () => openConfirm('Take the whole vehicle off the stand?', () => { assembly.clear(); changed(); }));
+        if (hooks.hasAnalysis?.()) item('Last flight analysis', 'what each part did on the last flight, and how it wore', () => hooks.onAnalysis?.());
+        if (hooks.hasRecords?.()) item('Last investigation', 'what the board found after the last failed flight', () => hooks.onRecords?.());
         b.append(list);
       },
       actions: [{ label: 'CLOSE' }],
@@ -260,7 +273,7 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
   function renderMoney() {
     const m = getMoney();
     chipFunds.textContent = fmtMoney(m);
-    chipFunds.dataset.state = last && m < last.spec.stats.cost + (last.breakdown.slot?.fee ?? 0) ? 'bad' : m < insolvencyFloor * 1.5 ? 'low' : 'ok';
+    chipFunds.dataset.state = last && m < last.spec.stats.cost + (last.breakdown.launchFee ?? last.breakdown.slot?.fee ?? 0) ? 'bad' : m < insolvencyFloor * 1.5 ? 'low' : 'ok';
   }
   let insolventEl = null;
   function renderInsolvency() {
@@ -279,7 +292,7 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
     scene.setLayout(assembly.layout(), assembly.freeNodes());
     const s = result.spec.stats;
     chipShip.textContent = assembly.name;
-    chipStats.textContent = `${fmtMoney(s.cost)} · Δv ${fmtInt(s.deltaV)} · TWR ${s.twrEarth.toFixed(2)} · ${result.blocks.length ? `${result.blocks.length} block(s)` : result.spec.warnings.length ? `${result.spec.warnings.length} warning(s)` : 'ready'}`;
+    chipStats.textContent = `${fmtMoney(Number.isFinite(result.price) ? result.price : s.cost)} · Δv ${fmtInt(s.deltaV)} · TWR ${s.twrEarth.toFixed(2)} · ${result.blocks.length ? `${result.blocks.length} block(s)` : 'ready for the poll'}`;
     renderMoney();
     renderInsolvency();
     design.refresh(result);
@@ -287,7 +300,7 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
   }
 
   function update(dt, { prompt: p = null } = {}) {
-    void dt;
+    if (design.open) design.update(dt);
     if (!state.station) {
       prompt.textContent = p ? `E · ${p}` : '';
       prompt.classList.toggle('bay-prompt--show', !!p);
@@ -298,10 +311,14 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
     testStatus.hidden = !txt;
     testStatus.textContent = txt;
   }
+  /** The static fire report (null clears it, e.g. after a new unit is fitted). */
   function showTestResult(result) {
-    state.testResult = result;
+    state.testResult = result ?? null;
     setTestStatus('');
-    say(result.lifted ? 'Hold-down test: the vehicle lifted.' : 'Hold-down test: the vehicle stayed on the stand.', result.lifted ? 'ok' : 'bad');
+    if (state.station === 'teststand') renderTest();
+    if (!result) return;
+    if (result.found?.length) say(`Static fire: ${result.found.length} problem(s) found. See the test report.`, 'bad');
+    else say(result.lifted ? 'Static fire: every engine ran clean and the vehicle lifted.' : 'Static fire: the engines ran clean, but the vehicle stayed on the stand.', result.lifted ? 'ok' : 'bad');
   }
 
   function dispose() {
@@ -315,6 +332,9 @@ export function createHangarScreen({ assembly, catalog, materials, engines, laun
     get station() { return state.station; },
     get dialogOpen() { return !backdrop.hidden; },
     get pickerOpen() { return design.pickerOpen; },
+    get designOpen() { return design.open; },
+    designBack: () => design.back(),
     closePicker: () => design.closePicker(),
+    rotateDesign: (deg) => design.rotateBy(deg),
   };
 }

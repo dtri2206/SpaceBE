@@ -72,16 +72,14 @@ export function createWallScreen(scene, { renderer, getScene, standTop = 0.35 })
       `Propellant  ${fmtMass(s.fuelMass)}`,
       `Thrust SL   ${fmtKN(s.thrust * (s.ispVac ? s.ispSL / s.ispVac : 1))}`,
       `Isp         ${fmtInt(s.ispSL)} / ${fmtInt(s.ispVac)} s`, '',
-      (s.deltaV >= breakdown.roundTrip ? ok : s.deltaV >= breakdown.oneWay ? warn : bad)(`Δv          ${fmtInt(s.deltaV)} m/s`),
-      `  to Mars   ${fmtInt(breakdown.oneWay)} m/s`,
-      `  round     ${fmtInt(breakdown.roundTrip)} m/s`,
-      (s.twrEarth >= 1.2 ? ok : s.twrEarth >= 1 ? warn : bad)(`TWR Earth   ${s.twrEarth.toFixed(2)}`),
+      // the ship's own numbers only: what the trip needs is for the player to work out (no hints while building)
+      `Δv          ${fmtInt(s.deltaV)} m/s`,
+      (s.twrEarth >= 1 ? (v) => v : bad)(`TWR Earth   ${s.twrEarth.toFixed(2)}`),
       (s.reliability >= 0.85 ? ok : s.reliability >= 0.8 ? warn : bad)(`Reliability ${fmtInt(s.reliability * 100)} %`),
-      (breakdown.copY < breakdown.comY ? ok : bad)(`Stability   ${breakdown.copY < breakdown.comY ? 'CoP behind CoM' : 'UNSTABLE'}`), '',
+      '',
       { text: 'READINESS', color: '#67e8f9' },
       ...poll.blocks.map((b) => bad(`✖ ${b.replace(/_/g, ' ')}`)),
-      ...spec.warnings.map((w) => warn(`▲ ${w.replace(/_/g, ' ')}`)),
-      ...(!poll.blocks.length && !spec.warnings.length ? [ok('All consoles GO')] : []),
+      ...(!poll.blocks.length ? [ok('Ready for the poll')] : []),
     ];
     redraw((ctx, w, h) => drawScreen(ctx, w, h, { title: 'Telemetry', lines, scale: 1.25, status: { text: `CAM 01 · F${frame}`, color: '#86a6ad' } }));
   }

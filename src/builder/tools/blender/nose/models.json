@@ -1,0 +1,1234 @@
+{
+ "abort_pusher_pod": {
+  "part": "abort_pusher_pod",
+  "size": "s",
+  "height": 0.8,
+  "triangles": 1692,
+  "kb": 18,
+  "nodes": [
+   "slot_chamber",
+   "slot_chamber__machined",
+   "slot_propellant",
+   "slot_propellant__dedicated"
+  ]
+ },
+ "apollo_sm": {
+  "part": "apollo_sm",
+  "size": "l",
+  "height": 4.2,
+  "triangles": 8380,
+  "kb": 73,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "atv_icc": {
+  "part": "atv_icc",
+  "size": "l",
+  "height": 3.1,
+  "triangles": 6116,
+  "kb": 51,
+  "nodes": [
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_stowage",
+   "slot_stowage__racks",
+   "slot_stowage__water_wall"
+  ]
+ },
+ "atv_propulsion": {
+  "part": "atv_propulsion",
+  "size": "l",
+  "height": 2.2,
+  "triangles": 6536,
+  "kb": 64,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "bpc_apollo": {
+  "part": "bpc_apollo",
+  "size": "l",
+  "height": 0.55,
+  "triangles": 1810,
+  "kb": 12,
+  "nodes": []
+ },
+ "capsule_apollo": {
+  "part": "capsule_apollo",
+  "size": "l",
+  "height": 2.8,
+  "triangles": 18662,
+  "kb": 189,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_dragon": {
+  "part": "capsule_dragon",
+  "size": "m",
+  "height": 2.2,
+  "triangles": 19286,
+  "kb": 174,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_gaganyaan": {
+  "part": "capsule_gaganyaan",
+  "size": "s",
+  "height": 1.95,
+  "triangles": 17682,
+  "kb": 171,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_gemini": {
+  "part": "capsule_gemini",
+  "size": "s",
+  "height": 1.84,
+  "triangles": 16308,
+  "kb": 156,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_mengzhou": {
+  "part": "capsule_mengzhou",
+  "size": "l",
+  "height": 2.3,
+  "triangles": 18194,
+  "kb": 163,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_mercury": {
+  "part": "capsule_mercury",
+  "size": "s",
+  "height": 2.92,
+  "triangles": 14980,
+  "kb": 147,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_newshepard": {
+  "part": "capsule_newshepard",
+  "size": "m",
+  "height": 2,
+  "triangles": 19912,
+  "kb": 184,
+  "nodes": [
+   "motor_escape",
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_orion": {
+  "part": "capsule_orion",
+  "size": "l",
+  "height": 2.25,
+  "triangles": 19794,
+  "kb": 181,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_shenzhou": {
+  "part": "capsule_shenzhou",
+  "size": "s",
+  "height": 1.64,
+  "triangles": 16228,
+  "kb": 150,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_soyuz": {
+  "part": "capsule_soyuz",
+  "size": "s",
+  "height": 2.06,
+  "triangles": 16728,
+  "kb": 152,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_starliner": {
+  "part": "capsule_starliner",
+  "size": "l",
+  "height": 2.3,
+  "triangles": 18906,
+  "kb": 176,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "capsule_vostok": {
+  "part": "capsule_vostok",
+  "size": "m",
+  "height": 2.25,
+  "triangles": 16762,
+  "kb": 157,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "chute_cluster_4": {
+  "part": "chute_cluster_4",
+  "size": "s",
+  "height": 0.75,
+  "triangles": 2456,
+  "kb": 28,
+  "nodes": [
+   "slot_canopy",
+   "slot_canopy__parafoil",
+   "slot_canopy__ribbon",
+   "slot_canopy__ringsail",
+   "slot_reefing",
+   "slot_reefing__staged"
+  ]
+ },
+ "chute_single_main": {
+  "part": "chute_single_main",
+  "size": "s",
+  "height": 0.6,
+  "triangles": 848,
+  "kb": 23,
+  "nodes": [
+   "slot_canopy",
+   "slot_canopy__parafoil",
+   "slot_canopy__ribbon",
+   "slot_canopy__ringsail",
+   "slot_reefing",
+   "slot_reefing__staged"
+  ]
+ },
+ "cruise_stage_mars": {
+  "part": "cruise_stage_mars",
+  "size": "l",
+  "height": 0.7,
+  "triangles": 6772,
+  "kb": 65,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "cygnus_pcm": {
+  "part": "cygnus_pcm",
+  "size": "s",
+  "height": 2.8,
+  "triangles": 6752,
+  "kb": 53,
+  "nodes": [
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_stowage",
+   "slot_stowage__racks",
+   "slot_stowage__water_wall"
+  ]
+ },
+ "cygnus_sm": {
+  "part": "cygnus_sm",
+  "size": "l",
+  "height": 1.05,
+  "triangles": 5144,
+  "kb": 55,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "dragon1_trunk": {
+  "part": "dragon1_trunk",
+  "size": "m",
+  "height": 1.57,
+  "triangles": 5264,
+  "kb": 52,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "dragon_trunk": {
+  "part": "crew_trunk_m",
+  "size": "m",
+  "height": 2,
+  "triangles": 1288,
+  "kb": 11,
+  "nodes": []
+ },
+ "dream_chaser": {
+  "part": "dream_chaser",
+  "size": "l",
+  "height": 5.3,
+  "triangles": 12862,
+  "kb": 133,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "fairing_atlas5": {
+  "part": "nose_hammerhead_m",
+  "size": "l",
+  "height": 3.4,
+  "triangles": 15680,
+  "kb": 77,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_bg54": {
+  "part": "nose_pointed_l",
+  "size": "l",
+  "height": 3.9,
+  "triangles": 15856,
+  "kb": 78,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_cz5": {
+  "part": "fairing_cz5",
+  "size": "l",
+  "height": 4.5,
+  "triangles": 16068,
+  "kb": 78,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_delta2": {
+  "part": "nose_biconic_m",
+  "size": "m",
+  "height": 2.9,
+  "triangles": 13184,
+  "kb": 66,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_electron": {
+  "part": "nose_pointed_s",
+  "size": "s",
+  "height": 2.2,
+  "triangles": 15636,
+  "kb": 77,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_falcon9": {
+  "part": "fairing_composite_l",
+  "size": "l",
+  "height": 5.2,
+  "triangles": 15828,
+  "kb": 76,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_h2": {
+  "part": "fairing_h2",
+  "size": "m",
+  "height": 3.2,
+  "triangles": 15608,
+  "kb": 78,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_h2b": {
+  "part": "fairing_h2b",
+  "size": "l",
+  "height": 3.6,
+  "triangles": 15968,
+  "kb": 79,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_newglenn": {
+  "part": "fairing_newglenn",
+  "size": "l",
+  "height": 4.8,
+  "triangles": 15852,
+  "kb": 77,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_pslv": {
+  "part": "fairing_pslv",
+  "size": "m",
+  "height": 2.9,
+  "triangles": 13900,
+  "kb": 71,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "fairing_soyuz2": {
+  "part": "nose_blunt_m",
+  "size": "m",
+  "height": 2.9,
+  "triangles": 13320,
+  "kb": 61,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ },
+ "gaganyaan_sm": {
+  "part": "gaganyaan_sm",
+  "size": "m",
+  "height": 1.8,
+  "triangles": 6408,
+  "kb": 60,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "gemini_adapter": {
+  "part": "gemini_adapter",
+  "size": "m",
+  "height": 1.88,
+  "triangles": 11992,
+  "kb": 95,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "htv_logistics": {
+  "part": "htv_logistics",
+  "size": "l",
+  "height": 3.5,
+  "triangles": 6428,
+  "kb": 55,
+  "nodes": [
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_stowage",
+   "slot_stowage__racks",
+   "slot_stowage__water_wall"
+  ]
+ },
+ "htv_propulsion": {
+  "part": "htv_propulsion",
+  "size": "l",
+  "height": 2,
+  "triangles": 7576,
+  "kb": 67,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "las_gaganyaan": {
+  "part": "las_gaganyaan",
+  "size": "m",
+  "height": 5,
+  "triangles": 19232,
+  "kb": 119,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_jettison",
+   "slot_jettison__backup",
+   "slot_jettison__shared",
+   "slot_motor",
+   "slot_motor__reverse",
+   "slot_motor__ring",
+   "slot_motor__staged",
+   "slot_steering",
+   "slot_steering__acm",
+   "slot_steering__canards",
+   "slot_steering__gridfins"
+  ]
+ },
+ "las_orion": {
+  "part": "las_orion",
+  "size": "l",
+  "height": 5,
+  "triangles": 12324,
+  "kb": 95,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_jettison",
+   "slot_jettison__backup",
+   "slot_jettison__shared",
+   "slot_motor",
+   "slot_motor__reverse",
+   "slot_motor__ring",
+   "slot_motor__staged",
+   "slot_steering",
+   "slot_steering__acm",
+   "slot_steering__canards",
+   "slot_steering__gridfins"
+  ]
+ },
+ "las_shenzhou": {
+  "part": "las_shenzhou",
+  "size": "m",
+  "height": 4.5,
+  "triangles": 12504,
+  "kb": 99,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_jettison",
+   "slot_jettison__backup",
+   "slot_jettison__shared",
+   "slot_motor",
+   "slot_motor__reverse",
+   "slot_motor__ring",
+   "slot_motor__staged",
+   "slot_steering",
+   "slot_steering__acm",
+   "slot_steering__canards",
+   "slot_steering__gridfins"
+  ]
+ },
+ "las_soyuz": {
+  "part": "las_soyuz",
+  "size": "m",
+  "height": 5.6,
+  "triangles": 12240,
+  "kb": 101,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_jettison",
+   "slot_jettison__backup",
+   "slot_jettison__shared",
+   "slot_motor",
+   "slot_motor__reverse",
+   "slot_motor__ring",
+   "slot_motor__staged",
+   "slot_steering",
+   "slot_steering__acm",
+   "slot_steering__canards",
+   "slot_steering__gridfins"
+  ]
+ },
+ "les_apollo": {
+  "part": "les_tower_apollo",
+  "size": "l",
+  "height": 4.4,
+  "triangles": 8736,
+  "kb": 82,
+  "nodes": [
+   "slot_jettison",
+   "slot_jettison__backup",
+   "slot_jettison__shared",
+   "slot_motor",
+   "slot_motor__reverse",
+   "slot_motor__ring",
+   "slot_motor__staged",
+   "slot_steering",
+   "slot_steering__acm",
+   "slot_steering__canards",
+   "slot_steering__gridfins"
+  ]
+ },
+ "les_mercury": {
+  "part": "les_tower_mercury",
+  "size": "s",
+  "height": 2.6,
+  "triangles": 8524,
+  "kb": 83,
+  "nodes": [
+   "slot_jettison",
+   "slot_jettison__backup",
+   "slot_jettison__shared",
+   "slot_motor",
+   "slot_motor__reverse",
+   "slot_motor__ring",
+   "slot_motor__staged",
+   "slot_steering",
+   "slot_steering__acm",
+   "slot_steering__canards",
+   "slot_steering__gridfins"
+  ]
+ },
+ "mengzhou_sm": {
+  "part": "mengzhou_sm",
+  "size": "l",
+  "height": 2,
+  "triangles": 7216,
+  "kb": 65,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "nose_dragon1": {
+  "part": "nose_dragon1",
+  "size": "s",
+  "height": 0.55,
+  "triangles": 4200,
+  "kb": 13,
+  "nodes": []
+ },
+ "nose_gemini_rr": {
+  "part": "nose_gemini_rr",
+  "size": "s",
+  "height": 1.1,
+  "triangles": 3980,
+  "kb": 40,
+  "nodes": [
+   "slot_canopy",
+   "slot_canopy__parafoil",
+   "slot_canopy__ribbon",
+   "slot_canopy__ringsail",
+   "slot_reefing",
+   "slot_reefing__staged"
+  ]
+ },
+ "nosecap_dragon": {
+  "part": "nosecap_dragon",
+  "size": "s",
+  "height": 0.55,
+  "triangles": 2900,
+  "kb": 13,
+  "nodes": []
+ },
+ "orion_esm": {
+  "part": "orion_esm",
+  "size": "l",
+  "height": 2.7,
+  "triangles": 6048,
+  "kb": 58,
+  "nodes": [
+   "esm_core",
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "progress_cargo_module": {
+  "part": "progress_cargo_module",
+  "size": "s",
+  "height": 2.75,
+  "triangles": 13180,
+  "kb": 63,
+  "nodes": [
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_stowage",
+   "slot_stowage__racks",
+   "slot_stowage__water_wall"
+  ]
+ },
+ "retropack_mercury": {
+  "part": "retropack_mercury",
+  "size": "s",
+  "height": 0.45,
+  "triangles": 2020,
+  "kb": 14,
+  "nodes": []
+ },
+ "shenzhou_orbital_module": {
+  "part": "shenzhou_orbital_module",
+  "size": "s",
+  "height": 2.09,
+  "triangles": 6248,
+  "kb": 56,
+  "nodes": [
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_stowage",
+   "slot_stowage__racks",
+   "slot_stowage__water_wall"
+  ]
+ },
+ "shenzhou_service_module": {
+  "part": "shenzhou_service_module",
+  "size": "m",
+  "height": 2.19,
+  "triangles": 6512,
+  "kb": 62,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "shooting_star": {
+  "part": "shooting_star",
+  "size": "l",
+  "height": 2.2,
+  "triangles": 7292,
+  "kb": 66,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "soyuz_7k_service_module": {
+  "part": "soyuz_7k_service_module",
+  "size": "m",
+  "height": 2.1,
+  "triangles": 5952,
+  "kb": 56,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "soyuz_orbital_module": {
+  "part": "soyuz_orbital_module",
+  "size": "s",
+  "height": 2.6,
+  "triangles": 13600,
+  "kb": 68,
+  "nodes": [
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_stowage",
+   "slot_stowage__racks",
+   "slot_stowage__water_wall"
+  ]
+ },
+ "soyuz_service_module": {
+  "part": "soyuz_service_module",
+  "size": "m",
+  "height": 2.08,
+  "triangles": 8690,
+  "kb": 71,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "starliner_sm": {
+  "part": "starliner_sm",
+  "size": "l",
+  "height": 1.9,
+  "triangles": 6010,
+  "kb": 62,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "starship_nose": {
+  "part": "starship_nose",
+  "size": "l",
+  "height": 4.9,
+  "triangles": 19958,
+  "kb": 192,
+  "nodes": [
+   "slot_couches",
+   "slot_couches__ejection",
+   "slot_couches__shock",
+   "slot_docking",
+   "slot_docking__apas",
+   "slot_docking__cbm",
+   "slot_docking__nds",
+   "slot_docking__probe_drogue",
+   "slot_docking__ssvp",
+   "slot_hatch",
+   "slot_hatch__inward",
+   "slot_hatch__top",
+   "slot_landing",
+   "slot_landing__airbags",
+   "slot_landing__hard_land",
+   "slot_landing__rockets",
+   "slot_suits",
+   "slot_suits__pressure",
+   "slot_windows",
+   "slot_windows__cupola",
+   "slot_windows__panoramic"
+  ]
+ },
+ "volga_airlock": {
+  "part": "volga_airlock",
+  "size": "s",
+  "height": 0.8,
+  "triangles": 1184,
+  "kb": 12,
+  "nodes": []
+ },
+ "voskhod_backup_retro": {
+  "part": "voskhod_backup_retro",
+  "size": "m",
+  "height": 0.7,
+  "triangles": 1136,
+  "kb": 10,
+  "nodes": []
+ },
+ "vostok_instrument_module": {
+  "part": "vostok_instrument_module",
+  "size": "m",
+  "height": 2.1,
+  "triangles": 9184,
+  "kb": 73,
+  "nodes": [
+   "slot_engine",
+   "slot_engine__main_backup",
+   "slot_engine__thrusters_only",
+   "slot_power",
+   "slot_power__batteries",
+   "slot_power__body_cells",
+   "slot_power__fuel_cells"
+  ]
+ },
+ "vostok_shroud": {
+  "part": "vostok_shroud",
+  "size": "m",
+  "height": 2.2,
+  "triangles": 14348,
+  "kb": 68,
+  "nodes": [
+   "form_neck",
+   "form_shroud",
+   "slot_acoustic",
+   "slot_acoustic__blankets",
+   "slot_pushers",
+   "slot_pushers__pneumatic",
+   "slot_split",
+   "slot_split__trisector"
+  ]
+ }
+}

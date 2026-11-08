@@ -1,7 +1,8 @@
 {
+  "_about": "Launch day data that is not part of a complex. The launch windows below are the OLD date-picking model, kept only so old saves and presets still load: 'cold' (legacyFront) becomes a cold front on day 0 at the chosen complex (the Challenger setup); 'mild' and 'warm' mean nothing now. The weather itself comes from each complex's climate in sections/pad/section.json (weather.js).",
   "slots": [
-    { "id": "cold", "name": "Tomorrow 06:10", "tempC": 2, "fee": 0, "note": "Clear and cold. No waiting, no fees." },
-    { "id": "mild", "name": "In 3 days 11:40", "tempC": 18, "fee": 150000, "note": "Pad fees for the wait." },
-    { "id": "warm", "name": "In 6 days 14:00", "tempC": 27, "fee": 300000, "note": "Pad fees for the wait." }
+    { "id": "cold", "name": "Tomorrow 06:10", "tempC": 2, "fee": 0, "legacyFront": true, "windKts": 7, "lightning": 0, "label": "January cold front: clear, still, near freezing", "note": "A January cold front: clear, still and close to freezing." },
+    { "id": "mild", "name": "In 3 days 11:40", "tempC": 18, "fee": 150000, "note": "Old window, no longer used." },
+    { "id": "warm", "name": "In 6 days 14:00", "tempC": 27, "fee": 300000, "note": "Old window, no longer used." }
   ]
 }

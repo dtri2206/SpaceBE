@@ -1,0 +1,1357 @@
+{
+  "name": "Body",
+  "short": "Body",
+  "blurb": "The middle of the ship: the propellant tanks, the structure that joins them, the guidance electronics and everything clamped to the tank walls.",
+  "rows": [
+    {
+      "id": "avionics",
+      "name": "Guidance electronics",
+      "role": "The flight computer and gyros that fly the stack.",
+      "mode": "stack",
+      "pick": {
+        "flags": [
+          "avionics"
+        ]
+      }
+    },
+    {
+      "id": "structure",
+      "name": "Stage structure",
+      "role": "Interstages, intertanks, centerbodies and trusses: the skeleton between the tanks.",
+      "mode": "stack",
+      "pick": {
+        "families": [
+          "stages"
+        ]
+      }
+    },
+    {
+      "id": "tanks",
+      "name": "Propellant tanks",
+      "role": "Fuel and oxidizer for the engines. The engines switch to whatever the tanks hold most of.",
+      "mode": "stack",
+      "pick": {
+        "has": [
+          "fuel"
+        ]
+      }
+    },
+    {
+      "id": "adapters",
+      "name": "Adapters (automatic)",
+      "role": "Added where two diameters meet.",
+      "mode": "auto",
+      "pick": {
+        "has": [
+          "adapter"
+        ]
+      }
+    },
+    {
+      "id": "plumbing",
+      "name": "Lines, cables & pressure",
+      "role": "Feed lines, cable raceways and the gas bottles that keep the tanks pressurised.",
+      "mode": "radial",
+      "pick": {
+        "ids": [
+          "feedline_external",
+          "cable_raceway",
+          "wiring_tunnel",
+          "helium_copv",
+          "copv_rack",
+          "nitrogen_sphere"
+        ]
+      }
+    },
+    {
+      "id": "attitude",
+      "name": "Attitude & settling",
+      "role": "Thruster pods and ullage motors that hold the stage steady and settle the propellant before a burn.",
+      "mode": "radial",
+      "pick": {
+        "ids": [
+          "aps_module",
+          "ullage_motors"
+        ]
+      }
+    },
+    {
+      "id": "power",
+      "name": "Power",
+      "role": "Electricity for everything on board.",
+      "mode": "radial",
+      "pick": {
+        "families": [
+          "power"
+        ]
+      }
+    },
+    {
+      "id": "science",
+      "name": "Science instruments",
+      "role": "What the mission is for on Mars.",
+      "mode": "radial",
+      "pick": {
+        "families": [
+          "science"
+        ]
+      }
+    },
+    {
+      "id": "protection",
+      "name": "Protection & insulation",
+      "role": "Debris shields and blankets.",
+      "mode": "radial",
+      "pick": {
+        "families": [
+          "protection"
+        ],
+        "ids": [
+          "mli_blanket"
+        ]
+      }
+    },
+    {
+      "id": "seals",
+      "name": "Tank joint seals",
+      "role": "Cheap seals save money and fail in the cold.",
+      "mode": "radial",
+      "pick": {
+        "families": [
+          "seals"
+        ]
+      }
+    }
+  ],
+  "shapes": [
+    {
+      "id": "methalox_core",
+      "name": "Methane core",
+      "real": "Starship-style methane and oxygen tanks",
+      "desc": "A big and a medium methalox tank, the big one on top: methane can be made on Mars from ice and air, so the ship can refuel for the trip home.",
+      "pros": [
+        "Refillable on Mars",
+        "Good all-rounder"
+      ],
+      "cons": [
+        "Steps in from large to medium inside the body"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_methalox",
+      "stack": [
+        "tank_l_methalox",
+        "tank_m_methalox"
+      ],
+      "radial": [
+        {
+          "type": "wiring_tunnel",
+          "on": 0,
+          "angle": 100,
+          "yFrac": 0.5
+        },
+        {
+          "type": "helium_copv",
+          "on": 1,
+          "angle": 220,
+          "yFrac": 0.7
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/SpaceX_Starship",
+        "https://en.wikipedia.org/wiki/New_Glenn"
+      ]
+    },
+    {
+      "id": "delta_core",
+      "name": "Fuel tank, centerbody, oxidizer tank",
+      "real": "Delta II first stage",
+      "desc": "The guidance ring on top, then the kerosene tank, a stiff isogrid centerbody and the oxygen tank. Delta II put its kerosene on top, unusually; the solid boosters clamped around the oxygen tank below.",
+      "pros": [
+        "Dense, cheap kerosene",
+        "Strong centerbody for strap-on boosters"
+      ],
+      "cons": [
+        "Heavy structure",
+        "90 t of propellant to lift"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_kerolox",
+      "stack": [
+        "avionics_ring_m",
+        "tank_l_kerolox",
+        {
+          "type": "centerbody_m",
+          "options": {
+            "construction": "isogrid"
+          }
+        },
+        "tank_l_kerolox"
+      ],
+      "radial": [
+        {
+          "type": "wiring_tunnel",
+          "on": 1,
+          "angle": 300,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Delta_II",
+        "https://www.ulalaunch.com/docs/default-source/rockets/deltaiipayloadplannersguide2007.pdf"
+      ]
+    },
+    {
+      "id": "hydrolox_core",
+      "name": "Shuttle External Tank",
+      "real": "Space Shuttle External Tank (also Delta IV, SLS core stage)",
+      "desc": "A short oxygen tank on top, the intertank, and a long hydrogen tank below, all under orange foam, with the big oxygen feed line running down the outside of the hydrogen tank. Choose aluminium 2219 for the 1981 standard tank, aluminium-lithium for the 1998 super-lightweight tank.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "Feed line outside: easy to inspect"
+      ],
+      "cons": [
+        "Huge, tall and expensive",
+        "Little propellant mass for the size"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_hydrolox_stretch",
+      "stack": [
+        {
+          "type": "tank_l_hydrolox",
+          "options": {
+            "insulation": "foam"
+          }
+        },
+        "intertank_l",
+        {
+          "type": "tank_l_hydrolox_stretch",
+          "options": {
+            "insulation": "foam"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "feedline_external",
+          "on": 2,
+          "angle": 300,
+          "yFrac": 0.56
+        },
+        {
+          "type": "cable_raceway",
+          "on": 2,
+          "angle": 225,
+          "yFrac": 0.5
+        },
+        {
+          "type": "wiring_tunnel",
+          "on": 0,
+          "angle": 225,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Space_Shuttle_external_tank",
+        "https://www.nasa.gov/sites/default/files/113020main_shuttle_lightweight.pdf",
+        "https://images.nasa.gov/details/9801795"
+      ]
+    },
+    {
+      "id": "falcon9_s1",
+      "name": "Falcon 9 first stage",
+      "real": "SpaceX Falcon 9 (Full Thrust)",
+      "desc": "A black carbon interstage on top, then one long aluminium-lithium tank: liquid oxygen over kerosene with a single common dome between them, and a raceway down the side.",
+      "pros": [
+        "67 t of kerosene and oxygen for little structure",
+        "Cold-gas thrusters on the interstage"
+      ],
+      "cons": [
+        "Heavy when full: 67 t of kerosene and oxygen",
+        "Tall and light at the top",
+        "Common dome: one wall between fuel and oxidizer"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_kerolox_common",
+      "stack": [
+        "interstage_l_composite",
+        "tank_l_kerolox_common"
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 1,
+          "angle": 315,
+          "yFrac": 0.5
+        },
+        {
+          "type": "nitrogen_sphere",
+          "on": 0,
+          "angle": 210,
+          "yFrac": 0.25
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Falcon_9_Full_Thrust",
+        "https://en.wikipedia.org/wiki/Falcon_9"
+      ]
+    },
+    {
+      "id": "saturn_sic",
+      "name": "Saturn V S-IC",
+      "real": "Saturn V first stage (S-IC, Boeing, 1967–73)",
+      "desc": "The corrugated forward skirt, a long oxygen tank with helium bottles inside and an anti-vortex cross at its outlet, a corrugated intertank, and the kerosene tank with the oxygen lines running down through it in tunnels. Two cable tunnels run down the outside. The real one was 10 m wide and fed five F-1 engines.",
+      "pros": [
+        "108 t of kerosene and oxygen",
+        "Separate tanks: robust and simple"
+      ],
+      "cons": [
+        "Very heavy when full",
+        "Long stack"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_kerolox_stretch",
+      "stack": [
+        {
+          "type": "forward_skirt_l",
+          "options": {
+            "construction": "corrugated"
+          }
+        },
+        {
+          "type": "tank_l_kerolox_stretch",
+          "options": {
+            "baffles": "antivortex",
+            "pressurisation": "autogenous"
+          },
+          "material": "al2219"
+        },
+        {
+          "type": "intertank_l",
+          "options": {
+            "construction": "corrugated"
+          }
+        },
+        {
+          "type": "tank_l_kerolox",
+          "options": {
+            "feedline": "tunnel",
+            "pressurisation": "heated"
+          },
+          "material": "al2219"
+        }
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 1,
+          "angle": 300,
+          "yFrac": 0.5
+        },
+        {
+          "type": "wiring_tunnel",
+          "on": 3,
+          "angle": 120,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://enginehistory.org/Rockets/RPE08.10/RPE08.10.shtml",
+        "https://en.wikipedia.org/wiki/S-IC",
+        "https://images.nasa.gov/details/0100981"
+      ]
+    },
+    {
+      "id": "saturn_sivb",
+      "name": "Saturn S-IVB with Instrument Unit",
+      "real": "Saturn V third stage (S-IVB, Douglas, 1967–73) and its Instrument Unit (IBM)",
+      "desc": "The Instrument Unit ring with its cold plates, then hydrogen over oxygen in one tank with a single honeycomb bulkhead, insulated from the inside and stiffened by a milled waffle grid, and the aft skirt with two thruster pods, two ullage motors and helium spheres.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "Guidance ring built in: reliability +3.5 %",
+        "Thruster pods for restarts in orbit"
+      ],
+      "cons": [
+        "An upper stage: 26 t of propellant",
+        "Very expensive"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_hydrolox_common",
+      "stack": [
+        {
+          "type": "avionics_iu_l",
+          "options": {
+            "cooling": "coldplate"
+          }
+        },
+        {
+          "type": "tank_l_hydrolox_common",
+          "options": {
+            "wall": "waffle",
+            "insulation": "internal",
+            "pressurisation": "cold_helium"
+          }
+        },
+        "aft_skirt_l"
+      ],
+      "radial": [
+        {
+          "type": "wiring_tunnel",
+          "on": 1,
+          "angle": 300,
+          "yFrac": 0.55,
+          "symmetry": 2
+        },
+        {
+          "type": "helium_copv",
+          "on": 2,
+          "angle": 40,
+          "yFrac": 0.5,
+          "symmetry": 2
+        },
+        {
+          "type": "aps_module",
+          "on": 2,
+          "angle": 0,
+          "yFrac": 0.45,
+          "symmetry": 2
+        },
+        {
+          "type": "ullage_motors",
+          "on": 2,
+          "angle": 90,
+          "yFrac": 0.5,
+          "symmetry": 2
+        }
+      ],
+      "sources": [
+        "https://enginehistory.org/Rockets/RPE08.30/RPE08.30.shtml",
+        "https://en.wikipedia.org/wiki/S-IVB",
+        "https://en.wikipedia.org/wiki/Saturn_V_instrument_unit",
+        "https://images.nasa.gov/details/0100983",
+        "https://images.nasa.gov/details/0100984"
+      ]
+    },
+    {
+      "id": "atlas_balloon",
+      "name": "Atlas balloon tank",
+      "real": "Atlas (SM-65 and the Mercury-Atlas that flew John Glenn)",
+      "desc": "One stainless steel tube thinner than a coin, oxygen over kerosene, held rigid only by the pressure inside. A long cable conduit runs down the side and helium bottles sit at the base.",
+      "pros": [
+        "Lightest kerolox structure: 57.5 t of propellant for under 2 t"
+      ],
+      "cons": [
+        "Must stay pressurised every minute: reliability 98.8 %",
+        "Long and slender"
+      ],
+      "diameter": "m",
+      "icon": "tank_m_kerolox_balloon",
+      "stack": [
+        "tank_m_kerolox_balloon"
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 0,
+          "angle": 315,
+          "yFrac": 0.5
+        },
+        {
+          "type": "helium_copv",
+          "on": 0,
+          "angle": 200,
+          "yFrac": 0.05,
+          "symmetry": 2
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/SM-65_Atlas",
+        "https://en.wikipedia.org/wiki/Balloon_tank",
+        "https://enginehistory.org/Rockets/RPE05/RPE05.shtml"
+      ]
+    },
+    {
+      "id": "soyuz_blok_a",
+      "name": "Soyuz core stage (Blok A)",
+      "real": "Soyuz core stage, Block A (R-7 family, 1957–)",
+      "desc": "The open lattice on top (the stage above fires its engine through it), the instrument ring, then the waisted core: an oxygen tank of two cones, widest at the ring where the four boosters push, over a narrower kerosene tank. Boiled liquid nitrogen pressurises the tanks.",
+      "pros": [
+        "The most-flown layout in history",
+        "56 t at the medium width"
+      ],
+      "cons": [
+        "Heavy structure for its propellant",
+        "Long and narrow"
+      ],
+      "diameter": "m",
+      "icon": "tank_m_kerolox_bloka",
+      "stack": [
+        "hotstage_truss_m",
+        "avionics_ring_m",
+        {
+          "type": "tank_m_kerolox_bloka",
+          "options": {
+            "pressurisation": "nitrogen"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "nitrogen_sphere",
+          "on": 2,
+          "angle": 250,
+          "yFrac": 0.08
+        },
+        {
+          "type": "wiring_tunnel",
+          "on": 2,
+          "angle": 300,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://courses.edx.org/asset-v1:DelftX+AEASM1x+1T2023+type@asset+block/Soyuz-Users-Manual-March-2012.pdf",
+        "https://www.russianspaceweb.com/soyuz_lv_stage2.html",
+        "https://en.wikipedia.org/wiki/Soyuz-2"
+      ]
+    },
+    {
+      "id": "starship_steel",
+      "name": "Starship stainless steel",
+      "real": "SpaceX Starship and Super Heavy",
+      "desc": "Welded rings of stainless steel: methane on top, oxygen below, one common dome between them, with a raceway down the side and a rack of carbon-wrapped helium bottles.",
+      "pros": [
+        "Cheapest propellant per dollar",
+        "Tough steel: reliability 99.9 %",
+        "Refillable on Mars"
+      ],
+      "cons": [
+        "Heavier than aluminium"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_methalox_steel",
+      "stack": [
+        "tank_l_methalox_steel"
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 0,
+          "angle": 315,
+          "yFrac": 0.5
+        },
+        {
+          "type": "copv_rack",
+          "on": 0,
+          "angle": 230,
+          "yFrac": 0.12
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/SpaceX_Starship_(spacecraft)",
+        "https://en.wikipedia.org/wiki/SpaceX_Starship"
+      ]
+    },
+    {
+      "id": "electron_carbon",
+      "name": "Electron carbon composite",
+      "real": "Rocket Lab Electron",
+      "desc": "A small, black, all-carbon-fibre stage: one composite tank pair with a common bulkhead. On Electron, battery packs drive the engine pumps; here the two packs store the ship's power.",
+      "pros": [
+        "Lightest small stage",
+        "Fits small noses and tails"
+      ],
+      "cons": [
+        "A small rocket: 20 t of propellant",
+        "Expensive",
+        "Composite can hide cracks: reliability 99.4 %"
+      ],
+      "diameter": "s",
+      "icon": "tank_s_kerolox_carbon",
+      "stack": [
+        "tank_s_kerolox_carbon"
+      ],
+      "radial": [
+        {
+          "type": "battery",
+          "on": 0,
+          "angle": 90,
+          "yFrac": 0.08,
+          "symmetry": 2
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Electron_(rocket)",
+        "https://fr.wikipedia.org/wiki/Electron_(fus%C3%A9e)"
+      ]
+    },
+    {
+      "id": "centaur_balloon",
+      "name": "Centaur upper stage",
+      "real": "Centaur (Atlas V and Vulcan upper stage; launched Voyager, Cassini, New Horizons)",
+      "desc": "The guidance electronics on top of a stainless steel balloon: hydrogen over oxygen with an insulated honeycomb bulkhead between them, and helium bottles at the base.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "Lightest hydrogen structure"
+      ],
+      "cons": [
+        "An upper stage: 20 t of propellant",
+        "Balloon tank must stay pressurised: reliability 99 %"
+      ],
+      "diameter": "m",
+      "icon": "tank_m_hydrolox_balloon",
+      "stack": [
+        "avionics_ring_m",
+        "tank_m_hydrolox_balloon"
+      ],
+      "radial": [
+        {
+          "type": "helium_copv",
+          "on": 1,
+          "angle": 60,
+          "yFrac": 0.06,
+          "symmetry": 2
+        },
+        {
+          "type": "wiring_tunnel",
+          "on": 1,
+          "angle": 300,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Centaur_(rocket_stage)",
+        "https://www.nasa.gov/history/centaur-americas-workhorse-in-space/"
+      ]
+    },
+    {
+      "id": "saturn_sii",
+      "name": "Saturn V S-II",
+      "real": "Saturn V second stage (S-II, North American Aviation, 1967–73)",
+      "desc": "The forward skirt, then hydrogen over oxygen in one tank with a single honeycomb bulkhead, a systems tunnel down the side, and the aft skirt, which here carries the four ullage motors that really rode on the interstage below it. The real one was 10 m wide and fed five J-2 engines.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "Common bulkhead: short for what it holds"
+      ],
+      "cons": [
+        "Very expensive",
+        "A bulkhead leak mixes the propellants"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_hydrolox_common",
+      "stack": [
+        "forward_skirt_l",
+        {
+          "type": "tank_l_hydrolox_common",
+          "options": {
+            "pressurisation": "autogenous"
+          }
+        },
+        "aft_skirt_l"
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 1,
+          "angle": 300,
+          "yFrac": 0.5
+        },
+        {
+          "type": "ullage_motors",
+          "on": 2,
+          "angle": 45,
+          "yFrac": 0.5,
+          "symmetry": 4
+        }
+      ],
+      "sources": [
+        "https://enginehistory.org/Rockets/RPE08.20/RPE08.20.shtml",
+        "https://en.wikipedia.org/wiki/S-II",
+        "https://apollojournals.org/afj/s-ii/s-ii-construction.html",
+        "https://images.nasa.gov/details/9801810"
+      ]
+    },
+    {
+      "id": "saturn_ib_sib",
+      "name": "Saturn IB S-IB",
+      "real": "Saturn IB first stage (S-IB, Chrysler, 1966–75)",
+      "desc": "Nine tanks in a bundle: a wide oxygen tank in the middle and eight narrower tanks around it, four of oxygen and four of kerosene, painted white and black in turn on the early stages, tied by a spider beam on top.",
+      "pros": [
+        "Proven tanks, easy to build",
+        "All nine Saturn IB launches succeeded"
+      ],
+      "cons": [
+        "Heavy for its propellant",
+        "The gaps between the tanks hold nothing"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_kerolox_cluster",
+      "stack": [
+        "tank_l_kerolox_cluster"
+      ],
+      "radial": [],
+      "sources": [
+        "https://en.wikipedia.org/wiki/S-IB",
+        "https://en.wikipedia.org/wiki/Saturn_IB",
+        "https://enginehistory.org/Rockets/RPE07/RPE07.shtml",
+        "https://images.nasa.gov/details/0100801",
+        "https://images.nasa.gov/details/6522687",
+        "https://images.nasa.gov/details/6973447"
+      ]
+    },
+    {
+      "id": "titan_ii",
+      "name": "Titan II first stage",
+      "real": "Titan II GLV, the Gemini launcher (Martin, 1964–66)",
+      "desc": "Two stiff aluminium tanks, oxidizer over fuel, the oxidizer pipe running down through the fuel tank and a wiring conduit outside. Standpipes and an accumulator on the feed lines stopped the pogo shaking for the astronauts.",
+      "pros": [
+        "Stands up without pressure",
+        "Flew all 12 Gemini missions"
+      ],
+      "cons": [
+        "Toxic propellants",
+        "Long and narrow"
+      ],
+      "diameter": "m",
+      "icon": "tank_m_storable_titan",
+      "stack": [
+        {
+          "type": "tank_m_storable_titan",
+          "options": {
+            "feedline": "pogo"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "wiring_tunnel",
+          "on": 0,
+          "angle": 90,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Titan_II_GLV",
+        "https://en.wikipedia.org/wiki/LGM-25C_Titan_II",
+        "https://enginehistory.org/Rockets/RPE06/RPE06.shtml",
+        "https://www.american-spacecraft.org/documents/sp-4203/chapter-8.html",
+        "https://images.nasa.gov/details/S65-14150"
+      ]
+    },
+    {
+      "id": "sls_core",
+      "name": "SLS core stage",
+      "real": "Space Launch System core stage (Boeing for NASA; Artemis I 2022, Artemis II 2026)",
+      "desc": "The forward skirt with three voting flight computers, the oxygen tank, the intertank where the boosters push, and the long hydrogen tank, orthogrid aluminium under orange foam, with two big oxygen lines down opposite sides.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "Three-computer guidance built in"
+      ],
+      "cons": [
+        "Huge, tall and expensive",
+        "Little propellant mass for the size"
+      ],
+      "diameter": "l",
+      "icon": "avionics_skirt_l",
+      "stack": [
+        {
+          "type": "avionics_skirt_l",
+          "options": {
+            "computer": "triple"
+          }
+        },
+        {
+          "type": "tank_l_hydrolox",
+          "options": {
+            "wall": "orthogrid",
+            "insulation": "foam"
+          },
+          "material": "al2219"
+        },
+        "intertank_l",
+        {
+          "type": "tank_l_hydrolox_stretch",
+          "options": {
+            "wall": "orthogrid",
+            "insulation": "foam"
+          },
+          "material": "al2219"
+        }
+      ],
+      "radial": [
+        {
+          "type": "feedline_external",
+          "on": 3,
+          "angle": 90,
+          "yFrac": 0.56,
+          "symmetry": 2
+        },
+        {
+          "type": "cable_raceway",
+          "on": 3,
+          "angle": 0,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.nasa.gov/reference/space-launch-system-core-stage/",
+        "https://en.wikipedia.org/wiki/Space_Launch_System_core_stage",
+        "https://www.nasa.gov/missions/artemis/orion/foam-and-cork-insulation-protects-deep-space-rocket-from-fire-and-ice",
+        "https://commons.wikimedia.org/wiki/File:SLS_Core_Stage_Configuration-2024-7-15.png"
+      ]
+    },
+    {
+      "id": "dcss_icps",
+      "name": "Delta IV upper stage (ICPS)",
+      "real": "Delta Cryogenic Second Stage, 5 m (Delta IV 2002–24), flown on Artemis I and II as the SLS Interim Cryogenic Propulsion Stage",
+      "desc": "A wide hydrogen tank finished white on top and a small oxygen tank in silver blankets hung below it on a truss, with helium bottles beside it. During the climb the oxygen tank rides inside the skirt.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "Short: 7.2 m"
+      ],
+      "cons": [
+        "An upper stage: 16.5 t of propellant",
+        "Expensive"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_lh2_upper",
+      "stack": [
+        {
+          "type": "tank_l_lh2_upper",
+          "options": {
+            "insulation": "foam_white"
+          }
+        },
+        {
+          "type": "tank_l_lox_hung",
+          "options": {
+            "insulation": "mli"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "helium_copv",
+          "on": 1,
+          "angle": 60,
+          "yFrac": 0.5,
+          "symmetry": 2
+        }
+      ],
+      "sources": [
+        "https://www.nasa.gov/reference/space-launch-system-interim-cryogenic-propulsion-stage-icps/",
+        "https://en.wikipedia.org/wiki/Delta_Cryogenic_Second_Stage",
+        "https://www.ulalaunch.com/docs/default-source/rockets/delta-iv-user%27s-guide.pdf",
+        "https://commons.wikimedia.org/wiki/File:Interim_Cryogenic_Propulsion_Stage.jpg"
+      ]
+    },
+    {
+      "id": "atlas_v_ccb",
+      "name": "Atlas V common core booster",
+      "real": "Atlas V first stage (Lockheed Martin, then ULA; 2002–)",
+      "desc": "An isogrid aluminium stage of bare metal with an anodised copper-tan finish and no foam: the oxygen tank, the intertank and the kerosene tank, with the oxygen line and the avionics pod down the outside of the kerosene tank. Unlike the old Atlas balloon, these tanks stand up empty.",
+      "pros": [
+        "Stiff isogrid: stands up empty",
+        "Launched Curiosity, Perseverance and New Horizons"
+      ],
+      "cons": [
+        "Heavy when full: 62.5 t of propellant",
+        "Long and narrow"
+      ],
+      "diameter": "m",
+      "icon": "tank_m_kerolox_stretch",
+      "stack": [
+        {
+          "type": "tank_m_kerolox_stretch",
+          "options": {
+            "wall": "isogrid",
+            "insulation": "tiodize"
+          }
+        },
+        {
+          "type": "intertank_m",
+          "options": {
+            "construction": "isogrid"
+          }
+        },
+        {
+          "type": "tank_m_kerolox",
+          "options": {
+            "wall": "isogrid",
+            "insulation": "tiodize"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "feedline_external",
+          "on": 2,
+          "angle": 0,
+          "yFrac": 0.75
+        },
+        {
+          "type": "cable_raceway",
+          "on": 2,
+          "angle": 300,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.ulalaunch.com/docs/default-source/rockets/atlasvusersguide2010.pdf",
+        "https://en.wikipedia.org/wiki/Common_Core_Booster",
+        "https://commons.wikimedia.org/wiki/File:Atlas_V_AV-021_first_stage_erection.jpg"
+      ]
+    },
+    {
+      "id": "delta_iv_cbc",
+      "name": "Delta IV common booster core",
+      "real": "Delta IV first stage (Boeing, then ULA; 2002–24)",
+      "desc": "The oxygen tank, a composite centerbody, and a long hydrogen tank, isogrid aluminium under orange foam, with the oxygen line and the wiring tunnel side by side down the back.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "Composite centerbody: light"
+      ],
+      "cons": [
+        "Tall and expensive",
+        "Little propellant mass for the size"
+      ],
+      "diameter": "l",
+      "icon": "centerbody_l",
+      "stack": [
+        {
+          "type": "tank_l_hydrolox",
+          "options": {
+            "wall": "isogrid",
+            "insulation": "foam_tan"
+          }
+        },
+        {
+          "type": "centerbody_l",
+          "options": {
+            "construction": "composite"
+          },
+          "material": "carbon"
+        },
+        {
+          "type": "tank_l_hydrolox_stretch",
+          "options": {
+            "wall": "isogrid",
+            "insulation": "foam_tan"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "feedline_external",
+          "on": 2,
+          "angle": 180,
+          "yFrac": 0.56
+        },
+        {
+          "type": "wiring_tunnel",
+          "on": 2,
+          "angle": 205,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Delta_IV",
+        "https://www.ulalaunch.com/docs/default-source/rockets/delta-iv-user%27s-guide.pdf",
+        "https://www.ulalaunch.com/docs/default-source/news-items/div_wgs3_mob.pdf",
+        "https://commons.wikimedia.org/wiki/File:Delta_IV_Heavy_on_pad_with_Orion_EFT-1_(KSC-2014-4686).jpg"
+      ]
+    },
+    {
+      "id": "h2a_s1",
+      "name": "H-IIA first stage",
+      "real": "H-IIA first stage (MHI for JAXA, 2001–2025, 50 flights)",
+      "desc": "Oxygen over hydrogen in two separate tanks with isogrid machined inside the walls, the center body between them, orange-brown foam outside and a thin raceway down the length.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "Flew 50 times"
+      ],
+      "cons": [
+        "Expensive",
+        "Little propellant mass for the size"
+      ],
+      "diameter": "m",
+      "icon": "tank_m_hydrolox",
+      "stack": [
+        {
+          "type": "tank_m_hydrolox",
+          "options": {
+            "wall": "isogrid",
+            "insulation": "foam_tan"
+          }
+        },
+        "intertank_m",
+        {
+          "type": "tank_m_hydrolox",
+          "options": {
+            "wall": "isogrid",
+            "insulation": "foam_tan"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 2,
+          "angle": 300,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://global.jaxa.jp/projects/rockets/h2a/",
+        "https://www.mhi.com/jp/products/pdf/manual.pdf",
+        "https://commons.wikimedia.org/wiki/File:H_IIA_No._F23_with_GPM_on_its_way_to_the_launchpad.jpg"
+      ]
+    },
+    {
+      "id": "long_march_5",
+      "name": "Long March 5 core stage",
+      "real": "Long March 5 core stage (CALT, 2016–)",
+      "desc": "Oxygen over hydrogen in two separate 5 m tanks with an intertank, white all over, with one long duct down the side.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "Separate tanks: simple and safe"
+      ],
+      "cons": [
+        "Tall and expensive",
+        "Little propellant mass for the size"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_hydrolox_stretch",
+      "stack": [
+        {
+          "type": "tank_l_hydrolox",
+          "options": {
+            "insulation": "foam_white"
+          }
+        },
+        "intertank_l",
+        {
+          "type": "tank_l_hydrolox_stretch",
+          "options": {
+            "insulation": "foam_white"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 2,
+          "angle": 300,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/Long_March_5",
+        "https://zh.wikipedia.org/wiki/长征五号运载火箭",
+        "http://www.astronautix.com/c/cz-5.html",
+        "https://commons.wikimedia.org/wiki/File:长征五号遥二火箭转场.jpg"
+      ]
+    },
+    {
+      "id": "energia_core",
+      "name": "Energia core stage (Blok Ts)",
+      "real": "Energia core stage Blok Ts (NPO Energia; flew 1987 and 1988)",
+      "desc": "Oxygen over hydrogen with an intertank, like the Shuttle tank, but the oxygen line runs through a tunnel inside the hydrogen tank, whose walls are machined into a waffle grid, under foam with a thermal-control enamel.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "No pipe outside: a smooth body"
+      ],
+      "cons": [
+        "Huge, tall and expensive",
+        "Little propellant mass for the size"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_hydrolox_stretch",
+      "stack": [
+        "tank_l_hydrolox",
+        "intertank_l",
+        {
+          "type": "tank_l_hydrolox_stretch",
+          "options": {
+            "wall": "waffle",
+            "feedline": "tunnel"
+          }
+        }
+      ],
+      "radial": [],
+      "sources": [
+        "http://www.buran.ru/htm/15-3.htm",
+        "https://www.russianspaceweb.com/energia.html",
+        "https://en.wikipedia.org/wiki/Energia_(rocket)",
+        "https://commons.wikimedia.org/wiki/File:Energia-Polyus_drawing.png"
+      ]
+    },
+    {
+      "id": "zenit_s1",
+      "name": "Zenit first stage",
+      "real": "Zenit first stage (Yuzhnoye, 1985–; also the Energia strap-on boosters)",
+      "desc": "Oxygen over kerosene in two waffle-milled aluminium tanks, the kerosene dome tucked up under the oxygen dome, the oxygen line running down a tunnel through the fuel and helium spheres inside the oxygen tank.",
+      "pros": [
+        "62.5 t of kerosene and oxygen",
+        "Nothing outside: a smooth body"
+      ],
+      "cons": [
+        "Long and narrow"
+      ],
+      "diameter": "m",
+      "icon": "tank_m_kerolox_stretch",
+      "stack": [
+        {
+          "type": "tank_m_kerolox_stretch",
+          "options": {
+            "wall": "waffle",
+            "pressurisation": "helium"
+          }
+        },
+        "intertank_m",
+        {
+          "type": "tank_m_kerolox",
+          "options": {
+            "wall": "waffle",
+            "feedline": "tunnel"
+          }
+        }
+      ],
+      "radial": [],
+      "sources": [
+        "http://www.buran.ru/htm/08-3.htm",
+        "http://www.astronautix.com/z/zenit-2.html",
+        "https://en.wikipedia.org/wiki/Zenit_(rocket_family)"
+      ]
+    },
+    {
+      "id": "pslv_ps2",
+      "name": "PSLV second stage",
+      "real": "PSLV second stage PS2 (ISRO, 1993–)",
+      "desc": "Two storable propellants, UH25 and nitrogen tetroxide, sharing one bulkhead, a ring-shaped water tank at the bottom for the engine turbine, and a raceway down the side.",
+      "pros": [
+        "Short for what it holds",
+        "Cheap"
+      ],
+      "cons": [
+        "Toxic propellants",
+        "The water tank is mass that does not burn"
+      ],
+      "diameter": "m",
+      "icon": "tank_m_storable_ps2",
+      "stack": [
+        "tank_m_storable_ps2"
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 0,
+          "angle": 300,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/PSLV",
+        "https://www.isro.gov.in/PSLV_CON.html",
+        "https://b14643.eu/Spacerockets_1/India/PSLV/Description/Text.htm"
+      ]
+    },
+    {
+      "id": "soyuz_blok_i",
+      "name": "Soyuz third stage (Blok I)",
+      "real": "Soyuz Block I (1960–; RD-0124 version on Soyuz-2.1b)",
+      "desc": "Kerosene on top, the instrument ring, then oxygen, standing on the open lattice its engine fires through at staging.",
+      "pros": [
+        "Instrument ring built in",
+        "Light"
+      ],
+      "cons": [
+        "An upper stage: 31.5 t of propellant"
+      ],
+      "diameter": "m",
+      "icon": "tank_m_kerolox_bloki",
+      "stack": [
+        "tank_m_kerolox_bloki",
+        "hotstage_truss_m"
+      ],
+      "radial": [],
+      "sources": [
+        "https://www.russianspaceweb.com/soyuz_lv_stage3.html",
+        "https://courses.edx.org/asset-v1:DelftX+AEASM1x+1T2023+type@asset+block/Soyuz-Users-Manual-March-2012.pdf"
+      ]
+    },
+    {
+      "id": "proton_s1",
+      "name": "Proton first stage",
+      "real": "Proton first stage (Khrunichev, 1965–)",
+      "desc": "A wide oxidizer tank ringed by six fuel tanks that each carry an engine, with an open lattice on top for hot staging and conduits between the outer tanks.",
+      "pros": [
+        "Every piece fits on a train",
+        "Cheap for its size"
+      ],
+      "cons": [
+        "Toxic propellants",
+        "The gaps between the tanks hold nothing"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_storable_cluster",
+      "stack": [
+        "hotstage_truss_l",
+        "tank_l_storable_cluster"
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 1,
+          "angle": 30,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.russianspaceweb.com/proton_stage1.html",
+        "https://en.wikipedia.org/wiki/Proton-M",
+        "https://ru.wikipedia.org/wiki/Протон_(ракета-носитель)"
+      ]
+    },
+    {
+      "id": "n1_blok_a",
+      "name": "N1 first stage (Block A)",
+      "real": "N1 Block A (1969–72; four launches, all failed)",
+      "desc": "Two spheres, kerosene above oxygen, inside a cone that narrows from the base to the top, under the open lattice that joined it to the second block.",
+      "pros": [
+        "Spheres: the lightest wall for what they hold",
+        "Built from pieces that travel by rail"
+      ],
+      "cons": [
+        "Wastes the space in the cone: only 18 t",
+        "Narrows towards the top"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_kerolox_spheres",
+      "stack": [
+        "hotstage_truss_m",
+        "tank_l_kerolox_spheres"
+      ],
+      "radial": [],
+      "sources": [
+        "https://www.russianspaceweb.com/n1_a.html",
+        "https://www.russianspaceweb.com/n1_7l.html",
+        "https://en.wikipedia.org/wiki/N1_(rocket)",
+        "http://www.astronautix.com/n/n1blocka.html",
+        "https://commons.wikimedia.org/wiki/File:N1_1M1_mockup_on_the_launch_pad_at_the_Baikonur_Cosmodrome_in_late_1967.jpg"
+      ]
+    },
+    {
+      "id": "super_heavy",
+      "name": "Super Heavy booster",
+      "real": "SpaceX Super Heavy with its vented hot-staging ring (from Flight 2, November 2023)",
+      "desc": "The vented hot-staging ring on top of welded steel rings: methane over oxygen with one common dome, a raceway down the side and a rack of helium bottles.",
+      "pros": [
+        "Cheapest propellant per dollar",
+        "Tough steel: reliability 99.9 %"
+      ],
+      "cons": [
+        "Heavier than aluminium",
+        "Methalox engines only"
+      ],
+      "diameter": "l",
+      "icon": "hotstage_ring_l",
+      "stack": [
+        "hotstage_ring_l",
+        "tank_l_methalox_steel"
+      ],
+      "radial": [
+        {
+          "type": "cable_raceway",
+          "on": 1,
+          "angle": 315,
+          "yFrac": 0.5
+        },
+        {
+          "type": "copv_rack",
+          "on": 1,
+          "angle": 230,
+          "yFrac": 0.12
+        }
+      ],
+      "sources": [
+        "https://en.wikipedia.org/wiki/SpaceX_Super_Heavy",
+        "https://en.wikipedia.org/wiki/Starship_flight_test_2",
+        "https://commons.wikimedia.org/wiki/File:NASA_Marshall_visit_to_Super_Heavy_booster.jpg"
+      ]
+    },
+    {
+      "id": "vulcan_booster",
+      "name": "Vulcan first stage",
+      "real": "Vulcan first stage (ULA, 2024–)",
+      "desc": "Oxygen over liquefied natural gas with one common bulkhead, orthogrid aluminium under orange foam, and the oxygen line down the outside.",
+      "pros": [
+        "64 t of methane and oxygen",
+        "Lighter than steel"
+      ],
+      "cons": [
+        "Methalox engines only",
+        "Common bulkhead: reliability 99.7 %"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_methalox_orthogrid",
+      "stack": [
+        {
+          "type": "tank_l_methalox_orthogrid",
+          "options": {
+            "insulation": "foam"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "feedline_external",
+          "on": 0,
+          "angle": 90,
+          "yFrac": 0.45
+        },
+        {
+          "type": "cable_raceway",
+          "on": 0,
+          "angle": 300,
+          "yFrac": 0.5
+        }
+      ],
+      "sources": [
+        "https://www.ulalaunch.com/docs/default-source/rockets/vulcancentaur.pdf",
+        "https://www.ulalaunch.com/missions/next-launch/vulcan-cert-2",
+        "https://en.wikipedia.org/wiki/Vulcan_Centaur"
+      ]
+    },
+    {
+      "id": "ariane5_epc",
+      "name": "Ariane 5 core stage (EPC)",
+      "real": "Ariane 5 main cryogenic stage, EPC (1996–2023)",
+      "desc": "The forward skirt, then one tank: oxygen over hydrogen, split by a single bulkhead, under a thin white foam layer.",
+      "pros": [
+        "Best Isp with a hydrolox engine",
+        "One bulkhead: short for what it holds"
+      ],
+      "cons": [
+        "Very expensive",
+        "A bulkhead leak mixes the propellants"
+      ],
+      "diameter": "l",
+      "icon": "tank_l_hydrolox_epc",
+      "stack": [
+        "forward_skirt_l",
+        {
+          "type": "tank_l_hydrolox_epc",
+          "options": {
+            "insulation": "foam_white"
+          }
+        }
+      ],
+      "radial": [],
+      "sources": [
+        "https://courses.edx.org/asset-v1:DelftX%2BAEASM1x%2B1T2022%2Btype%40asset%2Bblock/Ariane5_Users-Manual_October2016_Red.pdf",
+        "https://www.esa.int/Enabling_Support/Space_Transportation/Ariane/Ariane_5_ECA",
+        "https://b14643.eu/Spacerockets_1/West_Europe/Ariane-5/Description/Text.htm"
+      ]
+    }
+  ]
+}

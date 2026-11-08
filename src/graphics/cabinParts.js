@@ -157,16 +157,16 @@ export function panelTextures(wm, hm, labels = [], key = '') {
     const pw = w / cols, ph = h / rows;
     for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
       const tone = 168 + rnd() * 10;
-      c.fillStyle = `rgb(${tone - 2}, ${tone}, ${tone + 6})`;
+      c.fillStyle = `rgb(${tone + 52}, ${tone + 44}, ${tone + 22})`;
       c.fillRect(i * pw, j * ph, pw, ph);
       const grime = c.createLinearGradient(0, j * ph, 0, (j + 1) * ph);
-      grime.addColorStop(0, 'rgba(20,24,30,0)');
-      grime.addColorStop(1, `rgba(20,24,30,${j === rows - 1 ? 0.28 : 0.1})`);
+      grime.addColorStop(0, 'rgba(60,48,30,0)');
+      grime.addColorStop(1, `rgba(60,48,30,${j === rows - 1 ? 0.3 : 0.1})`);
       c.fillStyle = grime; c.fillRect(i * pw, j * ph, pw, ph);
     }
     c.lineWidth = 5; b.lineWidth = 7;
     for (let i = 0; i <= cols; i++) {
-      c.strokeStyle = '#2c333b'; b.strokeStyle = '#1c1c1c';
+      c.strokeStyle = '#7a705c'; b.strokeStyle = '#1c1c1c';
       c.beginPath(); c.moveTo(i * pw, 0); c.lineTo(i * pw, h); c.stroke();
       b.beginPath(); b.moveTo(i * pw, 0); b.lineTo(i * pw, h); b.stroke();
     }
@@ -176,21 +176,21 @@ export function panelTextures(wm, hm, labels = [], key = '') {
     }
     for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) for (let k = 0; k < 8; k++) {
       for (const [x, y] of [[i * pw + 14 + k * (pw - 28) / 7, j * ph + 14], [i * pw + 14 + k * (pw - 28) / 7, (j + 1) * ph - 14]]) {
-        c.fillStyle = '#4a525b'; c.beginPath(); c.arc(x, y, 4.5, 0, 6.3); c.fill();
+        c.fillStyle = '#8f8570'; c.beginPath(); c.arc(x, y, 4.5, 0, 6.3); c.fill();
         c.fillStyle = 'rgba(255,255,255,.35)'; c.beginPath(); c.arc(x - 1, y - 1, 2, 0, 6.3); c.fill();
         b.fillStyle = '#e6e6e6'; b.beginPath(); b.arc(x, y, 5, 0, 6.3); b.fill();
       }
     }
     for (let k = 0; k < w / 24; k++) {
       const x = rnd() * w, y = rnd() * h, len = 20 + rnd() * 70, a = rnd() * 6.3;
-      c.strokeStyle = 'rgba(80,90,100,.12)'; c.lineWidth = 1.5;
+      c.strokeStyle = 'rgba(90,75,50,.14)'; c.lineWidth = 1.5;
       c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len); c.stroke();
       b.strokeStyle = 'rgba(40,40,40,.5)'; b.lineWidth = 2;
       b.beginPath(); b.moveTo(x, y); b.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len); b.stroke();
     }
     for (const { text, x, y, size } of labels) {
-      stencil(c, text, x * ppm, y * ppm, size, 'rgba(60,66,74,.85)');
-      stencil(b, text, x * ppm, y * ppm, size, '#505050');
+      stencil(c, text, x * ppm, y * ppm, Math.min(size, 10), 'rgba(70,64,52,.8)');
+      stencil(b, text, x * ppm, y * ppm, Math.min(size, 10), '#505050');
     }
     return { map: canvasTexture(color), bump: canvasTexture(bump, { srgb: false }) };
   });
@@ -198,11 +198,11 @@ export function panelTextures(wm, hm, labels = [], key = '') {
 
 export const hullTexture = () => memo('hull', () => {
   const canvas = makeCanvas(512, 512), c = canvas.getContext('2d');
-  c.fillStyle = '#b9c0c8'; c.fillRect(0, 0, 512, 512);
-  c.strokeStyle = '#2c333b'; c.lineWidth = 5;
+  c.fillStyle = '#d9d0ba'; c.fillRect(0, 0, 512, 512);
+  c.strokeStyle = '#7a705c'; c.lineWidth = 5;
   c.strokeRect(0, 0, 512, 512);
   c.beginPath(); c.moveTo(256, 0); c.lineTo(256, 512); c.stroke();
-  c.fillStyle = '#4a525b';
+  c.fillStyle = '#8f8570';
   for (let i = 0; i < 16; i++) for (const y of [14, 498]) { c.beginPath(); c.arc(14 + i * 32, y, 4, 0, 6.3); c.fill(); }
   return canvasTexture(canvas, { repeat: true });
 });
@@ -274,8 +274,8 @@ export const rackAtlas = () => memo('rack', () => {
   const rnd = seeded(77);
   MODULES.forEach(([name, kind], i) => {
     const x = (i % 4) * 256, y = Math.floor(i / 4) * 256;
-    c.fillStyle = '#cfd5da'; c.fillRect(x, y, 256, 256);
-    c.strokeStyle = '#7d868e'; c.lineWidth = 3; c.strokeRect(x + 3, y + 3, 250, 250);
+    c.fillStyle = '#858c92'; c.fillRect(x, y, 256, 256);
+    c.strokeStyle = '#5d646a'; c.lineWidth = 3; c.strokeRect(x + 3, y + 3, 250, 250);
     c.fillStyle = '#1f2a36'; c.fillRect(x + 12, y + 12, 232, 36);
     stencil(c, name, x + 128, y + 30, 22, '#e5e9ee');
     c.fillStyle = '#e0752d'; c.fillRect(x + 12, y + 52, 232, 5);
@@ -287,7 +287,7 @@ export const rackAtlas = () => memo('rack', () => {
         const sx = x + 28 + k * 38, sy = y + 90 + r * 50;
         c.fillStyle = '#10151b'; c.fillRect(sx - 9, sy - 16, 18, 32);
         c.fillStyle = rnd() > 0.5 ? '#e5e9ee' : '#e0752d'; c.fillRect(sx - 6, sy - (rnd() > 0.5 ? 14 : -2), 12, 12);
-        c.fillStyle = '#394450'; c.font = `600 9px ${MONO}`; c.textAlign = 'center'; c.fillText(String.fromCharCode(65 + ((i * 7 + r * 6 + k) % 26)) + (k + 1), sx, sy + 28);
+        c.fillStyle = '#eceeef'; c.font = `600 9px ${MONO}`; c.textAlign = 'center'; c.fillText(String.fromCharCode(65 + ((i * 7 + r * 6 + k) % 26)) + (k + 1), sx, sy + 28);
       }
     } else if (kind === 'connectors') {
       for (let r = 0; r < 3; r++) for (let k = 0; k < 5; k++) {
@@ -296,11 +296,11 @@ export const rackAtlas = () => memo('rack', () => {
         c.strokeStyle = '#9aa3ab'; c.lineWidth = 3; c.beginPath(); c.arc(sx, sy, 15, 0, 6.3); c.stroke();
         c.fillStyle = '#c9a227'; for (let p = 0; p < 6; p++) { c.beginPath(); c.arc(sx + Math.cos(p) * 7, sy + Math.sin(p) * 7, 1.8, 0, 6.3); c.fill(); }
       }
-      c.fillStyle = '#394450'; c.font = `600 10px ${MONO}`; c.textAlign = 'left';
+      c.fillStyle = '#eceeef'; c.font = `600 10px ${MONO}`; c.textAlign = 'left';
       c.fillText('J1  J2  J3  J4  J5', x + 26, y + 236);
     } else if (kind === 'vent') {
       for (let k = 0; k < 9; k++) { c.fillStyle = '#12171d'; c.fillRect(x + 28, y + 76 + k * 16, 200, 8); }
-      c.fillStyle = '#394450'; c.font = `600 11px ${MONO}`; c.textAlign = 'left';
+      c.fillStyle = '#eceeef'; c.font = `600 11px ${MONO}`; c.textAlign = 'left';
       c.fillText('DO NOT BLOCK', x + 28, y + 232);
     } else {
       for (let k = 0; k < 3; k++) {
@@ -310,7 +310,7 @@ export const rackAtlas = () => memo('rack', () => {
         c.strokeStyle = '#1f2a36'; c.lineWidth = 3; const a = 2 + rnd() * 3; c.beginPath(); c.moveTo(sx, sy); c.lineTo(sx + Math.cos(a) * 20, sy + Math.sin(a) * 20); c.stroke();
       }
       c.fillStyle = '#e0752d'; c.fillRect(x + 28, y + 190, 200, 12);
-      c.fillStyle = '#394450'; c.font = `600 10px ${MONO}`; c.textAlign = 'left'; c.fillText('PSI  TEMP  FLOW', x + 28, y + 228);
+      c.fillStyle = '#eceeef'; c.font = `600 10px ${MONO}`; c.textAlign = 'left'; c.fillText('PSI  TEMP  FLOW', x + 28, y + 228);
     }
   });
   return canvasTexture(canvas);
@@ -326,13 +326,13 @@ export function moduleFace(w, h, cell) {
   return g;
 }
 
-/** Label strips (stencils on tape) for shelves, bins and locker doors: one atlas, 4 columns x 8 rows of 256 x 64. */
-export const LABELS = ['SAMPLES', 'EVA KIT', 'TOOLS', 'MEDICAL', 'SPARES', 'CLOTHES', 'FILTERS', 'CABLES', 'WIPES', 'BATTERIES', 'O2 SPARE', 'REPAIR', 'DOCS', 'FOOD A', 'FOOD B', 'WASTE', 'REGOLITH', 'CORE 01', 'CORE 02', 'SOIL', 'ROCK', 'ICE', 'BLANK', 'DRILL BITS', 'LASER', 'CAMERA', 'LENSES', 'GLOVES', 'PLANT', 'SEEDS', 'NUTRIENT', 'PERSONAL'];
+/** Label strips (stencils on tape) for shelves, bins and locker doors: one atlas, 4 columns x 16 rows of 256 x 64. */
+export const LABELS = ['SAMPLES', 'EVA KIT', 'TOOLS', 'MEDICAL', 'SPARES', 'CLOTHES', 'FILTERS', 'CABLES', 'WIPES', 'BATTERIES', 'O2 SPARE', 'REPAIR', 'DOCS', 'FOOD A', 'FOOD B', 'WASTE', 'REGOLITH', 'CORE 01', 'CORE 02', 'SOIL', 'ROCK', 'ICE', 'BLANK', 'DRILL BITS', 'LASER', 'CAMERA', 'LENSES', 'GLOVES', 'PLANT', 'SEEDS', 'NUTRIENT', 'PERSONAL', 'A1', 'B3', 'FOOD', 'C2', 'A4', 'B1'];
 export const labelAtlas = () => memo('labels', () => {
-  const canvas = makeCanvas(1024, 512), c = canvas.getContext('2d');
+  const canvas = makeCanvas(1024, 1024), c = canvas.getContext('2d');
   LABELS.forEach((text, i) => {
     const x = (i % 4) * 256, y = Math.floor(i / 4) * 64;
-    c.fillStyle = i % 5 === 0 ? '#e9b43a' : '#e9e4d6'; c.fillRect(x, y, 256, 64);
+    c.fillStyle = '#ebe7da'; c.fillRect(x, y, 256, 64);
     c.strokeStyle = '#1a1c20'; c.lineWidth = 3; c.strokeRect(x + 3, y + 3, 250, 58);
     stencil(c, text, x + 128, y + 33, 30, '#17191c');
   });
@@ -342,7 +342,7 @@ export function labelStrip(w, h, index) {
   const g = new THREE.PlaneGeometry(w, h);
   const uv = g.attributes.uv;
   const cx = index % 4, cy = Math.floor(index / 4);
-  for (let i = 0; i < uv.count; i++) uv.setXY(i, (cx + uv.getX(i)) / 4, 1 - (cy + 1 - uv.getY(i)) / 8);
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, (cx + uv.getX(i)) / 4, 1 - (cy + 1 - uv.getY(i)) / 16);
   return g;
 }
 

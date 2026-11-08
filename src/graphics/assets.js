@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createPlanet, loadPlanetMaps } from './planets.js';
 import { createSpaceSky } from './sky.js';
 import { createCockpit, interiorEnvironment, pbr } from './interiors.js';
-import { createFlightDeck } from './flightDeck.js';
+import { createShipCockpit } from './capsuleCockpit.js';
 import { createCabin } from './cabin.js';
 import { PROPS } from './props.js';
 import { createRover, loadRoverModel } from './rover.js';
@@ -436,7 +436,7 @@ function register(name, factory) {
   factories.set(name, factory);
 }
 
-register('cockpit', () => createFlightDeck(createCockpit));
+register('cockpit', () => createShipCockpit(createCockpit)); // a capsule's own cabin, or the Shuttle-style deck (Dream Chaser, Starship)
 register('cabin', createCabin);
 register('vfx:engineFlame', createEngineFlame);
 register('vfx:exhaust', createExhaust);

@@ -73,7 +73,7 @@ export function regolithMaterial({ rock = 0, roughness = 0.96, terrain = false }
         dB_ = texture2D(uDetail, vWPos.xz / 53. + .37);
         dC_ = texture2D(uDetail, vWPos.xz / 487. + .11);
         float macro_ = dC_.b * .55 + dB_.b * .45;
-        vec3 alb_ = mix(vec3(.335, .165, .085), vec3(.50, .285, .155), smoothstep(.38, .62, macro_));
+        vec3 alb_ = mix(vec3(.335, .152, .08), vec3(.50, .245, .13), smoothstep(.38, .62, macro_));
         alb_ = mix(alb_, vec3(.135, .09, .075), smoothstep(.52, .74, dB_.b * .5 + dA_.g * .5) * .42);
         alb_ *= .8 + .4 * dA_.r;
         float cliff_ = smoothstep(.09, .24, 1. - clamp(vUp, 0., 1.));
@@ -91,8 +91,8 @@ export function regolithMaterial({ rock = 0, roughness = 0.96, terrain = false }
           // Reddish-tan dust settles in hollows and low flats; dune sand is a touch darker and warmer.
           float hollow_ = smoothstep(.1, .65, vTerr.x);
           float ridge_ = smoothstep(.1, .65, -vTerr.x);
-          alb_ = mix(alb_, vec3(.60, .355, .215) * (.86 + .28 * dA_.r), hollow_ * .6 * (1. - cliff_));
-          alb_ = mix(alb_, vec3(.42, .25, .15) * (.82 + .34 * dA_.r), vTerr.y * .55 * (1. - cliff_));
+          alb_ = mix(alb_, vec3(.60, .305, .175) * (.86 + .28 * dA_.r), hollow_ * .6 * (1. - cliff_));
+          alb_ = mix(alb_, vec3(.42, .215, .125) * (.82 + .34 * dA_.r), vTerr.y * .55 * (1. - cliff_));
           // Dark basalt on crater rims, ridges and the steepest faces.
           float basalt_ = clamp(vTerr.z * .85 + ridge_ * .3 * smoothstep(.05, .2, 1. - vUp) + smoothstep(.22, .42, 1. - vUp) * .55, 0., .88);
           alb_ = mix(alb_, vec3(.085, .066, .058) * (.8 + .6 * dA_.b) + vec3(.03, .015, .008) * dA_.g, basalt_);
@@ -275,7 +275,7 @@ function createDust(count) {
     uniforms: {
       uTime: sharedUniforms.uTime,
       uScale: { value: window.innerHeight / 900 * qualitySettings().pixelRatio },
-      uColor: { value: new THREE.Color().setRGB(0.95, 0.66, 0.45) },
+      uColor: { value: new THREE.Color().setRGB(0.95, 0.58, 0.40) },
     },
     transparent: true,
     depthWrite: false,
@@ -314,10 +314,10 @@ export function createMarsScene({ sunElevation = 14, sunAzimuth = 118 } = {}) {
     scene.fog.color.copy(horizon);
     // Thin air barely softens the Sun, so light stays strong until it reaches the horizon.
     const up = THREE.MathUtils.smoothstep(direction.y, -0.03, 0.14);
-    sun.color.copy(lit.setRGB(1, 0.86 + 0.08 * up, 0.72 + 0.14 * up));
+    sun.color.copy(lit.setRGB(1, 0.68 + 0.08 * up, 0.5 + 0.1 * up));
     sun.intensity = 3.5 * up;
-    hemi.color.setRGB(0.92, 0.7, 0.53);
-    hemi.groundColor.setRGB(0.4, 0.24, 0.15);
+    hemi.color.setRGB(0.92, 0.55, 0.38);
+    hemi.groundColor.setRGB(0.4, 0.21, 0.13);
     hemi.intensity = THREE.MathUtils.lerp(0.95, 0.34, dusk);
   };
   setSunElevation(sunElevation);

@@ -44,13 +44,33 @@
       ]
     },
     {
-      "id": "stations",
-      "title": "5. The stations in this hall",
+      "id": "anatomy",
+      "title": "5. Anatomy of a launch vehicle",
       "paragraphs": [
-        "Integration console: the stand. Click a glowing node on the vehicle, then pick a part; or drag a part onto the node. Undo with Z, redo with Y, Delete removes the selected part. Q and E turn the stand.",
-        "Propulsion workshop, Structures bay, Crew systems lab: each shows the parts of that trade with a picture and what the part is for. ADD TO VEHICLE puts the part in a sensible place; move it later on the stand.",
-        "Parts warehouse: every part the agency can buy. Test console: the static fire, the hold-down liftoff test and the readiness poll. Range terminal: the launch window and its weather.",
-        "This handbook: the right-hand page is yours. Write what worked and what did not. It is saved with your agency."
+        "Read a real rocket from the top down, the way the Dawn launch diagram does. Fairing: the two-piece shell that shields the payload through the air, dropped at about 100 km. Payload attach fitting: the cone that bolts the spacecraft to the stage and lets it go with springs.",
+        "Third-stage motor: a small solid motor (Dawn used a Star 48B, 66 kN for 87 seconds) spun up on a spin table so it needs no guidance; a clamp band holds it until pyrotechnic bolts cut it free. Guidance electronics: the flight computer, gyros and radios that fly the launcher, in a ring near the top of the second stage.",
+        "Second stage: a restartable liquid engine with a long vacuum bell, fed from tanks pressurised by helium spheres; nitrogen spheres feed the cold-gas thrusters that steer between burns; a miniskirt and open truss carry the loads and hold the spheres. Interstage: the hollow ring that joins the stages and hides the upper engine bell.",
+        "First stage: a fuel tank and an oxidizer tank with a stiff centerbody section between them, a wiring tunnel down the outside for cables and lines, and the main engine on a gimbal at the bottom. Thrust augmentation solids: strap-on solid motors around the base (Dawn's Delta II had nine) that give most of the push off the pad and are dropped in the first two minutes.",
+        "In this hangar every one of those pieces is a part you can choose: the design page draws your stack the same way, from nose to nozzle. Nothing separates in flight yet, so a casing or an interstage you add rides along to Mars as dry mass: that is the honest price of it until staging arrives."
+      ]
+    },
+    {
+      "id": "inside",
+      "title": "6. Inside the parts",
+      "paragraphs": [
+        "Zoom into a part on the design page and it opens up. An engine is a turbopump (and the cycle that drives it: gas generator, staged combustion, expander, electric or none at all), an injector plate, a chamber, a nozzle skirt and an igniter. Each choice moves mass, cost, Isp or reliability, and the card says by how much.",
+        "A tank is two domes (or one shared common bulkhead), slosh baffles, insulation, pressurisation and feed lines. A capsule is a flight computer (one, three voting, or four plus a backup), a life-support loop, couches, windows and a hatch that must open outward.",
+        "Materials matter as much as shapes. Aluminium-lithium is the modern tank alloy; 2219 the cheap classic; stainless steel is heavy but happy hot and cold; carbon fibre is the lightest and the most brittle; titanium is strong, light and dear. Pressure bottles can be carbon-overwrapped, titanium or plain steel.",
+        "A rule from every accident report: the parts that failed were rarely the big ones. An O-ring, a strut, a foam block, a hatch. The small choices inside a part are where reliability is won."
+      ]
+    },
+    {
+      "id": "stations",
+      "title": "7. The machines in this hall",
+      "paragraphs": [
+        "Any design desk (integration, propulsion, structures, crew systems, warehouse) opens the design page: the vehicle in 3D, every part labelled. Drag to turn it, scroll to zoom. Click a part to see what it is and what could replace it; zoom in on a selected part and it opens up to show what is inside.",
+        "The strip at the top shows the choices as small cards: picture, name, price. Click a card and the panel on the right tells the whole story (what it is for, pros and cons, the numbers) with an INSTALL button. The strip folds away when you want the whole screen for the vehicle.",
+        "Test console: the static fire, the hold-down liftoff test and the readiness poll. Range terminal: the launch window and its weather. This handbook: the right-hand page is yours; write what worked and what did not. It is saved with your agency."
       ]
     }
   ]

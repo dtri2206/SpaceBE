@@ -32,7 +32,10 @@
     "failed": "Flight ended",
     "manualOffer": "MANUAL AVAILABLE · press F",
     "manualFly": "MANUAL · keep ○ on +",
-    "manualLock": "LOCK READY · SPACE or CLICK"
+    "manualFree": "MANUAL · F gives it back",
+    "manualLock": "LOCK READY · SPACE or CLICK",
+    "debrisOffer": "DEBRIS AHEAD · press F to dodge",
+    "debrisDodge": "DODGE · keep the centre clear"
   },
   "turnText": "Gravity turn: tip {degrees}° toward the horizon"
 }

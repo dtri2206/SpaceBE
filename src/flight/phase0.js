@@ -3,6 +3,7 @@
 //   B  board the ship   camera rises up the tower, then the pilot's seat (cinematic, skippable)
 //   C  checklist        the player presses 1-4 in order: HATCH, CABIN, O2, ARM ENGINE
 //   D  GO / NO-GO poll  the launch director polls the stations, then asks the crew: GO or SCRUB
+//   CABIN is a choice (air mix or pure oxygen). Pure oxygen + an ignored wiring caution + GO = the Apollo 1 pad fire.
 // Then the countdown (index.js) starts exactly as before. Nothing here can fail a flight: it teaches, the later
 // failure logic does the rest.
 //
@@ -18,6 +19,7 @@ import phase0Data from './phase0.json' with { type: 'json' };
 
 export const PHASE0_TIMING = Object.freeze(phase0Data.timing);
 export const CHECKLIST_STEPS = Object.freeze(phase0Data.steps);
+export const CABIN_OPTIONS = Object.freeze({ air: Object.freeze(phase0Data.cabin.air), pure: Object.freeze(phase0Data.cabin.pure) });
 
 /** Checklist state machine: steps must be done in order; a wrong key changes nothing and returns a hint. */
 export function createChecklist(steps = CHECKLIST_STEPS) {
@@ -73,13 +75,14 @@ function reasonFor(warning, ship, needDv) {
     case 'NO_HEAT_SHIELD': return ['Thermal', 'no heat shield'];
     case 'NO_LEGS': return ['Recovery', 'no landing legs'];
     case 'NO_SHELTER': return ['Surface ops', 'no shelter for the crew on Mars'];
+    case 'PURE_O2_WIRING': return [phase0Data.copy.eclssStation, phase0Data.copy.eclssReason]; // Apollo 1: added by the ritual, never a ShipSpec warning
     default: return ['Flight director', String(warning).toLowerCase().replace(/_/g, ' ')];
   }
 }
 
 /** The poll the launch director reads out: one entry per station, in order. */
-export function buildPoll(ship, { needDv = 5400 } = {}) {
-  const warnings = [...new Set(ship?.warnings ?? [])];
+export function buildPoll(ship, { needDv = 5400, pureOxygenFault = false } = {}) {
+  const warnings = [...new Set([...(ship?.warnings ?? []), ...(pureOxygenFault ? ['PURE_O2_WIRING'] : [])])];
   const reasons = new Map(); // station → [reasons]
   for (const w of warnings) {
     const [station, reason] = reasonFor(w, ship, needDv);
@@ -142,3 +145,35 @@ export function boardingPath(base, eyeY) {
     { position: [bx + 2.6, y(1.02), bz + 3.4], lookAt: [bx, y(1), bz] },
   ];
 }
+
+// ---------- aim-and-click (mouse) ----------
+export const normaliseNodeName = (name) => String(name ?? '').replace(/[.:\[\]\s]/g, '').toLowerCase();
+
+/** Which checklist button id a scene node belongs to ('btn:hatch' / 'btnhatch' group, 'btnCap.hatch', 'btnLamp.hatch'), or null. */
+export function buttonIdOfName(name, steps = CHECKLIST_STEPS) {
+  const n = normaliseNodeName(name);
+  for (const step of steps) {
+    const id = step.id.toLowerCase();
+    if (n === `btn${id}` || n === `btncap${id}` || n === `btnlamp${id}`) return step.id;
+  }
+  return null;
+}
+
+/**
+ * What the reticle shows when it rests on button `id`.
+ * → { id, kind: 'next'|'blocked'|'done'|'none', tone: 'ok'|'warn'|'done'|null, label: string|null, clickable }
+ */
+export function aimInfo(checklist, id, steps = CHECKLIST_STEPS) {
+  const i = steps.findIndex((s) => s.id === id);
+  if (i < 0 || checklist.done) return { id: null, kind: 'none', tone: null, label: null, clickable: false };
+  const step = steps[i];
+  if (i < checklist.index) return { id, kind: 'done', tone: 'done', label: `${step.name} · done`, clickable: false };
+  if (i === checklist.index) return { id, kind: 'next', tone: 'ok', label: `${step.name} · ${step.aim}`, clickable: true };
+  return { id, kind: 'blocked', tone: 'warn', label: `${step.name} · ${steps[checklist.index].first}`, clickable: false };
+}
+
+/** The button the player should hit next ('hatch' ...), or null when the checklist is finished. */
+export const nextButtonId = (checklist, steps = CHECKLIST_STEPS) => (checklist.done ? null : steps[checklist.index].id);
+
+/** Fallback label for an item whose button mesh could not be found: 'HATCH · press 1'. */
+export const fallbackLabel = (step, tpl = phase0Data.copy.pressHint) => `${step.name} · ${tpl.replace('{key}', step.key)}`;

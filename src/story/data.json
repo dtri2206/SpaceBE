@@ -77,11 +77,12 @@
     }
   },
 
+  "returnChoice": { "prompt": "Earth entry in 2 hours. After seven months, the pressure suits feel hot, cramped and pointless. Suit up for entry?", "suitUp": "Suit up", "skip": "Skip it" },
   "returnTrip": [
     { "caption": "Liftoff from Jezero Crater", "planet": "mars", "duration": 6 },
     { "caption": "Trans-Earth injection: the engine burns for home", "planet": "mars", "duration": 5 },
     { "caption": "Cruise: seven months between two worlds", "planet": "none", "duration": 7, "showFinalLog": true },
-    { "caption": "Earth entry at 11.5 km/s, faster than any Mars entry", "planet": "earth", "duration": 6 },
+    { "caption": "Earth entry at 11.5 km/s, faster than any Mars entry", "planet": "earth", "duration": 6, "choice": "suitUp" },
     { "caption": "Parachutes… and splashdown", "planet": "earth", "duration": 5 }
   ],
 
@@ -124,7 +125,7 @@
   "lessons": {
     "challenger": { "title": "Challenger, 1986", "text": "On 28 January 1986 it was about 2 °C at the launch pad. Engineers warned the night before that the rubber O-rings sealing the solid rocket boosters might not seal in the cold. The launch went ahead. 73 seconds after liftoff a seal failed and Challenger broke apart. All seven crew died.", "lesson": "Listen to warnings. Don't let risk become normal.", "entry": "history-challenger" },
     "columbia": { "title": "Columbia, 2003", "text": "82 seconds after launch, a piece of foam struck the leading edge of Columbia's left wing. The damage was never inspected in orbit. On re-entry on 1 February 2003, hot gas entered the wing and the shuttle broke apart. All seven crew died.", "lesson": "Small damage can kill. Inspect it.", "entry": "history-columbia" },
-    "apollo1": { "title": "Apollo 1, 1967", "text": "On 27 January 1967, during a ground test, a fire started in the pure-oxygen cabin of Apollo 1. It spread in seconds. Gus Grissom, Ed White and Roger Chaffee died.", "lesson": "Fires in oxygen-rich air spread terrifyingly fast.", "entry": "history-apollo1" },
+    "apollo1": { "title": "Apollo 1, 1967", "text": "On 27 January 1967, during a ground test, a fire started in the pure-oxygen cabin of Apollo 1. It spread in seconds. Gus Grissom, Ed White and Roger Chaffee died.", "lesson": "Fires in oxygen-rich air spread extremely fast.", "entry": "history-apollo1" },
     "apollo13": { "title": "Apollo 13, 1970", "text": "Two days into the flight, an oxygen tank exploded. The crew used the lunar module as a lifeboat while engineers on the ground worked out how to bring them home. All three came back alive.", "lesson": "Calm problem-solving saves lives.", "entry": "history-apollo13" },
     "soyuz11": { "title": "Soyuz 11, 1971", "text": "On 30 June 1971 a valve opened as the Soyuz 11 modules separated before re-entry, and the cabin lost its air. The crew wore no pressure suits. Georgy Dobrovolsky, Vladislav Volkov and Viktor Patsayev are the only people to have died in space.", "lesson": "Wear the suit in critical phases.", "entry": "history-soyuz11" },
     "marsClimateOrbiter": { "title": "Mars Climate Orbiter, 1999", "text": "Ground software gave thruster data in pound-force seconds, while the navigation team expected newton-seconds. The small error grew over months, and in September 1999 the orbiter flew far too low into Mars' atmosphere and was lost.", "lesson": "Units matter.", "entry": "history-mco" },

@@ -2,14 +2,17 @@
 //
 // PUBLIC API for other roles (re-exported from src/flight/index.js; Role 4's Flight Report may call it, optionally):
 //
-//   getPhaseRatings() → Array<{ phase: 'ascent' | 'entry' | 'landing', stars: 1 | 2 | 3, stats: {...}, text: string }>
+//   getPhaseRatings() → Array<{ phase: 'ascent' | 'debris' | 'entry' | 'landing', stars: 1 | 2 | 3, stats: {...}, text: string }>
 //     In the order the phases were finished; a phase that was not flown (or not finished) is simply missing.
 //     Cleared when a new mission starts (LAUNCH). `text` is the one-line card the pilot saw, e.g.
 //       'ASCENT ★☆☆ · flown by the computer · fuel left 34 % · peak 3.8 g'
 //       'ASCENT ★★☆ · manual accuracy 78 % · fuel left 34 % · peak 3.8 g'
+//       'DEBRIS ★★★ · 0 hits · closest 41 m · Δv 9 m/s'
+//       'DEBRIS ★☆☆ · flown by the computer · 1 hit'
 //       'ENTRY ★★★ · corridor centre 1.2° off · peak 0.9 g · heat 6 % of limit'
 //       'LANDING ★★★ · 1.4 m/s · 42 m from target · fuel 12 %'
 //     stats: ascent  { avgDeviationDeg, fuelLeftPct, peakG, manualFlown, manualAccuracyPct }
+//            debris  { manualFlown, hits, closestM, minRatio, dvMs }
 //            entry   { interfaceAngleDeg, centreOffsetDeg, peakG, peakHeatPct, trimDv }
 //            landing { touchdownSpeed, offsetM, fuelLeftPct }
 //
@@ -19,6 +22,9 @@
 //            manual accuracy (nose within 2.5° of the target):  ≥ 85 % → 3 · ≥ 60 % → 2 · else 1
 //            peak g:                                            ≤ 5.5 → 3 · ≤ 7 → 2 · else 1
 //            fuel left in orbit:                                ≥ 8 % → 3 · ≥ 2 % → 2 · else 1
+//   DEBRIS   Earth-orbit debris dodge window (conjunction.js), after the ascent, before entry:
+//            computer flew it (player did not take the stick):  1 star
+//            flown by the player: any hit → 1 · 0 hits → 2 · 0 hits and every piece passed farther than 2× its danger radius → 3
 //   ENTRY    interface angle vs the corridor centre, in half-widths: ≤ 0.5 → 3 · ≤ 0.85 → 2 · else 1
 //            peak g:                                            ≤ 4 → 3 · ≤ 6 → 2 · else 1
 //   LANDING  touchdown speed (limit 3 m/s):                     ≤ 2 → 3 · ≤ 2.7 → 2 · else 1
@@ -30,6 +36,7 @@ import { flightPathDeg } from './corridor.js';
 
 export const RATING_LIMITS = {
   ascent: { dev: [5, 10], manual: [85, 60], g: [5.5, 7], fuel: [8, 2] },
+  debris: { clearRatio: 2 },
   entry: { centre: [0.5, 0.85], g: [4, 6] },
   landing: { speed: [2, 2.7], offset: [60, 200], fuel: [3, 0.5] },
 };
@@ -46,6 +53,14 @@ export function rateAscent(st) {
   const stars = flown ? Math.min(higherIsBetter(st.manualAccuracyPct ?? 0, L.manual), gf) : 1;
   const lead = flown ? `manual accuracy ${f(st.manualAccuracyPct)} %` : 'flown by the computer';
   return { phase: 'ascent', stars, stats: st, text: `ASCENT ${starText(stars)} · ${lead} · fuel left ${f(st.fuelLeftPct)} % · peak ${f(st.peakG, 1)} g` };
+}
+
+export function rateDebris(st) {
+  const flown = !!st.manualFlown;
+  const hits = st.hits ?? 0;
+  const stars = !flown || hits > 0 ? 1 : (st.minRatio ?? 0) > RATING_LIMITS.debris.clearRatio ? 3 : 2;
+  const lead = flown ? `${hits} hit${hits === 1 ? '' : 's'} · closest ${f(st.closestM)} m · Δv ${f(st.dvMs)} m/s` : `flown by the computer · ${hits} hit${hits === 1 ? '' : 's'}`;
+  return { phase: 'debris', stars, stats: st, text: `DEBRIS ${starText(stars)} · ${lead}` };
 }
 
 export function rateEntry(st) {

@@ -6,7 +6,9 @@
 //   t (s, MET), altitude (m), speed, verticalSpeed (m/s), throttle (0..1), fuelKg, fuelMax, fuelFrac (0..1), thrust (N), twr, isp (s),
 //   deltaVLeft (m/s), gForce | gLoad (g), q | dynamicPressure (Pa), maxQ (Pa), engineTemp (K), engineTempMax (K, default 3600),
 //   engineLit (bool), ignitionsLeft, phase (string), history (altitude samples, m), apoapsis, periapsis (m),
-//   pitch, roll, yaw (degrees, GUESSED: telemetry does not send attitude yet), pitchRate/rollRate/yawRate (deg/s, guessed).
+//   pitch (deg above the local horizon, 90 = straight up), yaw (deg, heading in the orbit plane, 0 = along the horizontal velocity,
+//   + toward the orbit normal), roll (deg, -180..180, 0 = pilot's head away from the planet), pitchRate/yawRate/rollRate (deg/s).
+//   The pages prefer these live values; before the first telemetry they show "--" (or the static ship stats the flight deck fills in).
 
 export const SCREEN_FONT = '"IBM Plex Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace';
 const F = SCREEN_FONT;
@@ -38,6 +40,22 @@ export function normaliseTrajectory(d) {
   t.sig = sig;
   return t;
 }
+// Debris conjunction view: objects {x,y,r,t} in 0..1 (y UP), t = seconds to closest approach, aim {x,y}, range (m) plot centre to edge.
+export function normaliseConjunction(d) {
+  if (!d) return null;
+  const objects = [];
+  if (Array.isArray(d.objects)) for (const o of d.objects.slice(0, 40)) {
+    if (o && finite(o.x) && finite(o.y)) objects.push({ x: o.x, y: o.y, r: finite(o.r) ? clamp(o.r, 0.005, 0.5) : 0.04, t: finite(o.t) ? Math.max(0, o.t) : null });
+  }
+  const c = {
+    objects, aim: d.aim && finite(d.aim.x) && finite(d.aim.y) ? { x: unit01(d.aim.x, 0.5), y: unit01(d.aim.y, 0.5) } : null,
+    range: finite(d.range) && d.range > 0 ? d.range : null,
+    label: typeof d.label === 'string' ? d.label.slice(0, 40) : '',
+    dv: finite(d.dv) ? d.dv : null, hits: finite(d.hits) ? Math.max(0, Math.round(d.hits)) : 0, passed: finite(d.passed) ? Math.max(0, Math.round(d.passed)) : 0,
+  };
+  c.sig = JSON.stringify(c);
+  return c;
+}
 export function normaliseAim(d) {
   if (!d) return null;
   const pt = (p, dx, dy) => ({ x: unit01(p?.x, dx), y: unit01(p?.y, dy) });
@@ -48,8 +66,9 @@ export function normaliseAim(d) {
     timeLeft: finite(d.timeLeft) ? Math.max(0, d.timeLeft) : null,
     lockReady: !!d.lockReady,
     label: typeof d.label === 'string' ? d.label.slice(0, 40) : '',
+    nose: d.nose && finite(d.nose.x) && finite(d.nose.y) ? pt(d.nose, 0.5, 0.5) : null, // where the ship's nose really points (optional)
   };
-  a.sig = [a.target.x, a.target.y, a.aim.x, a.aim.y, a.radius, a.accuracy].map((v) => v.toFixed(3)).join() +
+  a.sig = [a.target.x, a.target.y, a.aim.x, a.aim.y, a.radius, a.accuracy, a.nose ? a.nose.x : -1, a.nose ? a.nose.y : -1].map((v) => v.toFixed(3)).join() +
     `|${a.timeLeft === null ? '-' : Math.ceil(a.timeLeft)}|${a.lockReady}|${a.label}`;
   return a;
 }
@@ -203,6 +222,76 @@ export function drawTrajectoryPage(c, w, h, traj, aim, opts = {}) {
   cell(c, L + cw * 3, rowY, cw, a ? 'SPEED' : 'FUEL', a ? fmt(live.speed) : fmt(fuelPct), a ? 'm/s' : '%', a ? COL.white : fuelPct !== null && fuelPct < 15 ? COL.amber : COL.white);
 }
 
+// ---- centre display: debris conjunction view ---------------------------------------------------------------------------
+// View along the velocity, ship in the centre (x = orbit normal, y = radial up). Each piece: red circle at its predicted miss point,
+// danger radius growing as it nears; countdown on the nearest; cyan aim circle; bottom line with delta-v used and hits.
+export function drawConjunctionPage(c, w, h, conj, opts = {}) {
+  const k = conj ? (conj.sig ? conj : normaliseConjunction(conj)) : null;
+  const live = opts.live || {};
+  const met = metString(finite(opts.met) ? opts.met : live.t);
+  const box = chrome(c, w, h, 'CONJUNCTION · DEBRIS', met, TRAJ_L, TRAJ_R, 4, -1, COL.red);
+  const L = box.x0, R = box.x1, T = box.y0 + 2, B = T + 480, pw = R - L, ph = B - T;
+  const px = (x) => L + x * pw, py = (y) => B - y * ph;
+  c.save(); c.beginPath(); c.rect(L, T, pw, ph); c.clip();
+  c.lineWidth = 1;
+  for (let i = 1; i < 10; i++) line(c, px(i / 10), T, px(i / 10), B, COL.grid, 1);
+  for (let i = 1; i < 6; i++) line(c, L, py(i / 6), R, py(i / 6), COL.grid, 1);
+  line(c, px(0.5), T, px(0.5), B, COL.faint, 1.5); line(c, L, py(0.5), R, py(0.5), COL.faint, 1.5);
+  // range rings
+  c.strokeStyle = COL.faint; c.lineWidth = 1.5; c.setLineDash([6, 8]);
+  for (const f of [0.25, 0.5]) { c.beginPath(); c.ellipse(px(0.5), py(0.5), pw * f, pw * f, 0, 0, Math.PI * 2); c.stroke(); }
+  c.setLineDash([]);
+  const objs = k ? k.objects : [];
+  let nearest = null;
+  for (const o of objs) if (o.t !== null && (!nearest || o.t < nearest.t)) nearest = o;
+  for (const o of objs) {
+    const x = px(o.x), y = py(o.y), r = Math.max(8, o.r * pw), near = o === nearest;
+    c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2);
+    c.fillStyle = near ? 'rgba(255,77,61,.30)' : 'rgba(255,77,61,.14)'; c.fill();
+    c.strokeStyle = '#000'; c.lineWidth = 14; c.stroke(); c.strokeStyle = COL.red; c.lineWidth = near ? 8 : 5; c.stroke();
+    c.beginPath(); c.arc(x, y, 5, 0, Math.PI * 2); c.fillStyle = COL.red; c.fill();
+    if (near && o.t !== null) {
+      const label = `${o.t.toFixed(1)} s`, sz = 34;
+      c.font = `700 ${sz}px ${F}`; const tw = c.measureText(label).width * 0.9 + 16;
+      const lx = clamp(x - tw / 2, L + 4, R - tw - 4), ly = clamp(y - r - 12 - sz, T + 4, B - sz - 8);
+      c.fillStyle = 'rgba(0,0,0,.85)'; c.fillRect(lx, ly, tw, sz + 8);
+      txt(c, label, lx + tw / 2, ly + sz - 2, sz, COL.amber, 'center', 700, 0.9);
+    }
+  }
+  // ship at the centre
+  const sx = px(0.5), sy = py(0.5);
+  c.strokeStyle = COL.white; c.lineWidth = 2.5; c.beginPath(); c.arc(sx, sy, 22, 0, Math.PI * 2); c.stroke();
+  c.fillStyle = COL.white; c.fillRect(sx - 5, sy - 5, 10, 10);
+  // aim circle (cyan)
+  if (k && k.aim) {
+    const ax = px(k.aim.x), ay = py(k.aim.y);
+    line(c, sx, sy, ax, ay, COL.dim, 2);
+    c.beginPath(); c.arc(ax, ay, 26, 0, Math.PI * 2); c.strokeStyle = '#000'; c.lineWidth = 14; c.stroke(); c.strokeStyle = COL.cyan; c.lineWidth = 7; c.stroke();
+    c.beginPath(); c.arc(ax, ay, 5, 0, Math.PI * 2); c.fillStyle = COL.cyan; c.fill();
+  }
+  if (k && k.label) { c.fillStyle = 'rgba(0,0,0,.85)'; c.font = `700 26px ${F}`; const lw = c.measureText(k.label).width * 0.9 + 24; c.fillRect(L + 1, T + 1, lw, 40); txt(c, k.label, L + 12, T + 30, 26, COL.cyan, 'left', 700, 0.9); }
+  c.restore();
+  c.strokeStyle = COL.white; c.lineWidth = 2; c.strokeRect(L, T, pw, ph);
+  if (k && k.range) {
+    const half = k.range >= 1000 ? `${(k.range / 1000).toFixed(k.range >= 10000 ? 0 : 1)} KM` : `${Math.round(k.range)} M`;
+    txt(c, `± ${half}`, R - 8, T + 28, 22, COL.dim, 'right', 600, 0.9);
+    txt(c, 'RADIAL ↑', L + 8, B - 10, 22, COL.dim, 'left', 600, 0.9);
+    txt(c, 'ORBIT NORMAL →', R - 8, B - 10, 22, COL.dim, 'right', 600, 0.9);
+  }
+  // band: count of pieces / nearest
+  const bandT = B + 16, bandH = 92;
+  const warn = nearest && nearest.t !== null && nearest.t < 5;
+  const text = !objs.length ? 'ALL CLEAR' : nearest && nearest.t !== null ? `CLOSEST ${nearest.t.toFixed(1)} s · PUSH ○ AWAY` : `${objs.length} PIECES INBOUND`;
+  if (warn) { c.fillStyle = COL.amber; c.fillRect(L, bandT, pw, bandH); } else { c.strokeStyle = objs.length ? COL.red : COL.green; c.lineWidth = 3; c.strokeRect(L + 1, bandT + 1, pw - 2, bandH - 2); }
+  const sz = fitSize(c, text, pw - 28, 64, 36, 0.8);
+  txt(c, text, L + pw / 2, bandT + bandH / 2 + sz * 0.34, sz, warn ? '#000' : objs.length ? COL.red : COL.green, 'center', 700, 0.8);
+  const rowY = bandT + bandH + 8, cw = pw / 4;
+  cell(c, L, rowY, cw, 'ΔV USED', k && k.dv !== null ? fmt(k.dv, 1) : '--', 'm/s', COL.white);
+  cell(c, L + cw, rowY, cw, 'HITS', String(k ? k.hits : 0), '', k && k.hits > 0 ? COL.red : COL.green);
+  cell(c, L + cw * 2, rowY, cw, 'PASSED', String(k ? k.passed : 0), '', COL.white);
+  cell(c, L + cw * 3, rowY, cw, 'PIECES', String(objs.length), '', COL.white);
+}
+
 // Band under the plot: hint (auto) or aim status (manual). >= 64 px text so it reads at 0.23 scale.
 function drawBand(c, x, y, bw, bh, a, t) {
   let text = '', fill = null, col = COL.green, edge = COL.green;
@@ -238,6 +327,12 @@ function drawAimOverlay(c, a, L, T, pw, ph) {
   c.beginPath(); c.arc(ax, ay, 6, 0, Math.PI * 2); c.fillStyle = ring; c.fill();
   for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) line(c, ax + dx * r, ay + dy * r, ax + dx * (r + 14), ay + dy * (r + 14), ring, 5);
   if (ready) { c.beginPath(); c.arc(ax, ay, r + 22, 0, Math.PI * 2); c.strokeStyle = COL.green; c.lineWidth = 3; c.setLineDash([10, 8]); c.stroke(); c.setLineDash([]); }
+  // nose marker: small amber triangle where the ship's nose really points (lags the aim circle)
+  if (a.nose) {
+    const nx = px(a.nose.x), ny = py(a.nose.y);
+    c.beginPath(); c.moveTo(nx, ny - 24); c.lineTo(nx - 18, ny + 14); c.lineTo(nx + 18, ny + 14); c.closePath();
+    c.strokeStyle = '#000'; c.lineWidth = 12; c.lineJoin = 'round'; c.stroke(); c.fillStyle = COL.amber; c.fill();
+  }
   // label chip, top-left of the plot
   if (a.label) { c.fillStyle = 'rgba(0,0,0,.85)'; c.font = `700 26px ${F}`; const lw = c.measureText(a.label).width * 0.9 + 24; c.fillRect(L + 1, T + 1, lw, 40); txt(c, a.label, L + 12, T + 30, 26, COL.cyan, 'left', 700, 0.9); }
   c.restore();
@@ -348,8 +443,9 @@ export function drawAttitudePage(c, w, h, live = {}) {
   // attitude readouts in the corners beside the ball
   const rd = (lbl, v, x, y, al) => { txt(c, lbl, x, y, 22, COL.dim, al, 600, 0.9); txt(c, fmt(v), x, y + 40, 40, COL.white, al, 700); };
   rd('PITCH', pitch, L + 2, box.y0 + 40, 'left'); rd('ROLL', roll, R - 2, box.y0 + 40, 'right'); rd('YAW', yaw, L + 2, box.y0 + 300, 'left');
-  const rateTxt = finite(live.pitchRate) ? `${fmt(live.pitchRate, 1)}°/s` : '--';
-  txt(c, 'RATE', R - 2, box.y0 + 300, 22, COL.dim, 'right', 600, 0.9); txt(c, rateTxt, R - 2, box.y0 + 340, 34, COL.white, 'right', 700, 0.9);
+  // body rates (deg/s), stacked in the bottom-right corner beside the ball
+  txt(c, 'RATE °/s', R - 2, box.y0 + 296, 22, COL.dim, 'right', 600, 0.9);
+  [['P', live.pitchRate], ['Y', live.yawRate], ['R', live.rollRate]].forEach(([n, v], i) => txt(c, `${n} ${finite(v) ? fmt(v, 1) : '--'}`, R - 2, box.y0 + 326 + i * 28, 26, COL.white, 'right', 700, 0.9));
   // loads: G and Q bars
   const gf = finite(live.gForce) ? live.gForce : finite(live.gLoad) ? live.gLoad : null;
   const q = finite(live.q) ? live.q : live.dynamicPressure, maxQ = finite(live.maxQ) ? live.maxQ : 40000;

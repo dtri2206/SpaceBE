@@ -2,8 +2,17 @@
 // Owns no state. It places Role 3's mission props in the shared Mars scene when SURFACE starts, registers them with
 // Role 2's registerInteractable, and listens for task:completed. Halcyon-1 logs are recovered on Mars and count once
 // they are uploaded at the ship's comms console. The discovery rock opens once both logs are recovered.
+//
+// Comms (Role 1 wave 5, all four roles agreed; numbers and sources in src/builder/traits/landing.json): with the ship's
+// landing traits the upload takes time. Each antenna's real data rate from Mars (about 20 bit/s omni, 1 kbit/s horn,
+// 0.5 Mbit/s dish, 1 Mbit/s up to the relay smallsat) and its wait for the link (a direct antenna waits for Earth to
+// be up, about 3 h on average; the relay for its next pass, about 1 h) set the real time for 5 MB per log; the antenna
+// that gets the logs off the ship soonest sends them. The game waits 3 s plus 6 s for every ten times longer than a
+// minute (at most 60 s), counted while the game runs. A ship with
+// no working antenna (none fitted, or the one in a few hundred that failed on Mars, rolled with the flight's dice)
+// never calls home: the Beagle ending. Without traits: the upload is instant, as before.
 import * as THREE from 'three';
-import { contract, economy, events, getState, ui } from '/src/core/index.js';
+import { contract, economy, events, getShip, getState, save, ui } from '/src/core/index.js';
 import { assets, getTerrainHeight, graphics } from '/src/graphics/index.js';
 import * as surface from '/src/surface/index.js';
 import { registerInteractable } from '/src/surface/index.js';
@@ -17,6 +26,7 @@ const done = new Set();
 const carried = new Set(); // logs recovered on Mars, not yet uploaded
 const energyParts = new Set(); // 'panels' and 'ice'
 let percent = 0;
+let upload = null; // { logs, waitS, doneS, last, rateBps, realS, partId } while the logs leave the ship
 
 const group = new THREE.Group();
 group.name = 'role4-mission-props';
@@ -109,6 +119,7 @@ function placeProps() {
 }
 
 function resetMission() {
+  upload = null;
   done.clear();
   carried.clear();
   energyParts.clear();
@@ -117,6 +128,74 @@ function resetMission() {
   refreshProps();
   renderHud();
   events.emit('progress:changed', { percent });
+}
+
+// ---------- comms: the logs go home at the antenna's data rate ----------
+
+/** The ship's comms traits (src/builder/traits/landing.js), or null for a ship without them (instant, as before). */
+function shipComms() {
+  try { return getShip()?.stats?.traits?.landing?.comms ?? null; } catch { return null; }
+}
+/** This mission's flight record in save (src/flight/effects/index.js recordInSave), when it is this ship's. */
+function flightRecord() {
+  try {
+    const rec = save.load().partEffects?.flights?.at(-1) ?? null;
+    const name = getShip()?.name;
+    return rec && (rec.name == null || name == null || rec.name === name) ? rec : null;
+  } catch { return null; }
+}
+/** Seconds the game waits for an upload that takes realS in reality (landing.json gameScale.upload). */
+function waitSeconds(realS, u = {}) {
+  const minS = u.minS ?? 3, baseS = u.baseS ?? 60, per = u.perDecadeS ?? 6, maxS = u.maxS ?? 60;
+  return realS > 0 ? Math.min(maxS, minS + per * Math.log10(Math.max(1, realS / baseS))) : minS;
+}
+/** A note on the flight's record for the hangar's analysis (via: 'save', so the flight's recorder keeps it). */
+function recordNote(n) {
+  try {
+    const all = save.load();
+    const flights = all.partEffects?.flights;
+    const rec = flightRecord();
+    if (!rec || !flights?.length) return;
+    save.update({ partEffects: { ...all.partEffects, flights: [...flights.slice(0, -1), { ...rec, notes: [...(rec.notes ?? []), { ...n, group: 'landing', via: 'save', src: 'missions' }].slice(-300) }] } });
+  } catch { /* the record is a bonus */ }
+}
+
+function startUpload() {
+  const comms = shipComms();
+  if (!comms) { for (const logId of [...carried]) complete(logId); return; } // a ship without traits: as before
+  if (upload) return; // already sending
+  const failed = new Set(flightRecord()?.state?.landing?.antennaFailed ?? []);
+  const working = (comms.antennas ?? []).filter((a) => !failed.has(a.partId) && a.rateBps > 0);
+  const bits = carried.size * (comms.upload?.logMB ?? 5) * 8e6;
+  const realOf = (a) => (a.windowS ?? 0) + bits / a.rateBps; // the wait for the link, then the data
+  const best = working.reduce((b, a) => (!b || realOf(a) < realOf(b) ? a : b), null);
+  if (!best) {
+    // Beagle 2 (2003): it landed, and nobody ever heard from it
+    if (comms.antennas?.length) recordNote({ what: 'antennaDead', partId: comms.antennas[0].partId });
+    events.emit('flight:failed', { endingId: 'beagle', cause: comms.antennas?.length ? 'The antenna failed on Mars, so nothing the crew found ever reached Earth.' : 'The ship had no antenna, so nothing the crew found ever reached Earth.' });
+    return;
+  }
+  const logs = [...carried];
+  const realS = realOf(best);
+  upload = { logs, waitS: waitSeconds(realS, comms.upload), doneS: 0, last: performance.now(), rateBps: best.rateBps, realS, partId: best.partId };
+  renderHud();
+}
+
+function tickUpload() {
+  if (!upload) return;
+  const now = performance.now();
+  upload.doneS += Math.min(1, Math.max(0, (now - upload.last) / 1000)); // a paused game (no ticks) does not count
+  upload.last = now;
+  if (upload.doneS < upload.waitS) { renderHud(); return; }
+  const u = upload;
+  upload = null;
+  // in reality: minutes under an hour, hours under two days, days beyond
+  const real = u.realS < 3600 ? { what: 'uploadMinutes', realMinutes: Math.max(1, Math.round(u.realS / 60)) }
+    : u.realS < 48 * 3600 ? { what: 'upload', realHours: Math.round((u.realS / 3600) * 10) / 10 }
+      : { what: 'uploadDays', realDays: Math.round(u.realS / 86400) };
+  recordNote({ ...real, partId: u.partId, value: u.rateBps, waitS: Math.round(u.waitS), realS: Math.round(u.realS), logs: u.logs.length });
+  for (const logId of u.logs) if (carried.has(logId)) complete(logId);
+  renderHud();
 }
 
 // ---------- the mission HUD (SURFACE and INTERIOR) ----------
@@ -182,6 +261,7 @@ function renderHud() {
 
   let hint = '';
   if (percent >= 100) hint = 'All tasks done. Take the pilot seat to go home.';
+  else if (upload) hint = `Uploading ${upload.logs.length} Halcyon-1 log${upload.logs.length > 1 ? 's' : ''} to Earth: ${Math.min(99, Math.floor((100 * upload.doneS) / upload.waitS))} %`;
   else if (carried.size) hint = `Carrying ${carried.size} Halcyon-1 log${carried.size > 1 ? 's' : ''}: upload at the comms console in the ship.`;
   else if (inside && done.size === 0) hint = 'Suit up at the locker, then use the airlock.';
   hud.hint.textContent = hint;
@@ -268,7 +348,7 @@ export default {
     // Halcyon-1 logs count once they are uploaded at the comms console (spec §9: carry back, then upload).
     events.on('interior:interact', ({ stationId }) => {
       if (stationId !== 'commsConsole' || !carried.size) return;
-      for (const logId of [...carried]) complete(logId);
+      startUpload();
     });
 
     // A new ship is a new mission: Mars progress starts again from 0.
@@ -283,6 +363,7 @@ export default {
 
     // Role 2 sends telemetry twice a second on Mars: a cheap tick for the direction arrow.
     events.on('flight:telemetry', () => {
+      tickUpload(); // the surface sends it twice a second inside the ship and outside: the upload's clock
       if (getState() === 'SURFACE') updateBearing();
     });
 

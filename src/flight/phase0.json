@@ -8,7 +8,14 @@
     "pollEvery": 1,
     "promptDelay": 0.9,
     "cleared": 1.6,
-    "quickNoGo": 2
+    "quickNoGo": 2,
+    "fillAir": 6,
+    "fillPure": 1.5,
+    "purge": 6
+  },
+  "cabin": {
+    "air": { "key": "1", "label": "Air mix (N₂/O₂), 20 s to fill", "simSeconds": 20 },
+    "pure": { "key": "2", "label": "Pure oxygen, fills in 5 s (saves time)", "simSeconds": 5 }
   },
   "steps": [
     {
@@ -17,7 +24,10 @@
       "label": "HATCH · close",
       "button": "btn:hatch",
       "sound": "cockpit.hatch",
-      "fact": "Hatch closed and latched. A sealed hatch keeps cabin air from escaping into the vacuum."
+      "fact": "Hatch closed and latched. A sealed hatch keeps cabin air from escaping into the vacuum.",
+      "name": "HATCH",
+      "aim": "click to close the hatch",
+      "first": "close the hatch first"
     },
     {
       "id": "cabin",
@@ -25,7 +35,10 @@
       "label": "CABIN · pressurise",
       "button": "btn:cabin",
       "sound": "cockpit.pressurise",
-      "fact": "The cabin must hold its pressure before launch. In space, a leak can take your air away."
+      "fact": "The cabin must hold its pressure before launch. In space, a leak can take your air away.",
+      "name": "CABIN",
+      "aim": "click to pressurise the cabin",
+      "first": "pressurise the cabin first"
     },
     {
       "id": "o2",
@@ -33,7 +46,10 @@
       "label": "O2 · open",
       "button": "btn:o2",
       "sound": "suit.o2flow",
-      "fact": "Oxygen is flowing. Up there there is no air at all: every breath comes from these tanks."
+      "fact": "Oxygen is flowing. Up there there is no air at all: every breath comes from these tanks.",
+      "name": "O2",
+      "aim": "click to open the oxygen",
+      "first": "open the oxygen first"
     },
     {
       "id": "arm",
@@ -41,7 +57,10 @@
       "label": "ARM ENGINE",
       "button": "btn:arm",
       "sound": "cockpit.switch",
-      "fact": "Armed. From now on the engine can light."
+      "fact": "Armed. From now on the engine can light.",
+      "name": "ARM ENGINE",
+      "aim": "click to arm the engine",
+      "first": "arm the engine first"
     }
   ],
   "copy": {
@@ -57,8 +76,8 @@
     "quickAnswer": "Checklist recalled. Countdown follows in 2 seconds.",
     "cleared": "You are cleared for launch.",
     "insufficientFunds": "Insufficient funds for the scrub fee.",
-    "checklistFact": "One item at a time. Verify before you commit.",
-    "checklistKeys": "1–4 · complete the highlighted item",
+    "checklistFact": "One item at a time. Look at the HATCH button and click.",
+    "checklistKeys": "Look at the glowing button, centre the dot on it and click",
     "warningFact": "A NO-GO is a warning, not a formality. Cold seals were a warning before Challenger in 1986.",
     "goFact": "Challenger, 1986: cold-seal warnings went unheard. Every NO-GO deserves attention.",
     "objectiveGo": "Give the GO",
@@ -67,6 +86,21 @@
     "pollHeading": "LAUNCH DIRECTOR · STATION POLL",
     "ask": "Flight crew, are you GO?",
     "goButton": "GO (Enter)",
-    "scrubButton": "SCRUB (S)"
+    "scrubButton": "SCRUB (S)",
+    "wrongOrder": "Not yet. Do it in order: next is {next}.",
+    "pressHint": "press {key}",
+    "cabinTitle": "CABIN ATMOSPHERE",
+    "cabinFact": "Choose what fills the cabin. Click an option or press 1 or 2.",
+    "fillAir": "Filling the cabin with air mix… {s} s",
+    "fillPure": "Filling the cabin with pure oxygen… {s} s",
+    "airFact": "Cabin holds a normal air mix of nitrogen and oxygen.",
+    "pureFact": "Cabin filled with pure oxygen.",
+    "cautionLamp": "CAUTION · WIRING · intermittent short under the left seat",
+    "cautionPurge": "Vent and purge with air (costs 60 s)",
+    "cautionKey": "F",
+    "purging": "Venting the cabin and purging with air… {s} s",
+    "purgedFact": "Cabin purged with air. The wiring fault is no longer a danger.",
+    "eclssStation": "ECLSS",
+    "eclssReason": "pure-oxygen cabin with a wiring fault"
   }
 }

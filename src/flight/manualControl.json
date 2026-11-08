@@ -12,6 +12,18 @@
       "onTargetForLock": 0.5,
       "gust": { "pitch": [[2.5, 4.3, 0], [1.5, 2.1, 1.0]], "yaw": [[2.0, 3.7, 2.0], [1.0, 1.9, 0.5]] }
     },
+    "debris": {
+      "comment": "Earth-orbit debris dodge (conjunction.js). Aim is a thrust command in the plane perpendicular to the velocity (x = orbit normal, y = radial up).",
+      "enabled": true,
+      "label": "DEBRIS · CONJUNCTION VIEW",
+      "offerSeconds": 8,
+      "maxSeconds": 24,
+      "horizonSeconds": 20,
+      "rangeMetres": 120,
+      "showMissMetres": 150,
+      "pixelsPerUnit": 400,
+      "dangerFactor": 1.5
+    },
     "entry": {
       "comment": "Next task: manual entry-angle window. Disabled until then.",
       "enabled": false,

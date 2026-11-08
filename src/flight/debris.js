@@ -64,3 +64,8 @@ export function closestApproach(shipPos, shipVel, piece) {
   const miss = len(add(r, scale(v, Math.max(0, t))));
   return { timeToClosest: t, missDistance: miss, distance: len(r) };
 }
+
+// The Earth-orbit encounter the player can dodge (index.js, tests): 45 pieces in a disc ~250 m wide, spread over ~1000 m
+// of depth so they arrive one after another over ~8 s at 120 m/s; the first one ~14 s after the field is placed.
+// Only a few sit on the current path, so doing nothing costs 1-2 hits; a sideways Δv of a few m/s clears them all.
+export const DEBRIS_ENCOUNTER = { aheadDistance: 2200, count: 45, spread: 250, depth: 1000, relSpeed: 120, onPath: 0.12, seed: 2041 };

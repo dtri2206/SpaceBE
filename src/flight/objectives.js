@@ -30,7 +30,7 @@ export function objectiveText(fc, { state, debrisActive = false } = {}) {
     return `Reach orbit: periapsis above ${km(atmosphereTop(fc.planet))} km (apo ≈ ${km(ASCENT_PROFILE.targetApoapsis)} km)`;
   }
   if (fc.landed) return 'Touched down: press E to stand up';
-  if (fc.chuteOpen || t.phase === 'landing' || state === 'LANDING') return `Touch down under ${TUNING.touchdownLimit.legs} m/s`;
+  if (fc.chuteOpen || t.phase === 'landing' || state === 'LANDING') return `Touch down under ${(fc.fx?.value('touchdownLimit', TUNING.touchdownLimit.legs, { fc }) ?? TUNING.touchdownLimit.legs).toFixed(1).replace(/\.0$/, '')} m/s`; // the legs the player chose (part effects)
   return 'Enter the corridor, survive the heat';
 }
 

@@ -8,11 +8,17 @@
 //
 // const rover = new RoverController({ gravity: PLANETS.mars.g, getGroundHeight, start: { x, z, heading }, spec? });
 // `spec` defaults to ROVER (the Apollo LRV); pass ROVER_MR01 for the SPACEB&E MR-01.
+// Power from the ship (Role 1 wave 5, all four roles agreed; see rovers.js): with the ship's landing traits the battery
+// runs on the suit's clock (stored Wh ÷ 87, so a full LRV drives about 1.3 km), and a rover parked still within 15 m of
+// the lander charges from the ship's power parts. Optional `ship` (a ShipSpec; default: the ship in core, none in Node).
+// Without traits: the real battery, no charging, exactly as before.
 // each frame: rover.update(dt, { throttle: -1..1, steer: -1..1, brake: bool });   (steer +1 = left)
 // heading 0 drives toward −Z (same convention as WalkController's yaw); forward = (−sin h, 0, −cos h).
 
+import { currentShip, landerPowerFor, roverPowerFor, LANDER_AT } from './rovers.js';
+
 export const ROVER = {
-  name: 'LRV', // HUD name
+  name: 'LRV', // HUD name (also the key of the rover's charger in traits.landing.power.rovers)
   mass: 450, // kg: 210 kg rover + one suited astronaut (~180 kg) + tools and samples
   wheelbase: 2.29, // m
   track: 1.83, // m
@@ -27,6 +33,8 @@ export const ROVER = {
   turnRadius: 3.1, // m at full lock (four-wheel steering)
   steerRate: 1.6, // rad/s the steering can turn
   batteryWh: 8700, // ≈ 2 × 36 V × 121 Ah
+  chargeW: 870, // W, an estimate: Apollo's LRV ran on primary silver-zinc batteries that could not be recharged; the game's
+  // LRV takes a charge from the ship, at about a tenth of its capacity per hour as rechargeable silver-zinc would
   brakeDecel: 2.5, // m/s² from the brakes (still limited by grip)
   rolloverRollDeg: 40, // the LRV's static stability limit is about 45°
   rolloverPitchDeg: 45,
@@ -50,12 +58,14 @@ export const ROVER_MR01 = {
   reverseSpeed: 1.5,
   turnRadius: 3.4, // m at full lock
   batteryWh: 30000, // ≈ 30 kWh concept pack (3.4× the LRV's 8.7 kWh)
+  chargeW: 10000, // W: a lithium-ion pack charged at about a third of its capacity per hour (concept)
 };
 
 const deg = (r) => (r * 180) / Math.PI;
+const UNSET = Symbol('ship from core');
 
 export class RoverController {
-  constructor({ gravity, getGroundHeight = () => 0, start = {}, colliders = [], onNotice, spec = ROVER } = {}) {
+  constructor({ gravity, getGroundHeight = () => 0, start = {}, colliders = [], onNotice, spec = ROVER, ship = UNSET } = {}) {
     if (!(gravity > 0)) throw new Error('RoverController: pass gravity (PLANETS.<planet>.g from core)');
     this.spec = spec; // ROVER (Apollo LRV, default) or ROVER_MR01
     this.g = gravity;
@@ -73,7 +83,8 @@ export class RoverController {
     this.airTime = 0;
     this.pitch = 0; // rad, + nose up
     this.roll = 0; // rad, + right side down
-    this.batteryWh = this.spec.batteryWh;
+    this._shipOpt = ship; // UNSET: follow the ship in core (a new mission's ship gives the rover a new charge)
+    this._setupEnergy();
     this.odometer = 0;
     this.overturned = false;
     this.slip = 0; // 0..1 how much the turn is sliding (grip exceeded)
@@ -81,7 +92,32 @@ export class RoverController {
 
   get forward() { return { x: -Math.sin(this.heading), z: -Math.cos(this.heading) }; }
   get right() { return { x: Math.cos(this.heading), z: -Math.sin(this.heading) }; }
-  get batteryFrac() { return this.batteryWh / this.spec.batteryWh; }
+  get batteryFrac() { return this.batteryWh / this.capacityWh; }
+
+  // ---- energy: the rover's own battery, and the ship's power when the ship has landing traits (rovers.js) ----
+  _setupEnergy() {
+    const ship = this._shipOpt === UNSET ? currentShip() : this._shipOpt;
+    this._ship = ship;
+    const model = roverPowerFor(ship);
+    if (!model) { this.capacityWh = this.spec.batteryWh; this._wh = this.capacityWh; this.power = null; return; }
+    this.capacityWh = this.spec.batteryWh / model.scale; // the surface clock (see rovers.js)
+    this._wh = this.capacityWh * model.arrivalFrac;
+    this.chargeW = model.chargeW[this.spec.name] || this.spec.chargeW || 1000;
+    this.reachM = model.reachM;
+    this.power = landerPowerFor(ship, model);
+    this.power.add(this);
+  }
+  _sync() {
+    if (this._shipOpt === UNSET && currentShip() !== this._ship) this._setupEnergy(); // a new mission's ship
+    this.power?.accrue();
+  }
+  get batteryWh() { this._sync(); return this._wh; }
+  set batteryWh(v) { this._wh = v; }
+  /** Plugged into the ship: standing still on its wheels within the cable's reach of the lander. */
+  get pluggedIn() {
+    if (!this.power || this.overturned || !this.onGround || Math.abs(this.speed) > 0.05) return false;
+    return Math.hypot(this.x - LANDER_AT.x, this.z - LANDER_AT.z) <= this.reachM;
+  }
 
   // Ground heights under the four wheels → centre height, pitch (front up +) and roll (right down +).
   _wheels() {
@@ -157,8 +193,10 @@ export class RoverController {
     this.x += f.x * this.speed * dt;
     this.z += f.z * this.speed * dt;
     this.odometer += Math.abs(this.speed) * dt;
-    this.batteryWh = Math.max(0, this.batteryWh - (power * dt) / 3600);
-    if (this.batteryWh === 0) this._notice('battery_empty');
+    const usedWh = Math.min(this.batteryWh, (power * dt) / 3600);
+    this.batteryWh -= usedWh;
+    this.power?.used(usedWh);
+    if (this.batteryWh <= 0) { this.batteryWh = 0; this._notice('battery_empty'); } else if (this._flags?.battery && this.batteryFrac > 0.05) this._flags.battery = false; // charged again: say it again next time
 
     // obstacles: push out and stop
     for (const c of this.colliders) {
@@ -235,6 +273,7 @@ export class RoverController {
       rollDeg: deg(this.roll),
       onGround: this.onGround,
       batteryFrac: this.batteryFrac,
+      charging: this.pluggedIn && this.batteryFrac < 1,
       odometerKm: this.odometer / 1000,
       overturned: this.overturned,
       slip: this.slip,

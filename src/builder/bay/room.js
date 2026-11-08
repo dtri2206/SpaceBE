@@ -365,8 +365,9 @@ export function createRoom(scene) {
       pedestal(deg, r, 1.5, 0.78, 0.9, std(0x3a4046, { roughness: 0.5, metalness: 0.7 }));
       await placeNasa('ingenuity', { up: 'y' }, 0.5, deg, r, { y: 0.78, collider: 0.9 });
     }
-    // warehouse: the RASSOR mining robot and cubesats on the crates
-    await placeNasa('rassor', { up: 'y', tint: 0x8f969c, forceTint: true, metalness: 0.5, roughness: 0.5 }, 0.9, 214, 11.6, { yaw: 0.5, collider: 1.0 });
+    // warehouse: a stowed spacecraft (Mars Global Surveyor, folded for launch) on a pallet, and cubesats on the crates
+    pedestal(214, 11.6, 1.6, 0.14, 1.3, YELLOW);
+    await placeNasa('mgs_launch', { up: 'long', tint: 0xcfd3d8 }, 1.6, 214, 11.6, { y: 0.14, yaw: 0.5, collider: 1.0 });
     for (const [i, slug] of [['0', 'cubesat2'], ['1', 'cubesat1']]) {
       const crate = props.crates[+i];
       if (!crate) continue;

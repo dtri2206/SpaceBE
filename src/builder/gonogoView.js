@@ -1,7 +1,8 @@
 // The Go/No-Go poll (spec §5.5): consoles report in turn, "PROPULSION… GO". Driven only by update(dt).
+// Line statuses: GO, NO-GO (a warning), BLOCK (a hard block), and the launch director's HOLD, SCRUB and INFO lines.
 import { events } from '/src/core/index.js';
 
-const STATUS_CLASS = { GO: 'hud-good', 'NO-GO': 'hud-caution', BLOCK: 'hud-alert' };
+const STATUS_CLASS = { GO: 'hud-good', 'NO-GO': 'hud-caution', BLOCK: 'hud-alert', HOLD: 'hud-caution', SCRUB: 'hud-alert', INFO: 'gng-line--info' };
 const CALL = 0.32; // s between the console calling and its answer
 const GAP = 0.75; // s between consoles
 
@@ -39,7 +40,8 @@ export function createGonogoView({ parent, lines, onReveal, onDone }) {
     const { el, status, text, line } = pending;
     el.classList.remove('gng-line--calling');
     el.classList.add(STATUS_CLASS[line.status] ?? 'hud-ok');
-    if (line.status === 'BLOCK') el.classList.add('gng-line--flash');
+    if (line.status === 'BLOCK' || line.status === 'SCRUB') el.classList.add('gng-line--flash');
+    if (line.thin) el.classList.add('gng-line--thin');
     status.textContent = line.status;
     text.textContent = line.text;
     if (line.guidebook) {

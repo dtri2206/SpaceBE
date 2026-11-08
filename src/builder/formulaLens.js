@@ -201,7 +201,7 @@ export function createFormulaLens({ parent, g0, planets, balance, text, onHighli
     drawSilhouette(b, stable);
     comText.textContent = stable
       ? 'Air pushes on the centre of pressure. Behind the centre of mass it straightens the rocket like the feathers of an arrow.'
-      : 'With the centre of pressure ahead, any wobble grows: the tail wants to swap places with the nose. Add fins low on the stack.';
+      : 'With the centre of pressure ahead, any wobble grows: the tail wants to swap places with the nose.';
 
     // 5 budget
     const need = b.dvNeeded ?? {};
@@ -214,8 +214,9 @@ export function createFormulaLens({ parent, g0, planets, balance, text, onHighli
     have.style.left = `${Math.min(100, (s.deltaV / total) * 100)}%`;
     haveLabel.textContent = `you: ${kms(s.deltaV)} km/s`;
     budget.numbers.textContent = `one-way ${kms(dvNeedOne)} km/s · round trip ${kms(dvNeedTrip)} km/s`;
-    budget.result.textContent = s.deltaV >= dvNeedTrip ? `${fmtInt(s.deltaV - dvNeedTrip)} m/s spare for the whole trip` : s.deltaV >= dvNeedOne ? `Reaches Mars. ${fmtInt(dvNeedTrip - s.deltaV)} m/s short of coming home (make methane on Mars)` : `${fmtInt(dvNeedOne - s.deltaV)} m/s short of Mars`;
-    budget.el.dataset.state = s.deltaV >= dvNeedTrip ? 'ok' : s.deltaV >= dvNeedOne ? 'warn' : 'bad';
+    // the legs are the physics; the verdict is the player's to work out (a built ship also varies a little from paper)
+    budget.result.textContent = 'Lay your Δv against the legs: what is left after each one?';
+    budget.el.dataset.state = 'ok';
   }
 
   function drawGraph(s, dvNeedOne, dvNeedTrip) {

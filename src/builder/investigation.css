@@ -1,0 +1,71 @@
+/* The accident investigation board (investigation.js), and the few poll and test-console styles the luck agent adds
+   (builder.css belongs to the design page). Readable but compact: the whole board fits one 1440×860 screen. */
+.inv-root {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(660px, 50vw);
+  max-height: 94vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 20px 16px;
+  z-index: 6;
+  font-size: 14px;
+  line-height: 1.45;
+  background: var(--hud-surface-strong);
+  pointer-events: auto;
+  animation: inv-rise 220ms ease-out both;
+}
+.inv-head { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: start; }
+.inv-kicker { font-size: var(--hud-text-xs); letter-spacing: 0.16em; text-transform: uppercase; color: var(--hud-amber); }
+.inv-title { font-size: 20px; letter-spacing: 0.04em; color: var(--hud-ink); line-height: 1.2; margin-top: 2px; }
+.inv-sub { font-size: var(--hud-text-sm); color: var(--hud-muted); }
+.inv-lang { display: inline-flex; border: 1px solid var(--hud-line); border-radius: var(--hud-radius); overflow: hidden; }
+.inv-lang-btn { font: 600 12px var(--hud-font); letter-spacing: 0.1em; padding: 6px 10px; color: var(--hud-muted); background: transparent; border: 0; cursor: pointer; }
+.inv-lang-btn.is-on { color: #03161b; background: var(--hud-cyan); }
+.inv-close { font-size: var(--hud-text-sm); }
+.inv-section { display: flex; flex-direction: column; gap: 3px; padding-top: 7px; border-top: 1px solid color-mix(in srgb, var(--hud-line) 60%, transparent); }
+.inv-h { font-size: var(--hud-text-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--hud-cyan); }
+.inv-p { margin: 0; color: var(--hud-ink); }
+.inv-lead { margin: 0; color: var(--hud-ink); font-size: 15px; }
+.inv-strong { color: var(--hud-ink); font-weight: 600; }
+.inv-warned { color: color-mix(in srgb, var(--hud-red) 55%, var(--hud-ink)); }
+.inv-muted { color: var(--hud-muted); font-size: var(--hud-text-sm); }
+.inv-verdict { padding: 4px 10px; border-left: 3px solid var(--hud-accent); background: color-mix(in srgb, var(--hud-accent) 9%, transparent); }
+.inv-verdict.is-paperShort { --hud-accent: var(--hud-red); }
+.inv-verdict.is-builtShort { --hud-accent: var(--hud-amber); }
+.inv-verdict.is-enough { --hud-accent: var(--hud-green); }
+.inv-table { width: 100%; border-collapse: collapse; font-size: var(--hud-text-sm); }
+.inv-table th { text-align: right; font-weight: 400; color: var(--hud-muted); font-size: var(--hud-text-xs); letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 0 4px; }
+.inv-table td { text-align: right; padding: 2px 0; border-bottom: 1px solid color-mix(in srgb, var(--hud-line) 35%, transparent); white-space: nowrap; }
+.inv-table td.inv-k { text-align: left; color: var(--hud-muted); white-space: normal; padding-right: 10px; }
+.inv-built { color: var(--hud-ink); }
+.inv-diff { display: inline-block; min-width: 64px; margin-left: 8px; font-size: var(--hud-text-xs); }
+.inv-diff.is-down { color: var(--hud-amber); }
+.inv-diff.is-up { color: var(--hud-green); }
+.inv-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 2px; }
+.inv-item::marker { color: var(--hud-muted); }
+.inv-item.is-factory::marker, .inv-item.is-pad::marker, .inv-item.is-flight::marker { color: var(--hud-amber); }
+.inv-item.is-warning::marker { color: var(--hud-red); }
+.inv-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.inv-chip { font: 13px var(--hud-font); padding: 3px 10px; color: var(--hud-ink); background: color-mix(in srgb, var(--hud-amber) 12%, transparent); border: 1px solid color-mix(in srgb, var(--hud-amber) 55%, transparent); border-radius: 999px; cursor: pointer; }
+.inv-chip.is-on { color: #1a1203; background: var(--hud-amber); }
+.inv-question { margin: 0; font-size: 15.5px; line-height: 1.45; color: var(--hud-ink); font-style: italic; }
+@keyframes inv-rise { from { opacity: 0; transform: translateY(calc(-50% + 12px)); } to { opacity: 1; transform: translateY(-50%); } }
+@media (prefers-reduced-motion: reduce) { .inv-root { animation: none; } }
+
+/* the poll: the launch director's lines, a worried GO, and the bill */
+.gng-line--info { --hud-accent: var(--hud-cyan); }
+.gng-line--thin .gng-line-text { color: color-mix(in srgb, var(--hud-amber) 70%, var(--hud-ink)); }
+.gng-bill { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: var(--hud-text-sm); color: var(--hud-ink); }
+.gng-bill span { white-space: nowrap; }
+.gng-bill .gng-bill-total { color: var(--hud-cyan); }
+
+/* the test console: what the static fire found */
+.bay-test-found { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.bay-test-defect { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; padding: 6px 8px; border-left: 2px solid var(--hud-amber); background: color-mix(in srgb, var(--hud-amber) 8%, transparent); font-size: var(--hud-text-sm); line-height: 1.45; }
+.bay-test-defect .hud-button { flex: none; font-size: var(--hud-text-xs); }
+.bay-test-clean { font-size: var(--hud-text-sm); color: var(--hud-green); }

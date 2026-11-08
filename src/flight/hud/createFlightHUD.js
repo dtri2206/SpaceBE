@@ -32,7 +32,7 @@ function createFlightHUD({ parent = document.body } = {}) {
 <div class="readings"><div><small>ALTITUDE / km</small><strong data-id="alt"></strong></div><div><small>VELOCITY / m/s</small><strong data-id="speed"></strong></div><div><small>VERTICAL / m/s</small><strong data-id="vertical"></strong></div></div>
 <div class="panel"><small>PROPULSION & FLIGHT ENVELOPE</small><div class="row"><span>THROTTLE</span><span data-id="throttle"></span></div><meter min="0" max="1" data-id="throttleMeter"></meter><div class="row"><span>FUEL</span><span data-id="fuel"></span></div><meter min="0" max="1" data-id="fuelMeter"></meter><div class="row"><span>Δv REMAINING</span><span data-id="dv"></span></div><div class="row"><span>MAX-Q</span><span data-id="q"></span></div><meter min="0" max="1" data-id="qMeter"></meter><div class="row"><span>G LOAD</span><span data-id="g"></span></div><div class="row"><span>APO / PERI km</span><span data-id="orbit"></span></div><div class="row"><span>HEAT / LIMIT</span><span data-id="heat"></span></div></div>
 <div class="engine-state" style="position:absolute;right:32px;bottom:64px" data-id="engineState"></div>
-<div class="help">CLICK mouse look · F take manual control (when offered) · SPACE / CLICK lock · ESC give back · C outside view · mouse orbit · wheel zoom · , . time warp</div>`;
+<div class="help">F take / give back the stick · SPACE / CLICK lock · C outside view · mouse orbit · wheel zoom · , . time warp</div>`;
   parent.append(root);
   const fields = Object.fromEntries([...root.querySelectorAll("[data-id]")].map((el) => [el.dataset.id, el]));
   const formula = root.querySelector(".formula"), warnings = root.querySelector(".warnings");

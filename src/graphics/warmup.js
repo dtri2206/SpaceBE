@@ -8,6 +8,8 @@ import * as THREE from 'three';
 import { events, getShip, getState } from '/src/core/index.js';
 import { assets } from './assets.js';
 import { latestLaunchSite } from './launchSite.js';
+import { preloadCockpit } from './capsuleCockpit.js';
+import { prebuildCabin } from './cabin.js';
 
 // [rocket visible, cockpit visible]. On the pad the cockpit view also shows the engine flame (1 more point light, 4 in all),
 // so that combination needs its own programs too.
@@ -64,8 +66,46 @@ function warm(graphics) {
       drawOnce(renderer, graphics.composer?.inputBuffer, site.scene, graphics.camera, rocket, cockpit);
     } finally {
       dropPending();
+      requestIdle(() => { try { warmCabin(graphics); } catch (error) { console.warn('[graphics] cabin warm-up skipped:', error); } });
     }
   }));
+}
+
+// The Apollo cabin hangs under the cockpit when the crew float out in ORBIT (cockpit.userData.attachCabin). Building it takes about 300 ms and its
+// shaders about as long, so both happen here: the cabin goes into createCabin()'s pool, and its materials are compiled in a throw-away scene with the
+// same lights as the flight's space view (1 sun, 1 ambient, the cockpit's 3 point lights and the entry plasma's), because the light counts are baked
+// into the shaders. Nothing is shown: the scene is never rendered.
+function warmCabin(graphics) {
+  const renderer = graphics.renderer;
+  if (!renderer?.compileAsync || getState() !== 'PRELAUNCH') return;
+  const cockpit = assets.get('cockpit');
+  if (!cockpit.userData.attachCabin) return; // flight deck (no aft hatch)
+  const cabin = prebuildCabin();
+  const scene = new THREE.Scene();
+  scene.add(new THREE.DirectionalLight(0xfff4e6, 3), new THREE.AmbientLight(0x8ea4c8, 0.25));
+  cockpit.add(assets.get('vfx:entryPlasma'));
+  scene.add(cockpit);
+  cockpit.userData.attachCabin(cabin);
+  const previous = renderer.getRenderTarget();
+  try {
+    renderer.setRenderTarget(graphics.composer?.inputBuffer ?? null);
+    renderer.compileAsync(scene, graphics.camera).catch(() => {}).then(() => requestIdle(() => {
+      // a real draw into the composer's buffer uploads the cabin's geometry and textures (compile does not); the next real frame clears it
+      const probe = graphics.composer?.inputBuffer;
+      const before = renderer.getRenderTarget();
+      try {
+        if (probe && getState() === 'PRELAUNCH') {
+          renderer.setRenderTarget(probe);
+          renderer.render(scene, graphics.camera);
+        }
+      } finally {
+        renderer.setRenderTarget(before);
+        cockpit.userData.detachCabin?.();
+      }
+    }));
+  } finally {
+    renderer.setRenderTarget(previous);
+  }
 }
 
 // Draws into the composer's own buffer (the same formats the real frame uses, so the GPU pipelines match). Nothing
@@ -96,6 +136,7 @@ function requestIdle(fn) {
 export function startWarmup(graphics) {
   events.on('state:changed', ({ to }) => {
     if (to !== 'PRELAUNCH') { dropPending(); return; }
-    requestIdle(() => { try { warm(graphics); } catch (error) { console.warn('[graphics] launch warm-up skipped:', error); } });
+    // the cockpit this ship will fly in has to be loaded before its shaders can be warmed (a capsule cabin loads on demand)
+    requestIdle(() => preloadCockpit().then(() => { try { warm(graphics); } catch (error) { console.warn('[graphics] launch warm-up skipped:', error); } }));
   });
 }

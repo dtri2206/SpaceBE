@@ -32,6 +32,7 @@ export const PACE = {
   turnAlignDeg: 6,
   turnQFrac: 0.6, // of Max-Q
   turnG: 3.6,
+  turnHeat: 0.7, // engine temperature (1 = failure): no auto warp past this
   coastWarpMax: 50,
   coastLead: 10, // s before the apoapsis: back to 1×
   approachGrace: 8, // s of game time at 1× at the start of the Mars approach (trim time)
@@ -82,7 +83,7 @@ export function paceContext(fc, { ascent = null, landing = null, countdown = fal
     airDensity: airDensity(fc.planet, t.altitude),
     ascentStep: ascent?.step ?? null, landingStep: landing?.step ?? null, blackout: !!landing?.blackout,
     sinceLiftoff: fc.liftoffT === null ? 0 : fc.t - fc.liftoffT,
-    qFrac: t.dynamicPressure / t.maxQ, gLoad: t.gLoad, aligned, trimming, manual,
+    qFrac: t.dynamicPressure / t.maxQ, gLoad: t.gLoad, engineTemp: t.engineTemp ?? 0, aligned, trimming, manual,
     tApo: ascent?.step === 'coast' ? timeToApoapsis(fc) : null,
     tInterface: approaching ? (iface !== undefined ? iface : predictInterface(fc)?.time ?? null) : null,
     approaching,
@@ -159,7 +160,7 @@ export function createPacer() {
         return w > 1 ? auto(w, 'coasting') : one('coasting');
       }
       if (ctx.ascentStep === 'turn' && ctx.sinceLiftoff > PACE.climbNoWarp && ctx.aligned
-          && ctx.qFrac < PACE.turnQFrac && ctx.gLoad < PACE.turnG && ctx.throttle > 0) return auto(PACE.turnWarp, 'gravity turn');
+          && ctx.qFrac < PACE.turnQFrac && ctx.gLoad < PACE.turnG && (ctx.engineTemp ?? 0) < PACE.turnHeat && ctx.throttle > 0) return auto(PACE.turnWarp, 'gravity turn');
       return manual();
     },
   };

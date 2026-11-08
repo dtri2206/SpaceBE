@@ -1,0 +1,1339 @@
+{
+  "name": "Tail",
+  "short": "Tail",
+  "blurb": "The bottom of the ship: the thrust structure, the engines, steering, strap-on boosters, fins and landing legs.",
+  "rows": [
+    {
+      "id": "thrust",
+      "name": "Thrust structure",
+      "role": "The frame the engines push on. It sets how many engines there are and how they are arranged.",
+      "mode": "stack",
+      "pick": {
+        "has": [
+          "mounts"
+        ]
+      }
+    },
+    {
+      "id": "engines",
+      "name": "Engines",
+      "role": "One type for the whole cluster. Required.",
+      "mode": "stack",
+      "pick": {
+        "has": [
+          "engine"
+        ]
+      }
+    },
+    {
+      "id": "gimbal",
+      "name": "Steering",
+      "role": "How the engine thrust is pointed: swivelling the engine, small vernier chambers, or vanes in the jet.",
+      "mode": "radial",
+      "host": "engine",
+      "pick": {
+        "flags": [
+          "gimbal"
+        ]
+      }
+    },
+    {
+      "id": "boosters",
+      "name": "Strap-on boosters",
+      "role": "Solid or liquid boosters clamped to the side: extra thrust off the pad.",
+      "mode": "radial",
+      "host": "thrust",
+      "pick": {
+        "has": [
+          "booster"
+        ]
+      }
+    },
+    {
+      "id": "fins",
+      "name": "Fins, flaps & fairings",
+      "role": "Keep the ship pointing nose-first in thick air; moving fins and flaps steer; fairings smooth the air over outer engines.",
+      "mode": "radial",
+      "host": "thrust",
+      "pick": {
+        "match": "^fin_",
+        "ids": [
+          "aft_fairing_m"
+        ]
+      }
+    },
+    {
+      "id": "landing",
+      "name": "Landing gear",
+      "role": "Legs or airbags for the touchdown on Mars.",
+      "mode": "radial",
+      "pick": {
+        "flags": [
+          "legs"
+        ]
+      }
+    }
+  ],
+  "shapes": [
+    {
+      "id": "single_engine",
+      "name": "One big engine",
+      "real": "Redstone (Mercury-Redstone, 1960–61): one A-7, four fins with air rudders, four graphite jet vanes",
+      "desc": "One large engine on a conical thrust frame, four fins and four graphite jet vanes in the exhaust to steer, as on the Redstone that launched Alan Shepard in 1961: the layout of the first big rockets, and the simplest tail there is.",
+      "pros": [
+        "Simplest and cheapest tail",
+        "Light"
+      ],
+      "cons": [
+        "No engine-out: one failure ends the flight",
+        "The jet vanes erode and cost a little thrust"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "methalox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_single_m",
+        "engine_l"
+      ],
+      "radial": [
+        {
+          "type": "fin_m",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.25,
+          "symmetry": 4
+        },
+        {
+          "type": "jet_vanes",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "single_solids",
+      "name": "One engine + three solids",
+      "real": "Delta II 7320 (one RS-27A, three GEM-40)",
+      "desc": "One large engine helped off the pad by three solid motors around the base. Delta II flew 155 times with three, four or nine of them; this is the three-solid version.",
+      "pros": [
+        "Huge thrust off the pad",
+        "Cheap solids"
+      ],
+      "cons": [
+        "Solid casings stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_single_m",
+        "engine_l"
+      ],
+      "radial": [
+        {
+          "type": "srb_s",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 3
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "atlas_v",
+      "name": "Boattail + two big solids",
+      "real": "Atlas V 521 (one RD-180, two GEM-63)",
+      "desc": "One big kerosene engine with two chambers, its top hidden in a tapering boattail skirt, and two large graphite solids. Atlas V flies with none to five solids; Boeing's Starliner flies the two-solid N22. Here it must also do the upper stage's job (circularise, the transfer to Mars, the landing), so it is fitted with a restartable spark igniter; the real one-shot igniter is a cheaper option.",
+      "pros": [
+        "Engine plumbing shielded from the airflow",
+        "Strong liftoff"
+      ],
+      "cons": [
+        "Solid casings stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_boattail_m",
+        {
+          "type": "engine_l",
+          "options": {
+            "cycle": "sc",
+            "injector": "swirl",
+            "igniter": "spark"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "srb_m",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 2
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "ariane_5",
+      "name": "Wide core + two big solids",
+      "real": "Ariane 5 (one Vulcain 2, two P241 boosters)",
+      "desc": "A wide core with one hydrogen engine between two huge segmented solid boosters, which do most of the lifting for the first two minutes. Ariane 5 flew 117 times, including the James Webb Space Telescope. Here it must also do the upper stage's job (circularise, the transfer to Mars, the landing), so it is fitted with a restartable spark igniter; the real one-shot igniter is a cheaper option.",
+      "pros": [
+        "Very strong liftoff",
+        "One efficient main engine"
+      ],
+      "cons": [
+        "Two booster casings stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_single_l",
+        {
+          "type": "engine_l",
+          "options": {
+            "igniter": "spark"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "srb_l",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 2
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "titan_ii",
+      "name": "Two engines side by side",
+      "real": "Titan II GLV (LR87: two chambers), the Gemini launcher",
+      "desc": "Two large engines on one cross-beam, each chamber with its own turbopump: twice the thrust of the single-engine tail without boosters. Titan II launched all ten crewed Gemini missions; its propellants lit on contact, so the engine needed no igniter. Here kerosene and oxygen stand in for them.",
+      "pros": [
+        "Twice the thrust, no boosters to carry",
+        "Simple"
+      ],
+      "cons": [
+        "Two heavy engines",
+        "No engine-out: either failure ends the flight"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_twin_m",
+        "engine_l"
+      ],
+      "radial": [
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "vulcan",
+      "name": "Two engines + two solids",
+      "real": "Vulcan VC2 (two BE-4, two GEM-63XL)",
+      "desc": "Two methane engines side by side with a pair of big solids. Vulcan can fly with none, two, four or six; this is the two-solid version.",
+      "pros": [
+        "Strong, affordable liftoff",
+        "Medium engines keep the price down"
+      ],
+      "cons": [
+        "Solid casings stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "methalox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_twin_l",
+        {
+          "type": "engine_m",
+          "options": {
+            "cycle": "sc"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "srb_m",
+          "on": 0,
+          "angle": 90,
+          "yFrac": 0.9,
+          "symmetry": 2
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "space_shuttle",
+      "name": "Three engines + two big solids",
+      "real": "Space Shuttle (three RS-25, two four-segment SRBs)",
+      "desc": "Three hydrogen engines in a triangle between two huge segmented solid boosters, scaled down to fit. The boosters do most of the lifting; the three engines can lose one and still fly.",
+      "pros": [
+        "Can lose one engine",
+        "Very strong liftoff"
+      ],
+      "cons": [
+        "Two booster casings stay on as dead mass",
+        "Three engines to buy"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_triad_l",
+        {
+          "type": "engine_s",
+          "options": {
+            "cycle": "sc_fuel"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "srb_l",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 2
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "soyuz",
+      "name": "Four chambers + four liquid boosters",
+      "real": "Soyuz (R-7 family: core RD-108A, four RD-107A boosters)",
+      "desc": "A core with four chambers and steering verniers, ringed by four cone-topped liquid boosters: the R-7 cross that launched Gagarin and every Soyuz since.",
+      "pros": [
+        "Liquid boosters: far better Isp than solids",
+        "Proven: the R-7 family has flown more than 1,900 times"
+      ],
+      "cons": [
+        "Four boosters and four chambers must all work",
+        "Four booster shells stay on as dead mass"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_quad_m",
+        "engine_s"
+      ],
+      "radial": [
+        {
+          "type": "booster_liquid_m",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 4
+        },
+        {
+          "type": "verniers",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "saturn_sic",
+      "name": "Five engines, fairings and fins",
+      "real": "Saturn V first stage S-IC (five F-1)",
+      "desc": "Four steering engines at the corners of a square around a fixed fifth, each outer engine under a fairing with a big fin. The F-1s had tube-wall chambers and baffled injectors, after years of fighting combustion that shook chambers apart. The tail of the Moon rocket, scaled down.",
+      "pros": [
+        "Can lose one engine",
+        "Very stable: four big fins low down"
+      ],
+      "cons": [
+        "Five engines to buy",
+        "Heavy frame"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_five_l",
+        {
+          "type": "engine_m",
+          "options": {
+            "injector": "impinging",
+            "stability": "baffles",
+            "chamber": "tubes",
+            "igniter": "tea_teb"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "aft_fairing_m",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.4,
+          "symmetry": 4
+        },
+        {
+          "type": "fin_l",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0,
+          "symmetry": 4
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0,
+          "options": {
+            "power": "fueldraulic"
+          }
+        }
+      ]
+    },
+    {
+      "id": "new_glenn",
+      "name": "Seven engines",
+      "real": "New Glenn (seven BE-4)",
+      "desc": "Six methane engines in a ring around a seventh under a 7 m base, on six folding legs. The booster lands on a ship at sea; the first landing worked on the second flight, in November 2025.",
+      "pros": [
+        "Can lose one engine",
+        "Fine thrust in small steps"
+      ],
+      "cons": [
+        "Seven engines to buy",
+        "Heavy frame and legs"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "methalox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_seven_l",
+        {
+          "type": "engine_m",
+          "options": {
+            "cycle": "sc"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "legs_glenn_l",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.15
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "octaweb",
+      "name": "Nine engines (Octaweb)",
+      "real": "Falcon 9 (nine Merlin 1D)",
+      "desc": "Nine engines, eight in a ring around one, under a base heat shield, with carbon legs folded along the tail. Merlin engines use a pintle injector and light with a green flash of TEA-TEB.",
+      "pros": [
+        "Can lose one engine and fly on",
+        "Folding legs double as strakes"
+      ],
+      "cons": [
+        "Nine engines to buy and plumb",
+        "Nine small engines push like one large one"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_octaweb_m",
+        {
+          "type": "engine_s",
+          "options": {
+            "injector": "pintle",
+            "igniter": "tea_teb"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "legs_falcon_m",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.15
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0,
+          "options": {
+            "power": "fueldraulic"
+          }
+        }
+      ]
+    },
+    {
+      "id": "mercury_atlas",
+      "name": "Stage and a half",
+      "real": "Mercury-Atlas LV-3B (1960–63): two booster engines in a skirt, one sustainer, two verniers",
+      "desc": "Three engines in a row: two booster engines under bulging side fairings and a sustainer between them, all three swivelling to steer while two small verniers trimmed. On the real Atlas the whole skirt with the two booster engines slid off after about two minutes and the sustainer burned on alone; here nothing drops, and all three are the same engine. John Glenn rode one into orbit in 1962.",
+      "pros": [
+        "All engines start on the pad",
+        "Three swivelling engines"
+      ],
+      "cons": [
+        "No engine-out",
+        "Booster fairings add drag"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_atlas_m",
+        "engine_m"
+      ],
+      "radial": [
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "saturn_ib",
+      "name": "Eight engines in two squares",
+      "real": "Saturn IB first stage S-IB (1966–75): eight H-1, eight fins",
+      "desc": "Eight engines: four fixed in an inner square, four outer ones swivelling to steer, under a ring of eight fins. Its tanks were clustered too: eight Redstone-sized tanks around one Jupiter-sized tank. Saturn IB launched the first crewed Apollo, three Skylab crews and Apollo–Soyuz.",
+      "pros": [
+        "Can lose one engine",
+        "Eight fins: very stable"
+      ],
+      "cons": [
+        "Eight engines to buy",
+        "Eight small engines push less than one large one"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_sib_l",
+        {
+          "type": "engine_s",
+          "options": {
+            "chamber": "tubes"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "fin_l",
+          "on": 0,
+          "angle": 22.5,
+          "yFrac": 0.1,
+          "symmetry": 8
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "saturn_sii",
+      "name": "Five vacuum engines",
+      "real": "Saturn V second stage S-II (1967–73): five J-2",
+      "desc": "Five hydrogen engines with long vacuum bells on a cone of beams, the centre one fixed. The real stage lit about 67 km up; at sea level its bells push weakly. On Apollo 13 heavy shaking shut the centre engine down two minutes early and the other four burned longer to make up for it.",
+      "pros": [
+        "Can lose one engine",
+        "High Isp in space"
+      ],
+      "cons": [
+        "Vacuum bells: weak at sea level",
+        "Five engines to buy"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "vac"
+      },
+      "stack": [
+        "thrust_sii_l",
+        {
+          "type": "engine_m",
+          "options": {
+            "chamber": "tubes"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "n1",
+      "name": "Thirty engines and lattice fins",
+      "real": "Soviet N1 Block A (1969–72): 30 NK-15, four lattice fins",
+      "desc": "Twenty-four engines round the rim and six inside, none of them swivelling: the flight control system steered by throttling engines on opposite sides of the outer ring, and the KORD system shut down any engine that failed together with the one opposite. Four lattice fins sat at the base. All four launches failed, and the Soviet crewed Moon landing died with them.",
+      "pros": [
+        "Built to lose engines and fly on",
+        "Huge thrust"
+      ],
+      "cons": [
+        "Thirty engines to buy and plumb",
+        "Thirty engines heat and shake each other"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_n1_l",
+        {
+          "type": "engine_s",
+          "options": {
+            "cycle": "sc"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "fin_grid_m",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.05,
+          "symmetry": 4
+        }
+      ]
+    },
+    {
+      "id": "titan_iiie",
+      "name": "Twin core + two steering solids",
+      "real": "Titan IIIE (1974–77): LR87-11 core, two five-segment UA1205 boosters",
+      "desc": "A Titan core between two five-segment solids that do all the lifting for the first two minutes; the core engines only lit high up, seconds before the solids fell away. The solids steered by squirting nitrogen tetroxide into their own exhaust. A Titan IIIE launched both Viking landers to Mars and both Voyagers. Here kerosene and oxygen stand in for the core’s propellants, which light on contact.",
+      "pros": [
+        "Very strong liftoff",
+        "Booster steering with no moving nozzle"
+      ],
+      "cons": [
+        "Two big casings and their tanks stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_twin_m",
+        "engine_m"
+      ],
+      "radial": [
+        {
+          "type": "srb_ua1205_l",
+          "on": 0,
+          "angle": 90,
+          "yFrac": 0.9,
+          "symmetry": 2,
+          "options": {
+            "nozzle": "lit"
+          }
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "energia",
+      "name": "Hydrogen core + four kerosene boosters",
+      "real": "Energia (1987–88): four RD-0120 on the core, four Blok A boosters with RD-170",
+      "desc": "Four hydrogen engines under a 7.75 m core, ringed by four kerosene boosters, each with a four-chamber RD-170, the most powerful liquid engine ever flown. The payload rode on the side: the Buran shuttle flew this way in 1988, uncrewed, and landed by itself.",
+      "pros": [
+        "Liquid boosters: far better Isp than solids",
+        "Huge liftoff"
+      ],
+      "cons": [
+        "Four big boosters to buy",
+        "Booster shells stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_energia_l",
+        {
+          "type": "engine_s",
+          "options": {
+            "cycle": "sc_fuel"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "booster_blok_a_m",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.9,
+          "symmetry": 4
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "delta_ii_7925",
+      "name": "One engine + nine solids",
+      "real": "Delta II 7925 (one RS-27A, nine GEM-40)",
+      "desc": "One kerosene engine ringed by nine small solids: on the real rocket six lit on the pad and three in flight; here all nine light together. This version launched Mars Pathfinder, the Spirit rover and Phoenix.",
+      "pros": [
+        "Huge thrust off the pad",
+        "Nine cheap solids"
+      ],
+      "cons": [
+        "Nine casings stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_single_m",
+        "engine_l"
+      ],
+      "radial": [
+        {
+          "type": "srb_s",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 9
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "proton",
+      "name": "Six engines in a ring",
+      "real": "Proton-M first stage (2001–): six RD-275M under six outer fuel tanks",
+      "desc": "A ring of six engines, one under each of six fuel tanks clustered round a central oxidiser tank, with nothing in the middle. Every engine swivels sideways to steer. The real propellants light on contact and keep for weeks, but they are poisonous; kerosene and oxygen stand in for them here.",
+      "pros": [
+        "Six engines round the rim steer strongly",
+        "No igniters on the real engines"
+      ],
+      "cons": [
+        "No engine-out",
+        "Six engines to buy"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_proton_l",
+        {
+          "type": "engine_m",
+          "options": {
+            "cycle": "sc"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "delta_iv_heavy",
+      "name": "Three hydrogen cores",
+      "real": "Delta IV Heavy (2004–24): three Common Booster Cores, each with one RS-68A",
+      "desc": "Three identical hydrogen cores side by side, each with one RS-68 (the uprated RS-68A from 2012) and its ablative nozzle. All three lit on the pad in a famous fireball that scorched their orange foam. It flew 16 times, including Parker Solar Probe and Orion's first test.",
+      "pros": [
+        "Hydrogen boosters: far better Isp than solids",
+        "Strong liftoff"
+      ],
+      "cons": [
+        "The dearest boosters",
+        "Bulky hydrogen tanks",
+        "Booster shells stay on as dead mass"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_single_l",
+        {
+          "type": "engine_l",
+          "options": {
+            "nozzleExt": "ablative"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "booster_cbc_l",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 2
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "angara_a5",
+      "name": "One module + four identical modules",
+      "real": "Angara A5 (2014–): five URM-1 modules, each with one RD-191",
+      "desc": "Five identical kerosene modules: one in the middle and four strapped round it, each with a single RD-191, a one-chamber cousin of the RD-170. The same module flies alone as Angara 1.2. Here it must also do the upper stage's job (circularise, the transfer to Mars, the landing), so it is fitted with a restartable spark igniter; the real one-shot igniter is a cheaper option.",
+      "pros": [
+        "Liquid boosters: far better Isp than solids",
+        "Every module the same"
+      ],
+      "cons": [
+        "Four boosters to buy",
+        "Booster shells stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_single_m",
+        {
+          "type": "engine_l",
+          "options": {
+            "cycle": "sc",
+            "igniter": "spark",
+            "injector": "swirl"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "booster_urm1_m",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 4
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "new_shepard",
+      "name": "One hydrogen engine, aft fins and legs",
+      "real": "Blue Origin New Shepard booster (2015–): one BE-3PM, four aft fins, four legs",
+      "desc": "One deep-throttling hydrogen engine that taps hot gas from its own chamber to spin its pumps, four hydraulic aft fins and four landing legs. The booster falls back, relights and lands upright on its landing pad; one booster flew 17 times.",
+      "pros": [
+        "Throttles very deep (real engine, 18–100 %)",
+        "Moving fins steer in thick air"
+      ],
+      "cons": [
+        "No engine-out",
+        "Fins and legs add mass"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_single_m",
+        {
+          "type": "engine_l",
+          "options": {
+            "cycle": "tapoff",
+            "injector": "pintle"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "fin_aft_m",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.05,
+          "symmetry": 4
+        },
+        {
+          "type": "legs_shepard_m",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.1
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "long_march_5",
+      "name": "Hydrogen core + four two-engine boosters",
+      "real": "Long March 5 (2016–): two YF-77 on the core, four boosters with two YF-100 each",
+      "desc": "Two hydrogen engines under a 5 m core, with four 3.35 m kerosene boosters, each with two engines and a cone nose. Long March 5 launched China's first Mars mission, Tianwen-1, in July 2020.",
+      "pros": [
+        "Liquid boosters: far better Isp than solids",
+        "Ten engines at liftoff"
+      ],
+      "cons": [
+        "Four boosters to buy",
+        "Booster shells stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_twin_l",
+        "engine_m"
+      ],
+      "radial": [
+        {
+          "type": "booster_cz5_m",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.9,
+          "symmetry": 4
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "lvm3",
+      "name": "Twin core + two big solids",
+      "real": "LVM3 (2014–): L110 core with two Vikas, two S200 boosters",
+      "desc": "Two engines under a 4 m core between two 3.2 m solids with swivelling nozzles. On the real rocket the core only lights about 110 s after liftoff; the solids steer and lift alone until then. LVM3 launched Chandrayaan-3 to the Moon in 2023 and is being rated to fly India's first astronauts. Here kerosene and oxygen stand in for the core’s propellants, which light on contact.",
+      "pros": [
+        "Very strong liftoff",
+        "Booster nozzles swivel to steer"
+      ],
+      "cons": [
+        "Two big casings stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_twin_m",
+        "engine_m"
+      ],
+      "radial": [
+        {
+          "type": "srb_s200_l",
+          "on": 0,
+          "angle": 90,
+          "yFrac": 0.9,
+          "symmetry": 2
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "electron",
+      "name": "Nine electric-pump engines",
+      "real": "Rocket Lab Electron (2017–): nine Rutherford, carbon composite",
+      "desc": "Nine small engines whose pumps are spun by battery-powered electric motors, under a slim carbon-fibre stage. The engine parts are 3D printed. A tiny rocket: 1.2 m wide, built for small satellites.",
+      "pros": [
+        "Light carbon frame",
+        "Simplest pumps there are"
+      ],
+      "cons": [
+        "Narrow: a wide body needs an adapter",
+        "Electric pumps give less thrust"
+      ],
+      "diameter": "s",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_electron_s",
+        {
+          "type": "engine_s",
+          "options": {
+            "cycle": "electric"
+          },
+          "material": "printed"
+        }
+      ],
+      "radial": [
+        {
+          "type": "gimbal_emech",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "falcon_heavy",
+      "name": "Three Falcon cores",
+      "real": "Falcon Heavy (2018–): three Falcon 9 first stages, 27 Merlin 1D",
+      "desc": "A Falcon 9 core between two more Falcon 9 first stages with nose cones: 27 engines at liftoff. The side boosters fly back and land side by side; on the first flight in February 2018 they did, and the payload was a Tesla Roadster.",
+      "pros": [
+        "Can lose engines and fly on",
+        "Liquid boosters: far better Isp than solids"
+      ],
+      "cons": [
+        "Dear",
+        "Booster shells, legs and fins stay on as dead mass"
+      ],
+      "diameter": "m",
+      "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_octaweb_m",
+        {
+          "type": "engine_s",
+          "options": {
+            "injector": "pintle",
+            "igniter": "tea_teb"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "booster_f9_m",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 2
+        },
+        {
+          "type": "legs_falcon_m",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.15
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0,
+          "options": {
+            "power": "fueldraulic"
+          }
+        }
+      ]
+    },
+    {
+      "id": "sls",
+      "name": "Four engines + two five-segment solids",
+      "real": "Space Launch System Block 1 (2022–): four RS-25, two five-segment boosters",
+      "desc": "Four Shuttle engines in a square inside a tapering boattail, between the two biggest solid boosters ever flown. The boosters give about four fifths of the thrust at liftoff and are not recovered. SLS launched Artemis I around the Moon in November 2022.",
+      "pros": [
+        "Very strong liftoff",
+        "Four efficient hydrogen engines"
+      ],
+      "cons": [
+        "Two big casings stay on as dead mass",
+        "Four engines to buy"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_sls_l",
+        {
+          "type": "engine_s",
+          "options": {
+            "cycle": "sc_fuel"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "srb_5seg_l",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.9,
+          "symmetry": 2
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "h3_22",
+      "name": "Two expander-bleed engines + two solids",
+      "real": "H3-22 (2023–): two LE-9, two SRB-3",
+      "desc": "Two hydrogen engines that spin their pumps with hydrogen warmed in the chamber walls, a cycle that is hard to scale up to first-stage thrust, beside two simple solids. H3 flies as the 22 (two engines, two solids), the 24 (two engines, four solids) or the 30 (three engines, no solids).",
+      "pros": [
+        "Gentle cycle: failures are mild",
+        "Cheap, simple solids"
+      ],
+      "cons": [
+        "Solid casings stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_twin_l",
+        {
+          "type": "engine_m",
+          "options": {
+            "cycle": "expander_bleed"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "srb_3_m",
+          "on": 0,
+          "angle": 90,
+          "yFrac": 0.9,
+          "symmetry": 2
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "super_heavy",
+      "name": "Thirty-three engines",
+      "real": "SpaceX Super Heavy (2023–): 33 Raptor",
+      "desc": "Thirty-three methane engines in three rings: 3 in the centre, 10 around them and 20 at the edge. The inner 13 swivel on electric actuators and relight to land; the outer 20 only push at launch. The booster has no legs: the launch tower catches it with two arms, first done on 13 October 2024.",
+      "pros": [
+        "Can lose engines and fly on",
+        "The most thrust of any tail"
+      ],
+      "cons": [
+        "Thirty-three engines to buy",
+        "Tons of engines to carry",
+        "No legs on the real booster"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "methalox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_superheavy_l",
+        {
+          "type": "engine_s",
+          "options": {
+            "cycle": "ffsc",
+            "injector": "swirl"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "gimbal_emech",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "starship",
+      "name": "Six engines and aft flaps",
+      "real": "SpaceX Starship upper stage (2023–): three sea-level Raptors, three Raptor Vacuum, two aft flaps",
+      "desc": "Three swivelling sea-level engines in the middle and three big fixed vacuum engines around them, each in its own shielded bay, beside two steel flaps that steer the ship when it falls back belly-first. Here all six share one engine type.",
+      "pros": [
+        "Three swivelling engines steer and land",
+        "Flaps steer on the way down"
+      ],
+      "cons": [
+        "Six engines to buy",
+        "Heavy steel flaps"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "methalox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_starship_l",
+        {
+          "type": "engine_m",
+          "options": {
+            "cycle": "ffsc",
+            "injector": "swirl"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "fin_flap_l",
+          "on": 0,
+          "angle": 0,
+          "yFrac": 0.45,
+          "symmetry": 2
+        },
+        {
+          "type": "gimbal_emech",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    },
+    {
+      "id": "ariane_64",
+      "name": "Wide core + four carbon solids",
+      "real": "Ariane 64 (first flight 12 February 2026): one Vulcain 2.1, four P120C",
+      "desc": "One hydrogen engine under a 5.4 m core with four one-piece carbon-fibre solids, the same motor that is Vega C's first stage. Their nozzles are steered by electric actuators, no hydraulics. Ariane 62 flies with two. Here it must also do the upper stage's job (circularise, the transfer to Mars, the landing), so it is fitted with a restartable spark igniter; the real one-shot igniter is a cheaper option.",
+      "pros": [
+        "Very strong liftoff",
+        "Light carbon booster cases"
+      ],
+      "cons": [
+        "Four casings stay on as dead mass",
+        "No engine-out"
+      ],
+      "diameter": "l",
+      "engine": {
+        "fuel": "hydrolox",
+        "nozzle": "sl"
+      },
+      "stack": [
+        "thrust_single_l",
+        {
+          "type": "engine_l",
+          "options": {
+            "igniter": "spark"
+          }
+        }
+      ],
+      "radial": [
+        {
+          "type": "srb_p120c_l",
+          "on": 0,
+          "angle": 45,
+          "yFrac": 0.9,
+          "symmetry": 4,
+          "options": {
+            "nozzle": "tvc"
+          }
+        },
+        {
+          "type": "gimbal_ring",
+          "on": 1,
+          "angle": 0
+        }
+      ]
+    }
+  ]
+}

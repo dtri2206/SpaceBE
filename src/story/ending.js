@@ -8,6 +8,9 @@ import { getProgress } from '/src/missions/index.js';
 import * as surface from '/src/surface/index.js';
 import data from './data.json';
 import { button, el, fill, typeInto, wait } from './dom.js';
+import { showTribute } from './tribute.js';
+import tributes from './tributes.json';
+import { retryLabel, tributeFor } from './tributeFlow.js';
 import { showView } from './views.js';
 
 const money = (n) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -27,6 +30,15 @@ function firstWords() {
  * Bankrupt is declared by the builder below balance.insolvencyFloor, or happens when money goes below $0.
  */
 export function showEnding(ending) {
+  // A failure that mirrors a real, fatal spaceflight tragedy opens with the memorial (data-driven: tributes.json).
+  const tribute = tributeFor(tributes, ending.historyLessonId);
+  if (!tribute) return renderEnding(ending, false);
+  let inner = null;
+  const stop = showTribute(tribute, { onDone: () => { inner = renderEnding(ending, true); } });
+  return () => { stop(); inner?.(); };
+}
+
+function renderEnding(ending, isTribute) {
   const bankrupt = ending.endingId === contract.ENDINGS.bankrupt || economy.isBankrupt();
   if (ending.endingId === contract.ENDINGS.adrift && !bankrupt) return showAdrift(ending);
   const info = data.endings[ending.endingId] ?? { title: ending.endingId, tone: 'serious', scene: 'earth', text: '' };
@@ -97,6 +109,7 @@ export function showEnding(ending) {
       requestState('REPORT');
     }
   }, { key: 'Enter', primary: true }));
+  if (isTribute && !bankrupt) row.append(button(retryLabel(true), () => requestState('HANGAR')));
   if (entry && !lesson) row.append(button('Guidebook', () => events.emit('guidebook:open', { entryId: entry })));
   card.append(row);
 

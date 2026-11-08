@@ -1,0 +1,149 @@
+{
+  "_about": "Real numbers for the structure flight traits (traits/structure.js; the flight side is src/flight/effects/structure.js). neutral: the traits with no data (the flight as before). Every number has a line in sources; 'estimate' marks a defensible guess. Game scaling is stated where it applies: planets are 1/10 of real size with real gravity and air, so speeds are about 1/3.16 of real and entry heating is converted with atmosphere.js HEAT_REAL_SCALE (flux, x31.6) and HEAT_REAL_SCALE / SPEED_REAL_SCALE (heat load, x10: the same air, a third of the speed, three times as long).",
+  "neutral": {},
+  "maxQ": {
+    "_about": "The dynamic pressure the structure stands in flight: the weakest skin's rating (hull.json strengthKPa, the q its standard panel takes before it wrinkles) divided by the crewed factor of safety, which covers what the game's steady q leaves out (gusts, wind shear, angle of attack). Aluminium 2219 gives 41.4 kPa, about today's TUNING.maxQ 40 kPa (the neutral value, kept for a ship with no skin). A panel that wrinkled at confirm (asBuilt.js 'buckle': ascentCdA x 1.25) keeps a share of its strength; a hot skin loses strength (heatStrength per material).",
+    "safeFactor": 1.4,
+    "neutralPa": 40000,
+    "wrinkledShare": 0.8,
+    "wrinkleDetect": 1.1
+  },
+  "climb": {
+    "_about": "Skin heating on the climb, in flight: the same thin-skin model as hull.js (flat plate, laminar below hull.json physics.transitionRe and turbulent above, recovery 0.89, radiation, cork in series), driven by the ship's real speed and altitude. The heating uses the 1976 standard atmosphere (hull.json physics.atmosphere), not the game's isothermal exponential air: above about 50 km that one is 3 to 5 times denser than real, and on the game's long hypersonic coast at 70-90 km it would heat a 2219 skin to about 230 C on every normal climb (measured on Reliable), where real rockets are already above the air. With the real air the four presets peak at 85-115 C, close to hull.js's reference climb.",
+    "aboveTopKm": 85,
+    "overheatC": 50,
+    "overheatS": 2
+  },
+  "materials": {
+    "_about": "Physical properties of skin and wall materials for the ballistic-limit equations and crack mechanics. Keys are hull.json skin ids (al2219, al2195, carbon, steel, honeycomb), materials.json structure ids (al_li, al2219, stainless, carbon, titanium) and titanium for a future titanium skin. density g/cm3, bhn Brinell hardness, eGPa Young's modulus (sound speed C = sqrt(E/density)), yieldMPa, kic fracture toughness MPa m^0.5, kind 'metal' or 'composite' (composites: alEquiv = ballistic performance per areal density relative to aluminium). heatStiffness: [temperature C, share of the room-temperature stiffness E]: a skin's Max-Q rating is a buckling rating, and buckling goes with the stiffness, not the yield strength.",
+    "al2219": { "density": 2.84, "bhn": 130, "eGPa": 73.1, "yieldMPa": 393, "kic": 33, "kind": "metal", "heatStiffness": [[20, 1], [100, 0.96], [150, 0.94], [200, 0.9], [250, 0.85], [300, 0.78]] },
+    "al2195": { "density": 2.71, "bhn": 165, "eGPa": 76, "yieldMPa": 560, "kic": 35, "kind": "metal", "heatStiffness": [[20, 1], [100, 0.96], [150, 0.93], [200, 0.88], [250, 0.82]] },
+    "al_li": { "same": "al2195" },
+    "carbon": { "density": 1.6, "bhn": null, "eGPa": 60, "yieldMPa": 600, "kic": 15, "kind": "composite", "alEquiv": 0.8, "heatStiffness": [[20, 1], [100, 0.95], [150, 0.85], [170, 0.75], [200, 0.4]] },
+    "steel": { "density": 7.9, "bhn": 250, "eGPa": 193, "yieldMPa": 800, "kic": 150, "kind": "metal", "heatStiffness": [[20, 1], [100, 0.96], [200, 0.92], [300, 0.88], [400, 0.84], [500, 0.8], [600, 0.76], [700, 0.71], [800, 0.63]] },
+    "stainless": { "same": "steel" },
+    "honeycomb": { "density": 2.78, "bhn": 120, "eGPa": 73, "yieldMPa": 345, "kic": 34, "kind": "metal", "heatStiffness": [[20, 1], [100, 0.92], [150, 0.75], [180, 0.5], [220, 0.2]] },
+    "titanium": { "density": 4.43, "bhn": 334, "eGPa": 114, "yieldMPa": 880, "kic": 75, "kind": "metal", "tiBle": true, "heatStiffness": [[20, 1], [100, 0.97], [200, 0.93], [300, 0.89], [400, 0.84], [500, 0.79], [600, 0.72]] }
+  },
+  "skins": {
+    "_about": "How each hull.json skin is built, for the ballistic limit: a sheet (tMm thick) or a sandwich (two faces faceMm thick over a coreMm honeycomb core). Thicknesses come from hull.json's own sources (titanium: hull.json's Ti-6Al-4V skin, a 2.0 mm sheet sized like a buckling-critical skin); a sandwich is a small Whipple shield whose core channels part of the debris cloud, so its standoff counts at channelShare (estimate).",
+    "al2219": { "material": "al2219", "tMm": 2.5 },
+    "al2195": { "material": "al2195", "tMm": 2.45 },
+    "carbon": { "material": "carbon", "faceMm": 0.6, "coreMm": 25 },
+    "steel": { "material": "steel", "tMm": 1.8 },
+    "honeycomb": { "material": "honeycomb", "faceMm": 0.8, "coreMm": 25 },
+    "titanium": { "material": "titanium", "tMm": 2.0 },
+    "channelShare": 0.25,
+    "sheetFor": { "_about": "the sheet a dry part of a section is made of when no skin covers it (nose covers, intertanks, engine bays): its structure material at this thickness", "tMm": 2.5 }
+  },
+  "tanks": {
+    "_about": "Propellant tank walls are the outer skin over the tanks. Thickness: the default aluminium-lithium wall tMmRef (estimate for the game's 2.5 m tanks: real stage walls are 2-5 mm, set by flight loads and minimum gauge, not by the 3-4 bar pressure alone), scaled for another material by its mass factor (materials.json) over its density, so the wall keeps the game's mass. A punctured tank leaks while its pressurant lasts; the ullage gas vents through the same hole, so the blowdown time is blowdownS for a hole of refHoleCm2 and shorter for a bigger one (time ~ ullage volume / hole area), and every holed tank loses about the same propellant, Cd A sqrt(2 rho dp) x blowdownS x refHoleCm2 / A, about 1.7 t. It bursts when the hole reaches the critical crack length for its stress (hoopShare of yield; Griffith/Irwin: a_c = (K_IC / sigma)^2 / pi). parts: tanks with a fixed wall.",
+    "tMmRef": 3.0,
+    "refMaterial": "al_li",
+    "hoopShare": 0.5,
+    "pressureKPa": 300,
+    "liquidDensity": 1000,
+    "leakCd": 0.6,
+    "blowdownS": 1500,
+    "refHoleCm2": 0.785,
+    "parts": {
+      "tank_l_methalox_steel": { "material": "stainless", "tMm": 4.0 },
+      "tank_m_kerolox_balloon": { "material": "stainless", "tMm": 0.5 },
+      "tank_m_hydrolox_balloon": { "material": "stainless", "tMm": 0.5 },
+      "tank_s_kerolox_carbon": { "material": "carbon", "tMm": 3.5 }
+    }
+  },
+  "cabin": {
+    "_about": "A crew capsule is a natural Whipple shield: an outer shell (backshell, its thermal protection and insulation) bumperMm of aluminium-equivalent in front of the pressure vessel, standoffCm apart (estimates; Orion and Dragon carry MMOD protection in the backshell). The pressure vessel is tMmRef of aluminium-lithium (Orion, Crew Dragon), scaled like a tank for another material. A hole leaks the cabin air (choked flow through the hole, for the life group); the vessel bursts only past its critical crack at pressureKPa.",
+    "bumperMm": 1.5,
+    "standoffCm": 8,
+    "tMmRef": 3.0,
+    "radiusM": 1.5,
+    "pressureKPa": 101.3,
+    "airTempK": 293
+  },
+  "armor": {
+    "_about": "Parts with flags.armorHits. Each still takes one hit, as before, when the hit is within what it stops; a bigger piece goes through and the wall behind decides. whipple: an aluminium bumper (bumperMm, 6061-T6) at standoffCm in front of the wall (Christiansen's Whipple equation). stuffed: ISS-style stuffed Whipple, aluminium bumper plus Nextel and Kevlar cloth (Christiansen's stuffed-Whipple equation). fairing: a carbon-sandwich fairing skin in front of what it encloses, a bumper so thin it cannot shatter large pieces (bumper shatter limit, Christiansen design equation 4-1).",
+    "parts": {
+      "whipple_shield": { "kind": "whipple", "bumperMm": 2.0, "bumperDensity": 2.7, "standoffCm": 10 },
+      "armor_plate": { "kind": "stuffed", "bumperMm": 2.0, "bumperDensity": 2.7, "standoffCm": 11.4 },
+      "nose_hammerhead_m": { "kind": "fairing", "bumperMm": 1.2, "bumperDensity": 1.6, "standoffCm": 50 },
+      "fairing_composite_l": { "kind": "fairing", "bumperMm": 1.2, "bumperDensity": 1.6, "standoffCm": 50 },
+      "fairing_newglenn": { "kind": "fairing", "bumperMm": 1.2, "bumperDensity": 1.6, "standoffCm": 60 },
+      "fairing_cz5": { "kind": "fairing", "bumperMm": 1.2, "bumperDensity": 1.6, "standoffCm": 50 }
+    },
+    "default": { "kind": "whipple", "bumperMm": 2.0, "bumperDensity": 2.7, "standoffCm": 10 },
+    "shatterLimit": 1.5
+  },
+  "debris": {
+    "_about": "Game scaling of the debris pieces (src/flight/debris.js: drawn 0.3-2.5 m across, slowed to about 120 m/s so a player can dodge). A piece stands for an aluminium fragment of cmPerGameM cm per metre of its drawn radius (0.09-0.75 cm, mostly small), hitting at speedKmS (NASA's average debris impact speed) scaled by the game's relative speed over refRelSpeed. The energy that counts is the part normal to the wall (V cos theta): a glancing hit does less. Thresholds (J) are the kinetic energy of the critical particle at speedKmS; at hypervelocity Whipple shields are energy-limited (NASA TP-2003-210788), single walls nearly so (the energy form of Ratliff et al. 2009). incipient and perforation: the single-wall thickness rules t = 3.0 / 1.8 P_inf (detached spall 2.2). holeK: a perforated sheet's hole is about this many particle diameters, shrinking to nothing at the ballistic limit (estimate).",
+    "cmPerGameM": 0.3,
+    "speedKmS": 9,
+    "refRelSpeed": 120,
+    "density": 2.8,
+    "kIncipient": 3.0,
+    "kSpall": 2.2,
+    "kPerforate": 1.8,
+    "holeK": 2.5,
+    "cloudHoleK": 1.0
+  },
+  "shields": {
+    "_about": "Heat shields. peakWcm2: the peak heat flux the material stands (real); loadJcm2: the heat load (real) a standard-thickness shield of it absorbs before the heat reaches its bondline. A standard shield is sized, like a real one, for its design entry with margin: 5,000 J/cm2 for Avcoat, twice the game's nominal Mars entry (measured: about 2,500 J/cm2 real-equivalent on Reliable at the -22.8 deg start, the order of real Mars entries); other materials scale by their relative capacity (estimates, see sources). thickness 'thick' adds 25 % ablator, so 25 % capacity; a one-piece shield ('monolithic') has no seams to trip the flow (+10 % peak, estimate). type: ablator (consumed), tiles (reusable insulator, fragile), inflatable (flexible insulator), heatSink (soaks the heat). Shuttle-type tiles fly as an already damaged shield (stats.js fragileShield): the Columbia ending stays as it was.",
+    "ablators": {
+      "avcoat": { "type": "ablator", "peakWcm2": 500, "loadJcm2": 5000 },
+      "avcoat_blocks": { "type": "ablator", "peakWcm2": 500, "loadJcm2": 4750 },
+      "pica": { "type": "ablator", "peakWcm2": 1100, "loadJcm2": 4500 },
+      "sla": { "type": "ablator", "peakWcm2": 200, "loadJcm2": 3000 },
+      "phenolic_glass": { "type": "ablator", "peakWcm2": 300, "loadJcm2": 5250 },
+      "silicone": { "type": "ablator", "peakWcm2": 250, "loadJcm2": 4750 },
+      "bla": { "type": "ablator", "peakWcm2": 250, "loadJcm2": 4750 },
+      "carbon_phenolic": { "type": "ablator", "peakWcm2": 10000, "loadJcm2": 7500 },
+      "heat_sink": { "type": "heatSink", "peakWcm2": 100, "loadJcm2": 2250 }
+    },
+    "parts": {
+      "heat_tiles_m": { "type": "tiles", "name": "Shuttle-type silica tiles", "peakWcm2": 27, "loadJcm2": 6000, "fragile": true },
+      "heat_shield_hiad": { "type": "inflatable", "name": "HIAD flexible TPS", "peakWcm2": 80, "loadJcm2": 3000 },
+      "capsule_vostok": { "type": "ablator", "name": "Vostok ablative coating", "peakWcm2": 300, "loadJcm2": 5000 },
+      "capsule_mengzhou": { "type": "ablator", "name": "Mengzhou lightweight ablator", "peakWcm2": 500, "loadJcm2": 5000 },
+      "dream_chaser": { "type": "tiles", "name": "Silica tiles and a TUFROC nose cap", "peakWcm2": 73, "loadJcm2": 6000 },
+      "starship_nose": { "type": "tiles", "name": "Hexagonal ceramic tiles", "peakWcm2": 40, "loadJcm2": 6000, "fragile": true }
+    },
+    "defaultAblator": "avcoat",
+    "thickness": { "standard": 1, "thick": 1.25 },
+    "gaps": { "filler": 1, "monolithic": 1.1 }
+  },
+  "notes": {
+    "peakQ": { "en": "Peak air load {value} kPa; the structure was good for {limitKPa} kPa.", "vi": "Áp lực gió cao nhất {value} kPa; kết cấu chịu được {limitKPa} kPa.", "section": "ship", "tone": "info", "digits": 1, "scale": 0.001, "whatIfFail": { "en": "With {alt} instead of {mine}, this climb would have broken the ship ({altLimit} Pa).", "vi": "Nếu dùng {alt} thay cho {mine}, lần bay lên này đã làm vỡ tàu ({altLimit} Pa)." }, "whatIfPass": { "en": "With {alt} instead of {mine}, the structure would have held ({altLimit} Pa).", "vi": "Nếu dùng {alt} thay cho {mine}, kết cấu đã chịu được ({altLimit} Pa)." } },
+    "skinTemp": { "en": "The {section} skin peaked at {value} °C on the climb; it starts to weaken near {limit} °C.", "vi": "Vỏ phần {section} nóng nhất {value} °C khi bay lên; vật liệu bắt đầu yếu đi ở khoảng {limit} °C.", "tone": "info", "digits": 0 },
+    "skinShed": { "en": "The {section} skin overheated on the climb ({value} °C) and pieces broke away.", "vi": "Vỏ phần {section} quá nóng khi bay lên ({value} °C) và có mảnh bị bong ra.", "tone": "bad", "digits": 0 },
+    "hit": { "en": "A debris hit on the {section} ({outcomeText}).", "vi": "Một mảnh rác vũ trụ trúng phần {section} ({outcomeVi}).", "tone": "bad", "digits": 2 },
+    "impact": { "en": "The hit carried {value} J; the {wallText} could take {limitJ} J before a hole.", "vi": "Cú va chạm mang {value} J; {wallVi} chịu được {limitJ} J trước khi thủng.", "tone": "info", "digits": 0, "whatIfFail": { "en": "With {alt} instead of {mine}, this hit would have gone through.", "vi": "Nếu dùng {alt} thay cho {mine}, cú va chạm này đã xuyên thủng." }, "whatIfPass": { "en": "With {alt} instead of {mine}, the wall would have stopped this hit.", "vi": "Nếu dùng {alt} thay cho {mine}, lớp vỏ đã chặn được cú va chạm này." } },
+    "cabinLeak": { "en": "The cabin was holed: {value} mm² of hole, about {kgPerDay} kg of air a day at full pressure.", "vi": "Khoang lái bị thủng: lỗ {value} mm², mất khoảng {kgPerDay} kg không khí mỗi ngày khi còn đủ áp suất.", "tone": "bad", "digits": 1 },
+    "tankLeak": { "en": "A propellant tank was holed and lost about {value} kg before its pressure ran down.", "vi": "Một bình nhiên liệu bị thủng và mất khoảng {value} kg trước khi hết áp suất.", "tone": "bad", "digits": 0 },
+    "shieldUse": { "en": "The heat shield used {pct} % of what it can take.", "vi": "Tấm chắn nhiệt đã dùng {pct} % sức chịu của nó.", "tone": "info", "digits": 0 },
+    "heatLoad": { "en": "Entry heat load {value} J/cm² (real-equivalent) against the {limit} J/cm² this shield absorbs.", "vi": "Tổng nhiệt khi vào khí quyển {value} J/cm² (quy ra thực tế), tấm chắn này hấp thụ được {limit} J/cm².", "tone": "info", "digits": 0, "whatIfFail": { "en": "With {alt} instead of {mine}, the shield would have burned through.", "vi": "Nếu dùng {alt} thay cho {mine}, tấm chắn đã bị cháy thủng." }, "whatIfPass": { "en": "With {alt} instead of {mine}, the shield would have lasted.", "vi": "Nếu dùng {alt} thay cho {mine}, tấm chắn đã chịu được." } },
+    "heatPeak": { "en": "Peak heating {value} W/cm² (real-equivalent) against the {limit} W/cm² the shield stands.", "vi": "Dòng nhiệt cao nhất {value} W/cm² (quy ra thực tế), tấm chắn chịu được {limit} W/cm².", "tone": "info", "digits": 0, "whatIfFail": { "en": "With {alt} instead of {mine}, the peak would have been too much.", "vi": "Nếu dùng {alt} thay cho {mine}, dòng nhiệt đỉnh đã quá sức chịu." }, "whatIfPass": { "en": "With {alt} instead of {mine}, the shield would have stood the peak.", "vi": "Nếu dùng {alt} thay cho {mine}, tấm chắn đã chịu được dòng nhiệt đỉnh." } },
+    "burnThrough": { "en": "The heat shield's ablator was used up before the ship slowed down.", "vi": "Lớp vật liệu chống nhiệt đã cháy hết trước khi tàu kịp giảm tốc.", "tone": "bad", "section": "nose" }
+  },
+  "sources": [
+    "Crewed ultimate factor of safety 1.4: NASA-STD-5001 (Structural Design and Test Factors of Safety for Spaceflight Hardware); hull.json physics.safeFactor. 2219 rated 58 kPa / 1.4 = 41.4 kPa, about FlightController TUNING.maxQ 40 kPa ('real rockets see ~30-35 kPa at Max-Q').",
+    "wrinkledShare 0.8: a stiffened panel that has buckled locally keeps most of its load-carrying capacity in post-buckling (Bruhn, Analysis and Design of Flight Vehicle Structures, ch. C7-C9), estimate.",
+    "Single-wall cratering and thin-plate limits: P_inf = 5.24 d^(19/18) BHN^-0.25 (rho_p/rho_t)^0.5 (V_n/C)^(2/3); rear wall t = 1.8 P_inf to prevent perforation, 2.2 P_inf to prevent detached spall: E. L. Christiansen, Meteoroid/Debris Shielding, NASA TP-2003-210788 (2003), eqs. 3-9 and 3-10, https://ntrs.nasa.gov/citations/20030068423; incipient spall at 3.0 P_inf (Cour-Palais).",
+    "Titanium: the Cour-Palais equation is non-conservative for titanium walls (fitted to aluminium only); the measured detached-spall limit needs t = 2.4 x 5.24 ... (energy form) instead of 2.2: J. M. Ratliff, E. L. Christiansen, C. Bryant, Ballistic Limit Equation for Single Wall Titanium, NASA JSC (2009), https://ntrs.nasa.gov/citations/20090007776. Applied here as (2.2/2.4)^3 = 0.77 on titanium's single-wall energies.",
+    "Whipple shield, high velocity: d_c = 3.918 t_w^(2/3) rho_p^-1/3 rho_b^-1/9 (V cos theta)^-2/3 S^1/3 (sigma/70 ksi)^1/3 (Christiansen, Design and Performance Equations for Advanced Meteoroid and Debris Shields, Int. J. Impact Eng. 14, 145-156, 1993); TP-2003-210788 eq. 4-10 gives about the same (0.69 vs 0.66 cm for its 0.127 cm bumper, 10.7 cm, 0.32 cm 2219 example); bumper thickness to shatter the particle t_b = 0.25 d rho_p / rho_b (eq. 4-1). 'Since projectile kinetic energy controls WS penetration at high velocities' (TP-2003-210788, sec. 4.2).",
+    "Stuffed Whipple (Nextel/Kevlar), high velocity: d_c = 0.6 (t_w rho_w)^1/3 rho_p^-1/3 (V cos theta)^-1/3 S^2/3 (sigma/40 ksi)^1/6, momentum-scaled (TP-2003-210788 sec. 4.3); ISS U.S. Lab: 0.2 cm 6061-T6 bumper, 6 Nextel AF62 + 6 Kevlar 710 layers, 11.4 cm, 0.48 cm 2219-T87 wall.",
+    "Average debris impact: 9 km/s, 45 degrees, 2.8 g/cm3 (TP-2003-210788 sec. 4.2 example); src/flight/debris.js says real debris hits at about 10 km/s and the game slows it to 120 m/s. cmPerGameM 0.3 (0.09-0.75 cm fragments, game scaling): chosen so a bare aluminium-lithium tank wall is holed by every piece and bursts on the bigger third, a 10 cm Whipple stops about 85 % of them and an ISS-style stuffed shield all of them, matching the game's 'armour takes a hit' (estimate).",
+    "Material properties: 2219-T87 density 2.84, E 73.1 GPa, yield 393 MPa (57 ksi), Brinell about 130, K_IC about 30-36 MPa m^0.5; 2195-T8 density 2.71, E 76 GPa, yield about 560 MPa, Brinell about 165 (estimate from its 590 MPa tensile), K_IC about 30-40; Ti-6Al-4V annealed density 4.43, E 114 GPa, yield 880 MPa, Brinell about 334, K_IC 55-100 (75 used); cold-worked austenitic stainless (301/304L, Starship 30X) density 7.9, E 193 GPa, yield 800 MPa (estimate between annealed 300 and full-hard 1,000+), Brinell about 250 (estimate), K_IC above 150 at cryogenic temperature; 2024-T3 honeycomb faces yield 345 MPa, Brinell 120. Sources: MMPDS / MIL-HDBK-5 alloy chapters, ASM Handbook vol. 2 and 19, MatWeb datasheets (values rounded; K_IC of Al-Li and the steel's hardness are estimates).",
+    "Carbon-fibre composite: E about 60 GPa quasi-isotropic, strength about 600 MPa, alEquiv 0.8 (composite laminates stop hypervelocity particles somewhat worse than aluminium per areal density, estimate), effective K_IC 15 (impact-damaged laminates fail from small cracks and delaminations; also the X-33 composite hydrogen tank failure, 1999), estimate.",
+    "heatStiffness tables: the elastic modulus at temperature over its room-temperature value, because the Max-Q rating is a buckling rating (thin-shell buckling goes as E): 2219-T87 and 2195-T8 about 0.94 at 150 C and 0.90 at 200 C (2219 about 0.92 at 182 C), Ti-6Al-4V about 0.84 at 400 C (MMPDS modulus curves, read to about +/-3 %); austenitic stainless kE (EN 1993-1-2 annex C, 1.4301: 0.92 at 200 C, 0.84 at 400 C, 0.76 at 600 C); carbon/epoxy and bonded honeycomb lose their compression and core-shear stiffness near the resin's or adhesive's glass transition (hull.json sources), estimates.",
+    "Fracture: critical crack a_c = (K_IC / sigma)^2 / pi (Griffith-Irwin, Y = 1). hoopShare 0.5 (estimate) stands in for two loads together: the wall's operating stress (tanks fly near a third of their yield in hoop) and hydrodynamic ram, the pressure pulse a hypervelocity particle drives through a full tank, which loads the wall from inside as the hole opens. Leak-before-break is why stainless balloon tanks and Starship tolerate damage.",
+    "Tank wall tMmRef 3.0 mm aluminium-lithium for a 2.5 m tank (estimate; Starship 3.97 mm steel at 9 m and Centaur 0.51 mm steel are in hull.json sources; Delta II's 2.4 m isogrid first stage has a skin of a few mm).",
+    "Propellant leak: orifice flow m = Cd A sqrt(2 rho dp), Cd 0.6, 3 bar ullage pressure, liquid density about 1,000 kg/m3 (LOX 1,141, RP-1 810, methane 422). The ullage gas vents through the same hole, and a pressurised vessel blows down through an orifice in a time t ~ V / (Cd A c*) (isothermal or adiabatic blowdown, e.g. Saad, Compressible Fluid Flow, ch. 3), so the flow fades over blowdownS x (refHoleCm2 / A): about 25 min for a 1 cm hole (0.785 cm2) in a 10 m3 ullage (estimate), and every holed tank loses about 1.15 kg/s x 1,500 s, 1.7 t, whatever the hole size.",
+    "Cabin leak: choked flow of air m = Cd A p sqrt(gamma / (R T)) (2 / (gamma + 1))^((gamma + 1) / (2 (gamma - 1))), Cd 0.6, gamma 1.4, R 287, 293 K, 101.3 kPa: about 12 kg of air a day per mm2 of hole. Soyuz MS-09 (2018) lost pressure slowly through a 2 mm hole until the crew sealed it.",
+    "Capsule backshell as a bumper (1.5 mm aluminium-equivalent, 8 cm standoff) and pressure vessel 3 mm Al-Li: estimates (Orion's pressure vessel is 2195 Al-Li; Crew Dragon's Al-Li; Mercury and Gemini titanium).",
+    "Fairing bumper: carbon-fibre face sheets 0.6 mm each (hull.json carbon skin) 50-60 cm in front of the capsule (estimate).",
+    "Skin thicknesses: 2219 2.5 mm, steel 1.8 mm, carbon 2 x 0.6 mm faces on a 25 mm core (hull.json sources); 2195 2.45 mm (the same 79 % sheet share of its 8.4 kg/m2 as 2219's 7.1 of 9); honeycomb 2 x 0.8 mm faces on a 25 mm core (its 6.5 kg/m2, estimate); titanium 2.0 mm, sized like a buckling-critical skin, t ~ sqrt(1/E): 2.5 x sqrt(73/114) (estimate; hull.json has no titanium skin yet). channelShare 0.25: honeycomb cells channel the debris cloud, so a sandwich stops less than a Whipple of the same faces and gap (Christiansen; ESA sandwich-panel BLE studies), estimate.",
+    "Heat-shield peak fluxes: PICA arc-jet tested from 107 to 1,100 W/cm2 and flown on Stardust at about 950-1,200 W/cm2 with 36 kJ/cm2 (NASA Ames ablator reviews, e.g. https://ntrs.nasa.gov/api/citations/20220004752/downloads/SOA%20Ablators%20AMTPS.pdf and core.ac.uk/download/232566563.pdf); SLA-561V starts to ablate at about 110 W/cm2 (US patent 7,931,962) and failed MSL's high-heating, high-shear tests above about 200 W/cm2, so MSL switched to PICA (197 W/cm2 at peak: spaceflight101 MSL aeroshell); LOFTID's inflatable flew to about 40 W/cm2 in 2022, Gen-2 flexible TPS capability 80 W/cm2 (NASA EDL Summer Series, LOFTID & HIAD, https://ntrs.nasa.gov/api/citations/20210018646/downloads/EDL%20Summer%20Series%20-%20LOFTID%20%26%20HIAD_Final_noVids.pdf); Shuttle LI-900 tiles are reusable to 1,260 C, a radiative-equilibrium flux of 0.85 sigma T^4 = 27 W/cm2; TUFROC to about 1,700 C, 73 W/cm2 by the same rule; Avcoat 500 W/cm2 (Apollo lunar returns, estimate); carbon-phenolic 10,000 W/cm2 (Galileo and Pioneer Venus probes saw tens of kW/cm2, estimate); Mercury fibreglass-phenolic 300, Gemini silicone 250, Boeing Lightweight Ablator 250, beryllium heat sink 100 (estimates).",
+    "Heat-load capacities: Avcoat standard 5,000 J/cm2 is a game calibration (twice the measured nominal Mars entry, as real shields are sized for the design entry with margin). Relative capacities are estimates from density and char behaviour: PICA 0.9 (light, most effective at high flux, less so at Mars fluxes: 'most ablators are more effective at high heat flux', NASA Ames), SLA-561V 0.6 (cork and silica at 0.26 g/cm3, sized for gentle Mars entries), Avcoat blocks 0.95 (char loss between blocks, Artemis I, NASA OIG IG-24-011), phenolic-glass 1.05 (dense), silicone and BLA 0.95, carbon-phenolic 1.5 (1.45 g/cm3), beryllium heat sink 0.45 (it can only warm up: about 1.8 J/g/K over some 700 K, far less per kg than an ablator's char and blowing; heat sinks flew only suborbital, Mercury-Redstone), tiles 6,000 (insulators sized for 100 Shuttle entries), HIAD 3,000 (estimate)."
+  ]
+}

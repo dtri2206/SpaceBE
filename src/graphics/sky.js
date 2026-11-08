@@ -182,9 +182,9 @@ export function createMarsSky() {
   dome.name = 'sky:mars';
   dome.frustumCulled = false;
   dome.renderOrder = -1000;
-  const dayHorizon = new THREE.Color().setRGB(0.86, 0.56, 0.35);
+  const dayHorizon = new THREE.Color().setRGB(0.86, 0.49, 0.29);
   const duskHorizon = new THREE.Color().setRGB(0.36, 0.22, 0.17);
-  const dayZenith = new THREE.Color().setRGB(0.46, 0.28, 0.17);
+  const dayZenith = new THREE.Color().setRGB(0.46, 0.24, 0.15);
   const duskZenith = new THREE.Color().setRGB(0.055, 0.045, 0.065);
   dome.userData.setSun = (direction) => {
     uniforms.uSunDir.value.copy(direction);

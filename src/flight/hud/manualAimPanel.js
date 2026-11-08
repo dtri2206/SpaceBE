@@ -24,7 +24,7 @@ export function createManualAimPanel({ parent = document.body } = {}) {
 <div style="position:absolute;left:3%;right:3%;top:79%;height:3.4cqh;border:1px solid #72e6e055"><div data-id="bar" style="height:100%;width:0;background:${CYAN}"></div></div>
 <div data-id="acc" style="position:absolute;left:3%;top:83.5%;color:${CYAN};font-size:max(9px,3.4cqh)"></div>
 <div data-id="msg" style="position:absolute;left:0;right:0;top:88%;text-align:center;font-size:max(10px,4cqh);letter-spacing:.14em"></div>
-<div style="position:absolute;left:0;right:0;bottom:1.5%;text-align:center;color:#8daeb8;font-size:max(8px,2.8cqh);letter-spacing:.08em">ESC · give it back to the computer</div>
+<div style="position:absolute;left:0;right:0;bottom:1.5%;text-align:center;color:#8daeb8;font-size:max(8px,2.8cqh);letter-spacing:.08em">F · give it back to the computer</div>
 </div>`;
   el.classList.add('manual-aim-root');
   parent.append(el);
@@ -68,7 +68,10 @@ export function createManualAimPanel({ parent = document.body } = {}) {
       el.style.left = `${r.left}px`; el.style.top = `${r.top}px`; el.style.width = `${r.width}px`; el.style.height = `${r.height}px`;
       q('callout').textContent = callout ? `MISSION CONTROL · ${callout}` : '';
       q('label').textContent = readout.label ?? '';
-      q('time').textContent = `${Math.ceil(readout.timeLeft)} s`;
+      const scored = readout.timeLeft != null; // free manual: no timer, no accuracy bar
+      q('time').textContent = scored ? `${Math.ceil(readout.timeLeft)} s` : '';
+      q('bar').parentElement.style.display = scored ? '' : 'none';
+      q('acc').style.display = scored ? '' : 'none';
       place(target, readout.target); place(aim, readout.aim);
       nose.style.display = readout.nose ? '' : 'none';
       if (readout.nose) place(nose, readout.nose);

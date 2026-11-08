@@ -1,0 +1,3 @@
+{
+  "_about": "Inside every part: the kits a part can open when you zoom in. Each slot has options; the first option is the default. Effects: massF/costF multiply the part's dry mass and cost, massD/costD add kg and $, rel adds to reliability, isp adds seconds (engines and solid motors), thrustF multiplies thrust, powerF multiplies power, chuteF multiplies parachute drag."
+}

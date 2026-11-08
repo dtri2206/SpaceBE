@@ -7,7 +7,10 @@ import { fill } from './dom.js';
 import { showEnding } from './ending.js';
 import { showPrelaunch } from './prelaunch.js';
 import { clearRadio, radio } from './radio.js';
-import { showReturn } from './returnTrip.js';
+import { showReturn, showSilentReturnChoice } from './returnTrip.js';
+import { showTribute } from './tribute.js';
+import tributes from './tributes.json';
+import { fatalTributes as fatalTributeList, tributeFor } from './tributeFlow.js';
 import { showView } from './views.js';
 import './story.css';
 
@@ -16,6 +19,10 @@ const LESSONS = {
   coldMorning: 'challenger', theFoam: 'columbia', pureOxygen: 'apollo1', successfulFailure: 'apollo13',
   silentReturn: 'soyuz11', unitError: 'marsClimateOrbiter', falseTouchdown: 'marsPolarLander', spin: 'gemini8', beagle: 'beagle2',
 };
+
+// Public helpers for the Guidebook's Wall of Remembrance (Role 4's own module).
+export { tributes, showTribute };
+export const fatalTributes = () => fatalTributeList(tributes);
 
 let ending = { endingId: 'homecoming', cause: '', cost: 0, historyLessonId: null };
 let dispose = null;
@@ -52,6 +59,8 @@ function listen() {
   // Any module may emit flight:failed. Story charges the penalty and shows the ending.
   events.on('flight:failed', ({ endingId, cause, historyHint }) => {
     if (getState() === 'ENDING') return;
+    // A comic ending (rud) must never carry a fatal real-event cause: use that event's own tribute ending instead.
+    if (endingId === 'rud' && tributeFor(tributes, historyHint)) endingId = Object.keys(LESSONS).find((k) => LESSONS[k] === historyHint) ?? endingId;
     const cost = economy.chargeFailure(getShip().stats.cost);
     events.emit('ending:show', { endingId, cause, cost, historyLessonId: LESSONS[endingId] ?? historyHint ?? null });
     requestState('ENDING');
@@ -111,6 +120,15 @@ function listen() {
 export default {
   init() {
     listen();
+    if (new URLSearchParams(location.search).get('debug') === '1') {
+      // Debug only: window.__role4.tribute('challenger') shows a memorial; silentReturnChoice() jumps to the RETURN choice.
+      let off = null;
+      window.__role4 = {
+        ...(window.__role4 ?? {}),
+        tribute: (id = 'challenger') => { off?.(); off = showTribute(tributes[id], { onDone: () => {} }); },
+        silentReturnChoice: () => { off?.(); off = showSilentReturnChoice(); },
+      };
+    }
   },
 
   enter(state) {

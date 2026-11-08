@@ -1,0 +1,1691 @@
+{
+  "kits": {
+    "capsule": {
+      "name": "Inside the cabin",
+      "slots": [
+        {
+          "key": "computer",
+          "name": "Flight computer",
+          "role": "The computer that flies the ship and how many copies of it there are.",
+          "art": "computer",
+          "options": [
+            {
+              "id": "single",
+              "name": "Single computer",
+              "note": "One flight computer. If it fails, the crew flies by hand.",
+              "pros": [
+                "Cheap",
+                "Light"
+              ],
+              "cons": [
+                "No backup"
+              ],
+              "real": "Mercury, Gemini"
+            },
+            {
+              "id": "triple",
+              "name": "Triple redundant, voting",
+              "note": "Three computers vote on every command; one can fail without anyone noticing.",
+              "pros": [
+                "Reliability +2 %"
+              ],
+              "cons": [
+                "+60 kg",
+                "+$150k"
+              ],
+              "massD": 60,
+              "costD": 150000,
+              "rel": 0.02,
+              "real": "Dragon, Soyuz"
+            },
+            {
+              "id": "quad",
+              "name": "Four plus a backup",
+              "note": "Four identical computers and a fifth with different software, as the Shuttle flew.",
+              "pros": [
+                "Reliability +3 %"
+              ],
+              "cons": [
+                "+90 kg",
+                "+$260k"
+              ],
+              "massD": 90,
+              "costD": 260000,
+              "rel": 0.03,
+              "real": "Space Shuttle GPCs"
+            }
+          ]
+        },
+        {
+          "key": "lifeSupport",
+          "name": "Life-support loop",
+          "role": "Air and water: used once, or recycled.",
+          "art": "ecls",
+          "options": [
+            {
+              "id": "open",
+              "name": "Open loop",
+              "note": "Oxygen from tanks, CO₂ into canisters, water from bags. Simple; it lasts as long as the stores do.",
+              "pros": [
+                "Simple"
+              ],
+              "cons": [
+                "Stores for weeks, not months"
+              ],
+              "real": "Apollo, Dragon"
+            },
+            {
+              "id": "regenerative",
+              "name": "Regenerative loop",
+              "note": "Water is split to make the cabin's oxygen and carbon dioxide is cleaned out and reused, as on the ISS: the spare oxygen goes only to the suit. It needs a backup scrubber: if it fails, nothing else cleans the air.",
+              "pros": [
+                "Runs for months"
+              ],
+              "cons": [
+                "+120 kg",
+                "+$200k",
+                "Needs a backup scrubber"
+              ],
+              "massD": 120,
+              "costD": 200000,
+              "rel": 0.005,
+              "real": "ISS ECLSS"
+            }
+          ]
+        },
+        {
+          "key": "couches",
+          "name": "Crew couches",
+          "role": "What the crew sits in through launch and landing.",
+          "art": "couch",
+          "options": [
+            {
+              "id": "fixed",
+              "name": "Fixed couches",
+              "note": "Padded seats bolted to the floor.",
+              "pros": [
+                "Light"
+              ],
+              "cons": [
+                "A hard landing is felt in full"
+              ],
+              "real": "Mercury contour couch, moulded to each astronaut"
+            },
+            {
+              "id": "shock",
+              "name": "Shock-attenuating couches",
+              "note": "Seats hung on crushable struts that soak up a hard landing.",
+              "pros": [
+                "Survive a hard touchdown",
+                "Reliability +0.4 %"
+              ],
+              "cons": [
+                "+40 kg"
+              ],
+              "massD": 40,
+              "costD": 40000,
+              "rel": 0.004,
+              "real": "Apollo, Orion"
+            },
+            {
+              "id": "ejection",
+              "name": "Ejection seats",
+              "note": "Each seat is a small rocket that throws its astronaut clear, then opens a parachute. An escape with no tower, but only low and slow.",
+              "pros": [
+                "An escape without a tower",
+                "Reliability +0.6 %"
+              ],
+              "cons": [
+                "+150 kg",
+                "Only works low and slow"
+              ],
+              "massD": 150,
+              "costD": 120000,
+              "rel": 0.006,
+              "real": "Gemini (usable up to about 4.6 km), Vostok (the cosmonaut ejected on every landing)"
+            }
+          ]
+        },
+        {
+          "key": "windows",
+          "name": "Windows",
+          "role": "How much of the wall is glass.",
+          "art": "window",
+          "options": [
+            {
+              "id": "small",
+              "name": "Small ports",
+              "note": "Two small panes of fused silica. Strong wall, little view.",
+              "pros": [
+                "Strongest wall"
+              ],
+              "cons": [
+                "Little view"
+              ],
+              "real": "Soyuz"
+            },
+            {
+              "id": "panoramic",
+              "name": "Panoramic windows",
+              "note": "Big triple-pane windows. The view of a lifetime, and a weaker, heavier wall.",
+              "pros": [
+                "The view"
+              ],
+              "cons": [
+                "+50 kg",
+                "Reliability −0.4 %"
+              ],
+              "massD": 50,
+              "costD": 60000,
+              "rel": -0.004,
+              "real": "New Shepard, the largest windows flown"
+            },
+            {
+              "id": "cupola",
+              "name": "Glass dome in the nose",
+              "note": "A dome of glass where the docking port would be: the widest view ever flown. One big pane in place of many cut-outs.",
+              "pros": [
+                "The whole sky in one window",
+                "Lighter than panoramic windows"
+              ],
+              "cons": [
+                "+40 kg",
+                "+$90k",
+                "Reliability −0.3 %"
+              ],
+              "massD": 40,
+              "costD": 90000,
+              "rel": -0.003,
+              "real": "Crew Dragon Resilience on Inspiration4 (2021)"
+            }
+          ]
+        },
+        {
+          "key": "hatch",
+          "name": "Hatch",
+          "role": "Which way the door opens.",
+          "art": "hatch",
+          "options": [
+            {
+              "id": "outward",
+              "name": "Outward, quick release",
+              "note": "Opens outward in seconds, even against cabin pressure. The rule since 1967.",
+              "pros": [
+                "Crew out in seconds"
+              ],
+              "cons": [
+                "Needs a strong latch"
+              ],
+              "real": "Apollo (after Apollo 1), Dragon"
+            },
+            {
+              "id": "inward",
+              "name": "Inward plug hatch",
+              "note": "Cabin pressure seals it tighter. It cannot be opened against that pressure: the Apollo 1 crew died behind one.",
+              "pros": [
+                "−$20k",
+                "Seals itself"
+              ],
+              "cons": [
+                "Cannot open in a cabin fire",
+                "Reliability −1 %"
+              ],
+              "costD": -20000,
+              "rel": -0.01,
+              "real": "Apollo 1 (1967)"
+            },
+            {
+              "id": "top",
+              "name": "Top hatch only",
+              "note": "No door in the side wall: the crew climbs out through the hatch in the nose. No cut-out to reinforce, but a slow way out after landing.",
+              "pros": [
+                "−15 kg",
+                "−$10k"
+              ],
+              "cons": [
+                "Slow to climb out: reliability −0.2 %"
+              ],
+              "massD": -15,
+              "rel": -0.002,
+              "real": "Soyuz and Shenzhou descent modules",
+              "costD": -10000
+            }
+          ]
+        },
+        {
+          "key": "docking",
+          "name": "Docking port",
+          "role": "The mechanism on the nose that latches onto another ship or a station and seals a tunnel between them.",
+          "art": "docking",
+          "options": [
+            {
+              "id": "none",
+              "name": "Hatch and tunnel only",
+              "note": "A plain hatch in the nose tunnel and no latching mechanism. Lightest; this ship can never dock with anything.",
+              "pros": [
+                "Lightest",
+                "Cheapest"
+              ],
+              "cons": [
+                "Cannot dock"
+              ],
+              "real": "Vostok, Voskhod, Mercury and Gemini capsules (Gemini docked with its nose section, not a tunnel)"
+            },
+            {
+              "id": "probe_drogue",
+              "name": "Probe and drogue",
+              "note": "A probe on one ship slides into a cone (the drogue) on the other, then twelve latches pull the rings tight. The probe and drogue are removed by hand to open the tunnel.",
+              "pros": [
+                "Simple and proven"
+              ],
+              "cons": [
+                "+60 kg",
+                "+$30k",
+                "Only an active ship meets a passive one"
+              ],
+              "massD": 60,
+              "costD": 30000,
+              "real": "Apollo command module and lunar module (1968–75)"
+            },
+            {
+              "id": "ssvp",
+              "name": "SSVP probe-cone (Soyuz)",
+              "note": "The Russian probe-and-cone system with a ring of hooks: a probe ship and a cone ship, and an 80 cm tunnel between them once the hooks close.",
+              "pros": [
+                "Flown on every Soyuz and Progress for fifty years"
+              ],
+              "cons": [
+                "+70 kg",
+                "+$30k",
+                "Needs the opposite half on the other ship"
+              ],
+              "massD": 70,
+              "costD": 30000,
+              "real": "Soyuz and Progress SSVP-G4000 (since 1971); Russian ISS ports"
+            },
+            {
+              "id": "apas",
+              "name": "Androgynous ring (APAS)",
+              "note": "Both ships carry the same ring of three petals, so any two can dock. A soft-capture ring with dampers soaks up the bump.",
+              "pros": [
+                "Any two ships can mate",
+                "Soft capture"
+              ],
+              "cons": [
+                "+120 kg",
+                "+$60k"
+              ],
+              "massD": 120,
+              "costD": 60000,
+              "real": "APAS-75 (Apollo-Soyuz 1975), APAS-89/95 (Shuttle to Mir and the ISS); China's docking system is APAS-derived"
+            },
+            {
+              "id": "nds",
+              "name": "Low-impact docking ring (NDS / IDSS)",
+              "note": "The international standard: a soft-capture ring on electric actuators reaches out, catches the other port gently and pulls the ships together. The 80 cm tunnel opens straight through.",
+              "pros": [
+                "Works with any IDSS port",
+                "Gentle capture"
+              ],
+              "cons": [
+                "+100 kg",
+                "+$60k"
+              ],
+              "massD": 100,
+              "costD": 60000,
+              "real": "NASA Docking System on Orion, Starliner; Crew Dragon's IDSS-compatible port; ISS IDA adapters (2016)"
+            },
+            {
+              "id": "cbm",
+              "name": "Berthing ring (CBM)",
+              "note": "A wide square hatch in a ring of bolts. The ship cannot dock itself: it parks next to the station and a robot arm pulls it in. The widest door in space, about 1.27 m.",
+              "pros": [
+                "Big cargo fits through"
+              ],
+              "cons": [
+                "+180 kg",
+                "+$50k",
+                "Needs a robot arm at the other end"
+              ],
+              "massD": 180,
+              "costD": 50000,
+              "real": "Common Berthing Mechanism: ISS modules, Cygnus, HTV, Dragon 1 (CBM rings 200–311 kg), Dream Chaser"
+            }
+          ]
+        },
+        {
+          "key": "atmosphere",
+          "name": "Cabin air",
+          "role": "What the crew breathes, and at what pressure.",
+          "art": "atmosphere",
+          "options": [
+            {
+              "id": "mixed",
+              "name": "Air at sea-level pressure",
+              "note": "Nitrogen and oxygen at the same pressure as on the ground. A thick wall to hold it, but a fire burns no faster than at home.",
+              "pros": [
+                "Like breathing at home",
+                "Fires spread slowly"
+              ],
+              "cons": [
+                "Heaviest wall"
+              ],
+              "real": "Soyuz, Shuttle, Crew Dragon, Orion"
+            },
+            {
+              "id": "pure_o2",
+              "name": "Pure oxygen at one-third pressure",
+              "note": "Only oxygen, at about 34 kPa. The wall can be thinner and there are no nitrogen tanks, but anything that sparks burns fiercely.",
+              "pros": [
+                "−40 kg",
+                "−$30k"
+              ],
+              "cons": [
+                "Reliability −1.5 %",
+                "A spark becomes a fire"
+              ],
+              "massD": -40,
+              "costD": -30000,
+              "rel": -0.015,
+              "real": "Mercury, Gemini, Apollo; the Apollo 1 fire (1967) on the pad with pure oxygen above sea-level pressure"
+            },
+            {
+              "id": "pad_mix",
+              "name": "Nitrogen-oxygen on the pad, oxygen in space",
+              "note": "60 % oxygen and 40 % nitrogen on the ground, bled down to pure oxygen at low pressure after launch. The change NASA made after Apollo 1.",
+              "pros": [
+                "−20 kg",
+                "−$10k"
+              ],
+              "cons": [
+                "Reliability −0.3 %"
+              ],
+              "massD": -20,
+              "costD": -10000,
+              "rel": -0.003,
+              "real": "Apollo command module from Apollo 7 (1968)"
+            }
+          ]
+        },
+        {
+          "key": "suits",
+          "name": "Launch and entry suits",
+          "role": "Whether the crew wear pressure suits when the cabin could leak: launch, docking and landing.",
+          "art": "suit",
+          "options": [
+            {
+              "id": "none",
+              "name": "Shirt-sleeves",
+              "note": "Overalls and a headset. Lighter, more room, and no protection if the cabin loses its air.",
+              "pros": [
+                "Lightest",
+                "Room to move"
+              ],
+              "cons": [
+                "A leak is fatal"
+              ],
+              "real": "Voskhod 1 (1964), Soyuz 1 to Soyuz 11; the Soyuz 11 crew died in 1971 when a valve let the air out during descent"
+            },
+            {
+              "id": "pressure",
+              "name": "Pressure suits",
+              "note": "Each crew member wears a suit plugged into the cabin, which inflates if the cabin pressure drops.",
+              "pros": [
+                "Reliability +1 %",
+                "Since Soyuz 11 (1971), every Soyuz crew wears them"
+              ],
+              "cons": [
+                "+40 kg",
+                "+$60k"
+              ],
+              "massD": 40,
+              "costD": 60000,
+              "rel": 0.01,
+              "real": "Sokol-K (Soyuz 12, 1973) and Sokol-KV2 (from Soyuz T-2, 1980); Shuttle ACES, Crew Dragon IVA suit, Orion crew survival suit"
+            }
+          ]
+        },
+        {
+          "key": "landing",
+          "name": "Touchdown on Earth",
+          "role": "How the capsule meets the ground or the sea at the end of the trip home.",
+          "art": "landing",
+          "options": [
+            {
+              "id": "splash",
+              "name": "Splashdown",
+              "note": "The capsule hangs under its parachutes and lands in the sea at about 8 m/s; ships pick it up.",
+              "pros": [
+                "Water is soft",
+                "Nothing extra to carry"
+              ],
+              "cons": [
+                "Needs a recovery fleet"
+              ],
+              "real": "Mercury, Gemini, Apollo, Orion, Crew Dragon"
+            },
+            {
+              "id": "rockets",
+              "name": "Soft-landing rockets",
+              "note": "The heat shield drops away and small solid rockets in the base fire about a metre above the ground, slowing the capsule from about 7 m/s to 2.",
+              "pros": [
+                "Lands on solid ground",
+                "Reliability +0.2 %"
+              ],
+              "cons": [
+                "+30 kg",
+                "+$25k"
+              ],
+              "massD": 30,
+              "costD": 25000,
+              "rel": 0.002,
+              "real": "Soyuz (since 1967), Shenzhou; Voskhod was the first to use them"
+            },
+            {
+              "id": "hard_land",
+              "name": "Hard landing on the ground",
+              "note": "The capsule comes down on land under its parachute at about 10 m/s, with nothing to soften the last metre. A helicopter team finds it; no fleet at sea.",
+              "pros": [
+                "−$20k: no recovery fleet"
+              ],
+              "cons": [
+                "Reliability −0.3 %",
+                "A hard jolt"
+              ],
+              "rel": -0.003,
+              "real": "Vostok descent module (1961–63): 574 m² main, 10–12 m/s at touchdown",
+              "costD": -20000
+            },
+            {
+              "id": "airbags",
+              "name": "Airbags under the capsule",
+              "note": "The heat shield drops away and bags inflate underneath, cushioning a landing on the ground.",
+              "pros": [
+                "Lands on solid ground",
+                "Reliability +0.3 %"
+              ],
+              "cons": [
+                "+60 kg",
+                "+$40k"
+              ],
+              "massD": 60,
+              "costD": 40000,
+              "rel": 0.003,
+              "real": "Boeing Starliner (2019, 2022, 2024 landings in New Mexico)"
+            }
+          ]
+        }
+      ]
+    },
+    "fairing": {
+      "name": "Inside the fairing",
+      "slots": [
+        {
+          "key": "split",
+          "name": "Separation",
+          "role": "How the fairing comes apart once the air is thin.",
+          "art": "split",
+          "options": [
+            {
+              "id": "bisector",
+              "name": "Two halves (bisector)",
+              "note": "The fairing splits down the middle and the halves swing away on hinges.",
+              "pros": [
+                "Standard"
+              ],
+              "cons": [],
+              "real": "Falcon 9, Delta II"
+            },
+            {
+              "id": "trisector",
+              "name": "Three petals",
+              "note": "Three lighter pieces, each needing its own pushers.",
+              "pros": [
+                "−5 % mass"
+              ],
+              "cons": [
+                "More mechanisms"
+              ],
+              "massF": 0.95,
+              "costF": 1.1,
+              "rel": -0.003,
+              "real": "Titan IV; Delta IV Heavy 5-m metallic trisector"
+            }
+          ]
+        },
+        {
+          "key": "acoustic",
+          "name": "Acoustic blankets",
+          "note": "",
+          "role": "Padding against the roar of liftoff, which can shake a payload apart.",
+          "art": "blanket",
+          "options": [
+            {
+              "id": "none",
+              "name": "None",
+              "note": "Bare composite skin. Loud inside: 140 dB at liftoff.",
+              "pros": [
+                "Lightest"
+              ],
+              "cons": [
+                "Equipment shaken by sound"
+              ],
+              "real": ""
+            },
+            {
+              "id": "blankets",
+              "name": "Acoustic blankets",
+              "note": "Foam and fibre panels that cut the sound by 10 dB.",
+              "pros": [
+                "Reliability +0.3 %"
+              ],
+              "cons": [
+                "+30 kg"
+              ],
+              "massD": 30,
+              "costD": 20000,
+              "rel": 0.003,
+              "real": "Every modern fairing"
+            }
+          ]
+        },
+        {
+          "key": "pushers",
+          "name": "Release",
+          "role": "What throws the pieces clear.",
+          "art": "pusher",
+          "options": [
+            {
+              "id": "pyro",
+              "name": "Pyrotechnic",
+              "note": "Explosive bolts and a shaped cord. Sudden and loud.",
+              "pros": [
+                "Proven"
+              ],
+              "cons": [
+                "Shock to the payload"
+              ],
+              "real": "Delta II"
+            },
+            {
+              "id": "pneumatic",
+              "name": "Pneumatic pushers",
+              "note": "Gas pistons shove the halves away gently.",
+              "pros": [
+                "Gentle",
+                "Reliability +0.2 %"
+              ],
+              "cons": [
+                "+$15k"
+              ],
+              "costD": 15000,
+              "rel": 0.002,
+              "real": "Falcon 9"
+            }
+          ]
+        }
+      ]
+    },
+    "shield": {
+      "name": "Inside the heat shield",
+      "slots": [
+        {
+          "key": "thickness",
+          "name": "Ablator thickness",
+          "role": "How much material there is to burn away.",
+          "art": "layer",
+          "options": [
+            {
+              "id": "standard",
+              "name": "Standard",
+              "note": "Sized for one entry with margin.",
+              "pros": [],
+              "cons": [],
+              "real": ""
+            },
+            {
+              "id": "thick",
+              "name": "Thick",
+              "note": "A quarter more ablator for a steep or hot entry.",
+              "pros": [
+                "Reliability +1 %"
+              ],
+              "cons": [
+                "+25 % mass"
+              ],
+              "massF": 1.25,
+              "costF": 1.15,
+              "rel": 0.01,
+              "real": "Stardust (12.9 km/s entry)"
+            }
+          ]
+        },
+        {
+          "key": "gaps",
+          "name": "Seams",
+          "role": "How the blocks of shield are joined.",
+          "art": "gap",
+          "options": [
+            {
+              "id": "filler",
+              "name": "Gap filler",
+              "note": "Blocks of ablator with a soft filler between them.",
+              "pros": [
+                "Standard"
+              ],
+              "cons": [
+                "Fillers can protrude and trip the flow"
+              ],
+              "real": "Orion (Artemis I)"
+            },
+            {
+              "id": "monolithic",
+              "name": "One piece",
+              "note": "The whole shield cast as one block. No seams, hard to make.",
+              "pros": [
+                "No seams",
+                "Reliability +0.5 %"
+              ],
+              "cons": [
+                "+20 % cost"
+              ],
+              "costF": 1.2,
+              "rel": 0.005,
+              "real": "Apollo Avcoat honeycomb"
+            }
+          ]
+        }
+      ]
+    },
+    "chute": {
+      "name": "Inside the parachute",
+      "slots": [
+        {
+          "key": "canopy",
+          "name": "Canopy",
+          "role": "The shape of the chute.",
+          "art": "canopy",
+          "options": [
+            {
+              "id": "dgb",
+              "name": "Disk-gap-band",
+              "note": "The Mars standard: a disk, a gap, a band. Opens supersonic without tearing.",
+              "pros": [
+                "Opens up to Mach 2.2"
+              ],
+              "cons": [],
+              "real": "Viking to Perseverance"
+            },
+            {
+              "id": "ringsail",
+              "name": "Ringsail",
+              "note": "Rings of sail cloth: more drag per kilogram, but subsonic only (below about Mach 0.7). On Mars that is only about 2 km up: too low to slow a heavy ship alone.",
+              "pros": [
+                "+15 % drag"
+              ],
+              "cons": [
+                "Subsonic only: on Mars it opens about 2 km up"
+              ],
+              "chuteF": 1.15,
+              "massD": 10,
+              "costD": 12000,
+              "rel": -0.004,
+              "real": "Apollo, Orion mains"
+            },
+            {
+              "id": "ribbon",
+              "name": "Conical ribbon",
+              "note": "Bands of tape with gaps between them: air leaks through, so it survives opening at high speed. Less drag.",
+              "pros": [
+                "Opens fast and high",
+                "Reliability +0.4 %"
+              ],
+              "cons": [
+                "−20 % drag"
+              ],
+              "chuteF": 0.8,
+              "costD": 6000,
+              "rel": 0.004,
+              "real": "Apollo and Orion drogue chutes"
+            },
+            {
+              "id": "parafoil",
+              "name": "Steerable parafoil",
+              "note": "A ram-air wing of cloth cells that glides and can be steered to a chosen spot. It has never landed a crewed capsule.",
+              "pros": [
+                "Steerable on Earth (catches fairings)"
+              ],
+              "cons": [
+                "Opens only when very slow: on Mars far too low to help alone",
+                "−10 % drag",
+                "Reliability −1 %",
+                "+$30k"
+              ],
+              "chuteF": 0.9,
+              "costD": 30000,
+              "rel": -0.01,
+              "real": "NASA X-38 drop tests (1999–2001); Falcon 9 fairing halves; Gemini's paraglider was tested but never flown"
+            }
+          ]
+        },
+        {
+          "key": "reefing",
+          "name": "Reefing",
+          "role": "Whether the chute opens in stages.",
+          "art": "reef",
+          "options": [
+            {
+              "id": "none",
+              "name": "Full open",
+              "note": "One hard jerk.",
+              "pros": [
+                "Simple"
+              ],
+              "cons": [
+                "Peak load tears a weak chute"
+              ],
+              "real": ""
+            },
+            {
+              "id": "staged",
+              "name": "Staged reefing",
+              "note": "Cutters release the canopy in two steps, halving the peak load.",
+              "pros": [
+                "Reliability +0.4 %"
+              ],
+              "cons": [
+                "+$8k"
+              ],
+              "costD": 8000,
+              "rel": 0.004,
+              "real": "Orion, Dragon"
+            }
+          ]
+        }
+      ]
+    },
+    "ablative_shield": {
+      "name": "Inside the heat shield",
+      "slots": [
+        {
+          "key": "thickness",
+          "name": "Ablator thickness",
+          "role": "How much material there is to burn away.",
+          "art": "layer",
+          "options": [
+            {
+              "id": "standard",
+              "name": "Standard",
+              "note": "Sized for one entry with margin.",
+              "pros": [],
+              "cons": [],
+              "real": ""
+            },
+            {
+              "id": "thick",
+              "name": "Thick",
+              "note": "A quarter more ablator for a steep or hot entry.",
+              "pros": [
+                "Reliability +1 %"
+              ],
+              "cons": [
+                "+25 % mass"
+              ],
+              "massF": 1.25,
+              "costF": 1.15,
+              "rel": 0.01,
+              "real": "Stardust (12.9 km/s entry)"
+            }
+          ]
+        },
+        {
+          "key": "gaps",
+          "name": "Seams",
+          "role": "How the blocks of shield are joined.",
+          "art": "gap",
+          "options": [
+            {
+              "id": "filler",
+              "name": "Gap filler",
+              "note": "Blocks of ablator with a soft filler between them.",
+              "pros": [
+                "Standard"
+              ],
+              "cons": [
+                "Fillers can protrude and trip the flow"
+              ],
+              "real": "Orion (Artemis I)"
+            },
+            {
+              "id": "monolithic",
+              "name": "One piece",
+              "note": "The whole shield cast as one block. No seams, hard to make.",
+              "pros": [
+                "No seams",
+                "Reliability +0.5 %"
+              ],
+              "cons": [
+                "+20 % cost"
+              ],
+              "costF": 1.2,
+              "rel": 0.005,
+              "real": "Apollo Avcoat honeycomb"
+            }
+          ]
+        },
+        {
+          "key": "ablator",
+          "name": "Ablator",
+          "role": "What the shield is made of: the material that chars and carries the heat away.",
+          "art": "ablator",
+          "options": [
+            {
+              "id": "avcoat",
+              "name": "Avcoat in honeycomb",
+              "note": "Silica fibres in epoxy, gunned cell by cell into a fibreglass honeycomb. Chars into a tough crust and carries the heat away.",
+              "pros": [
+                "Proven on the Moon return"
+              ],
+              "cons": [
+                "Slow to make: every cell is filled by hand"
+              ],
+              "real": "Apollo, Orion"
+            },
+            {
+              "id": "pica",
+              "name": "PICA (carbon ablator)",
+              "note": "Phenolic-impregnated carbon: a light, foam-like carbon block, the best for the fastest entries.",
+              "pros": [
+                "−18 % mass",
+                "Reliability +0.2 %"
+              ],
+              "cons": [
+                "+20 % cost",
+                "Brittle blocks with seams"
+              ],
+              "massF": 0.82,
+              "costF": 1.2,
+              "rel": 0.002,
+              "real": "Stardust (the fastest entry ever flown), Dragon 1 PICA-X, Crew Dragon PICA-3"
+            },
+            {
+              "id": "sla",
+              "name": "SLA-561V (cork and silica)",
+              "note": "Cork and silica in a honeycomb: light and cheap, fine for Mars, too weak for the 11 km/s return to Earth.",
+              "pros": [
+                "−25 % mass",
+                "−15 % cost"
+              ],
+              "cons": [
+                "Reliability −0.6 %",
+                "Mars only"
+              ],
+              "massF": 0.75,
+              "costF": 0.85,
+              "rel": -0.006,
+              "real": "Viking, Mars Pathfinder, Spirit and Opportunity"
+            },
+            {
+              "id": "avcoat_blocks",
+              "name": "Avcoat in moulded blocks",
+              "note": "The same Avcoat, cast in about 186 blocks and bonded on, instead of filling a honeycomb cell by cell. Quicker to build; on its first flight chunks of char broke away between the blocks.",
+              "pros": [
+                "−10 % cost",
+                "Faster to build"
+              ],
+              "cons": [
+                "Reliability −0.3 %"
+              ],
+              "costF": 0.9,
+              "rel": -0.003,
+              "real": "Orion from Artemis I (2022): 186 blocks; NASA traced the char loss to gas trapped in the Avcoat and changed the entry path for Artemis II"
+            },
+            {
+              "id": "phenolic_glass",
+              "name": "Fibreglass and phenolic resin",
+              "note": "Layers of glass cloth soaked in resin, built up like plywood. Cheap, tough, heavier than modern ablators.",
+              "pros": [
+                "−20 % cost"
+              ],
+              "cons": [
+                "+10 % mass",
+                "Reliability −0.3 %"
+              ],
+              "massF": 1.1,
+              "costF": 0.8,
+              "rel": -0.003,
+              "real": "Mercury orbital flights (1962–63)"
+            },
+            {
+              "id": "silicone",
+              "name": "Silicone elastomer in honeycomb",
+              "note": "A rubbery silicone ablator packed into a glass-fibre honeycomb. It chars into a glassy crust.",
+              "pros": [
+                "−10 % cost"
+              ],
+              "cons": [
+                "+5 % mass",
+                "Reliability −0.2 %"
+              ],
+              "massF": 1.05,
+              "costF": 0.9,
+              "rel": -0.002,
+              "real": "Gemini: Dow Corning DC-325 in a glass-fibre honeycomb"
+            },
+            {
+              "id": "bla",
+              "name": "Boeing Lightweight Ablator",
+              "note": "A light, filled silicone ablator sprayed onto the shield, made for capsules returning from low orbit.",
+              "pros": [
+                "−10 % mass"
+              ],
+              "cons": [
+                "+10 % cost",
+                "Made for Earth-orbit returns"
+              ],
+              "massF": 0.9,
+              "costF": 1.1,
+              "real": "Boeing Lightweight Ablator on Starliner"
+            },
+            {
+              "id": "carbon_phenolic",
+              "name": "Carbon-phenolic",
+              "note": "Dense carbon cloth in phenolic resin: the toughest ablator there is, for the fastest entries ever flown. Very heavy.",
+              "pros": [
+                "Takes the hottest entries",
+                "Reliability +1 %"
+              ],
+              "cons": [
+                "+50 % mass",
+                "+40 % cost"
+              ],
+              "massF": 1.5,
+              "costF": 1.4,
+              "rel": 0.01,
+              "real": "Galileo probe into Jupiter (1995), Pioneer Venus probes, missile re-entry vehicles"
+            },
+            {
+              "id": "heat_sink",
+              "name": "Beryllium heat sink",
+              "note": "No ablator at all: a thick metal plate soaks up the heat like a frying pan. It only works for a short, slow entry; a fall from orbit would melt it.",
+              "pros": [
+                "Nothing burns away",
+                "Cheapest: a plain metal plate"
+              ],
+              "cons": [
+                "+80 % mass",
+                "Soaks up only a short, slow entry: from orbit it can burn through"
+              ],
+              "massF": 1.8,
+              "costF": 0.5,
+              "rel": 0,
+              "real": "Mercury-Redstone 3 and 4 (1961): beryllium heat sinks on the suborbital flights"
+            }
+          ]
+        }
+      ]
+    },
+    "escape_tower": {
+      "name": "Inside the escape tower",
+      "slots": [
+        {
+          "key": "motor",
+          "name": "Escape motor",
+          "role": "The solid motor that pulls the capsule away.",
+          "art": "motor",
+          "options": [
+            {
+              "id": "canted",
+              "name": "Canted nozzles at the base",
+              "note": "A solid motor whose nozzles sit just above the truss, tilted outward so the flame misses the capsule.",
+              "pros": [
+                "Proven on Mercury and Apollo"
+              ],
+              "cons": [
+                "The tower must be tall to keep the flame off the cabin"
+              ],
+              "real": "Apollo launch escape motor: four canted nozzles, about 147,000 lbf (654 kN) for 3.2 s"
+            },
+            {
+              "id": "ring",
+              "name": "Ring of small nozzles",
+              "note": "Many small nozzles round the tower spread the push; one can burn through and the others still carry the cabin.",
+              "pros": [
+                "Reliability +0.3 %"
+              ],
+              "cons": [
+                "+3 % mass",
+                "+10 % cost"
+              ],
+              "massF": 1.03,
+              "costF": 1.1,
+              "rel": 0.003,
+              "real": "Soyuz SAS main motor, up to 76 t (745 kN)"
+            },
+            {
+              "id": "reverse",
+              "name": "Reverse-flow motor",
+              "note": "The gas flows up the motor and turns back out through four nozzles near the top: a shorter tower, and the flame starts far from the capsule.",
+              "pros": [
+                "Reliability +0.6 %"
+              ],
+              "cons": [
+                "+6 % mass",
+                "+30 % cost"
+              ],
+              "massF": 1.06,
+              "costF": 1.3,
+              "rel": 0.006,
+              "real": "Orion abort motor, about 400,000 lbf (1.8 MN)"
+            },
+            {
+              "id": "staged",
+              "name": "Low- and high-altitude motors",
+              "note": "Two sets of solid motors: one set for an escape near the ground, a second set tuned for the thin air higher up, plus a jettison motor.",
+              "pros": [
+                "Reliability +0.5 %"
+              ],
+              "cons": [
+                "+5 % mass",
+                "+15 % cost"
+              ],
+              "massF": 1.05,
+              "costF": 1.15,
+              "rel": 0.005,
+              "real": "Gaganyaan crew escape system (TV-D1 test, 21 October 2023)"
+            }
+          ]
+        },
+        {
+          "key": "jettison",
+          "name": "Tower jettison",
+          "role": "How the tower leaves on a good flight, once the air is thin.",
+          "art": "jettison",
+          "options": [
+            {
+              "id": "separate",
+              "name": "Separate jettison motor",
+              "note": "A small motor near the top pulls the tower away a couple of minutes after launch.",
+              "pros": [
+                "Standard"
+              ],
+              "cons": [],
+              "real": "Apollo tower jettison motor, 31,500 lbf for 1.1 s; Mercury 1.4-KS-785"
+            },
+            {
+              "id": "backup",
+              "name": "Jettison motor with backup",
+              "note": "If the jettison motor fails to light, the escape motor fires instead: the tower always goes.",
+              "pros": [
+                "Reliability +0.4 %"
+              ],
+              "cons": [
+                "+$25k"
+              ],
+              "costD": 25000,
+              "rel": 0.004,
+              "real": "Apollo: the launch escape motor was the backup for tower jettison"
+            },
+            {
+              "id": "shared",
+              "name": "One motor does both",
+              "note": "The escape motor also throws the tower away. Lighter and cheaper, but one failure keeps the tower on.",
+              "pros": [
+                "−7 % mass",
+                "−$40k"
+              ],
+              "cons": [
+                "Reliability −0.4 %"
+              ],
+              "massF": 0.93,
+              "costD": -40000,
+              "rel": -0.004,
+              "real": "Early Soyuz SAS: the same solid motor separated the capsule and, on a normal flight, the tower"
+            }
+          ]
+        },
+        {
+          "key": "steering",
+          "name": "Steering after an abort",
+          "role": "What keeps the escaping capsule pointed the right way.",
+          "art": "steering",
+          "options": [
+            {
+              "id": "ballast",
+              "name": "Ballast in the nose",
+              "note": "A lump of ballast keeps the nose heavy, so the escaping stack flies straight like a dart.",
+              "pros": [
+                "Simple"
+              ],
+              "cons": [
+                "The capsule must turn itself round afterwards"
+              ],
+              "real": "Mercury: 236 lb (107 kg) of ballast in the tower nose"
+            },
+            {
+              "id": "canards",
+              "name": "Deployable canards",
+              "note": "Two clamshell fins open 11 seconds after an abort and turn the capsule heat-shield first before the tower leaves.",
+              "pros": [
+                "Reliability +0.5 %"
+              ],
+              "cons": [
+                "+40 kg",
+                "+$45k"
+              ],
+              "massD": 40,
+              "costD": 45000,
+              "rel": 0.005,
+              "real": "Apollo: two metal canards about 4 ft long"
+            },
+            {
+              "id": "acm",
+              "name": "Attitude control motor",
+              "note": "A solid gas generator with eight valves round the tower steers the whole escape stack, even right off the pad.",
+              "pros": [
+                "Reliability +0.8 %"
+              ],
+              "cons": [
+                "+90 kg",
+                "+$120k"
+              ],
+              "massD": 90,
+              "costD": 120000,
+              "rel": 0.008,
+              "real": "Orion attitude control motor: up to 7,000 lbf of steering force"
+            },
+            {
+              "id": "gridfins",
+              "name": "Folding grid fins",
+              "note": "Four lattice fins on the fairing swing out when the tower fires and keep the escaping front end flying straight, like the feathers on a dart.",
+              "pros": [
+                "Reliability +0.6 %"
+              ],
+              "cons": [
+                "+60 kg",
+                "+$50k"
+              ],
+              "massD": 60,
+              "costD": 50000,
+              "rel": 0.006,
+              "real": "Soyuz escape system (saved Soyuz T-10a, 1983); Shenzhou and Gaganyaan escape fairings"
+            }
+          ]
+        }
+      ]
+    },
+    "abort_pod": {
+      "name": "Inside the abort pod",
+      "slots": [
+        {
+          "key": "chamber",
+          "name": "Engine chambers",
+          "role": "How the two engines in the pod are made.",
+          "art": "chamber",
+          "options": [
+            {
+              "id": "printed",
+              "name": "3D-printed Inconel",
+              "note": "Each chamber is laser-sintered in one piece of nickel superalloy, cooling channels and all. Light and quick to make.",
+              "pros": [
+                "Light",
+                "Quick to build"
+              ],
+              "cons": [
+                "Porosity is hard to inspect"
+              ],
+              "real": "SuperDraco: 71 kN, the first fully printed engine to fly"
+            },
+            {
+              "id": "machined",
+              "name": "Forged and machined",
+              "note": "Machined from forgings and welded: heavier, but every wall and weld can be inspected.",
+              "pros": [
+                "Reliability +0.4 %"
+              ],
+              "cons": [
+                "+10 % mass",
+                "+20 % cost"
+              ],
+              "massF": 1.1,
+              "costF": 1.2,
+              "rel": 0.004,
+              "real": "Aerojet RS-88, Starliner's launch abort engine"
+            }
+          ]
+        },
+        {
+          "key": "propellant",
+          "name": "Propellant",
+          "role": "Where the abort engines draw their propellant from.",
+          "art": "tanks",
+          "options": [
+            {
+              "id": "shared",
+              "name": "Shared with the thrusters",
+              "note": "Hypergolic NTO and MMH from the same tanks as the steering thrusters; an unused abort leaves propellant for manoeuvres.",
+              "pros": [
+                "No extra tanks"
+              ],
+              "cons": [
+                "A leaking thruster could drain the abort"
+              ],
+              "real": "Crew Dragon"
+            },
+            {
+              "id": "dedicated",
+              "name": "Own tanks and valves",
+              "note": "The pod keeps its own small tanks: nothing else can drain them.",
+              "pros": [
+                "Reliability +0.3 %"
+              ],
+              "cons": [
+                "+35 kg",
+                "+$30k"
+              ],
+              "massD": 35,
+              "costD": 30000,
+              "rel": 0.003,
+              "real": "Separate abort feed lines, as in Starliner's service module"
+            }
+          ]
+        }
+      ]
+    },
+    "rcs": {
+      "name": "Inside the thruster pack",
+      "slots": [
+        {
+          "key": "propellant",
+          "name": "Thruster propellant",
+          "role": "What the small steering thrusters burn.",
+          "art": "rcs_tanks",
+          "options": [
+            {
+              "id": "hypergolic",
+              "name": "Hypergolic pair",
+              "note": "Two liquids (MMH and nitrogen tetroxide) that ignite on contact: no igniter, thousands of pulses, but both are toxic.",
+              "pros": [
+                "Strong, quick pulses"
+              ],
+              "cons": [
+                "Toxic propellant"
+              ],
+              "real": "Apollo, Shuttle, Orion, Crew Dragon (Draco, 400 N)"
+            },
+            {
+              "id": "peroxide",
+              "name": "Hydrogen peroxide",
+              "note": "One liquid that a silver catalyst breaks into hot steam and oxygen. Simple and clean, but weaker, and it slowly decomposes in its tank.",
+              "pros": [
+                "−20 % cost",
+                "Clean exhaust"
+              ],
+              "cons": [
+                "+10 % mass",
+                "Reliability −0.3 %"
+              ],
+              "massF": 1.1,
+              "costF": 0.8,
+              "rel": -0.003,
+              "real": "Mercury capsule thrusters, Soyuz descent module"
+            },
+            {
+              "id": "hydrazine",
+              "name": "Hydrazine monopropellant",
+              "note": "One liquid split by a hot catalyst bed: simpler than a pair, nearly as strong.",
+              "pros": [
+                "Reliability +0.2 %",
+                "−10 % cost"
+              ],
+              "cons": [
+                "+5 % mass"
+              ],
+              "massF": 1.05,
+              "costF": 0.9,
+              "rel": 0.002,
+              "real": "Most satellites; the Mars Science Laboratory cruise stage and descent stage"
+            },
+            {
+              "id": "cold_gas",
+              "name": "Cold nitrogen",
+              "note": "Nitrogen gas squirted from bottles through valves: nothing burns, so almost nothing can go wrong, but it pushes weakly and the bottles are heavy.",
+              "pros": [
+                "Reliability +0.5 %",
+                "−30 % cost"
+              ],
+              "cons": [
+                "+30 % mass",
+                "Weak push"
+              ],
+              "massF": 1.3,
+              "costF": 0.7,
+              "rel": 0.005,
+              "real": "Vostok attitude control (nitrogen jets on the instrument module), the Manned Maneuvering Unit (1984)"
+            }
+          ]
+        },
+        {
+          "key": "rings",
+          "name": "Thruster rings",
+          "role": "How many independent sets of thrusters there are.",
+          "art": "rcs_rings",
+          "options": [
+            {
+              "id": "single",
+              "name": "One ring",
+              "note": "One set of thrusters on one set of valves.",
+              "pros": [
+                "Lightest"
+              ],
+              "cons": [
+                "A stuck valve has no backup"
+              ],
+              "real": "Most uncrewed spacecraft"
+            },
+            {
+              "id": "dual",
+              "name": "Two independent rings",
+              "note": "Two separate sets with their own tanks and valves. If one sticks open, the crew shuts it off and steers with the other.",
+              "pros": [
+                "Reliability +0.8 %"
+              ],
+              "cons": [
+                "+40 kg",
+                "+$40k"
+              ],
+              "massD": 40,
+              "costD": 40000,
+              "rel": 0.008,
+              "real": "Gemini: the re-entry control system saved Gemini 8 (1966) when a thruster stuck open; Apollo command module (two rings of six)"
+            }
+          ]
+        }
+      ]
+    },
+    "service_module": {
+      "name": "Inside the service module",
+      "slots": [
+        {
+          "key": "power",
+          "name": "Power source",
+          "role": "Where the electricity comes from between launch and the trip home.",
+          "art": "power",
+          "options": [
+            {
+              "id": "solar_wings",
+              "name": "Unfolding solar wings",
+              "note": "Wings of solar cells that unfold in space and turn to face the Sun. Unlimited power in sunlight, batteries in the shadow.",
+              "pros": [
+                "Power for months"
+              ],
+              "cons": [
+                "Must unfold"
+              ],
+              "real": "Soyuz, Shenzhou, Orion European Service Module, ATV, Cygnus"
+            },
+            {
+              "id": "body_cells",
+              "name": "Cells on the skin",
+              "note": "Solar cells laid flat on the outside of the module: nothing to unfold, but only part of the skin faces the Sun.",
+              "pros": [
+                "Nothing to unfold",
+                "Reliability +0.3 %",
+                "−40 kg"
+              ],
+              "cons": [
+                "40 % less power"
+              ],
+              "powerF": 0.6,
+              "massD": -40,
+              "rel": 0.003,
+              "real": "Crew Dragon trunk, Starliner service module, HTV"
+            },
+            {
+              "id": "fuel_cells",
+              "name": "Hydrogen-oxygen fuel cells",
+              "note": "Hydrogen and oxygen from cold tanks combine into electricity and drinking water. Steady power in sunlight or shadow, for about two weeks of gas.",
+              "pros": [
+                "+20 % power",
+                "Makes water"
+              ],
+              "cons": [
+                "+80 kg",
+                "+$90k",
+                "Reliability −0.4 %"
+              ],
+              "powerF": 1.2,
+              "massD": 80,
+              "costD": 90000,
+              "rel": -0.004,
+              "real": "Gemini (first fuel cells in space, 1965), Apollo service module (Apollo 13 lost its oxygen tank), Shuttle"
+            },
+            {
+              "id": "batteries",
+              "name": "Batteries only",
+              "note": "Silver-zinc batteries charged on the ground. Light and simple, and they run flat in days.",
+              "pros": [
+                "−30 kg",
+                "−$30k"
+              ],
+              "cons": [
+                "−70 % power"
+              ],
+              "powerF": 0.3,
+              "massD": -30,
+              "costD": -30000,
+              "real": "Vostok, Voskhod, Mercury"
+            }
+          ]
+        },
+        {
+          "key": "engine",
+          "name": "Service engine",
+          "role": "The module's own engine for course corrections and the burn home. The ship's main engines do the big pushing, so here it counts as the backup.",
+          "art": "sm_engine",
+          "options": [
+            {
+              "id": "main",
+              "name": "One main engine",
+              "note": "One pressure-fed engine on two hypergolic liquids, with a ring of small thrusters.",
+              "pros": [
+                "Simple"
+              ],
+              "cons": [],
+              "real": "Apollo SPS (91 kN), Orion OMS-E (a Shuttle OMS engine, 27 kN), Soyuz main engine"
+            },
+            {
+              "id": "main_backup",
+              "name": "Main engine and a backup set",
+              "note": "A second, smaller set of engines that can do the main engine's job if it fails.",
+              "pros": [
+                "Reliability +0.5 %"
+              ],
+              "cons": [
+                "+40 kg",
+                "+$60k"
+              ],
+              "massD": 40,
+              "costD": 60000,
+              "rel": 0.005,
+              "real": "Orion's eight auxiliary engines, which can stand in for its main engine"
+            },
+            {
+              "id": "thrusters_only",
+              "name": "Thrusters only",
+              "note": "No main engine: the capsule's own thrusters do every burn.",
+              "pros": [
+                "−15 % mass",
+                "−$40k"
+              ],
+              "cons": [
+                "Reliability −0.3 %"
+              ],
+              "massF": 0.85,
+              "costD": -40000,
+              "rel": -0.003,
+              "real": "Crew Dragon trunk (Draco thrusters in the capsule), Gemini adapter (16 thrusters)"
+            }
+          ]
+        }
+      ]
+    },
+    "module": {
+      "name": "Inside the module",
+      "slots": [
+        {
+          "key": "docking",
+          "name": "Docking port",
+          "role": "The mechanism on the nose that latches onto another ship or a station and seals a tunnel between them.",
+          "art": "docking",
+          "options": [
+            {
+              "id": "none",
+              "name": "Hatch and tunnel only",
+              "note": "A plain hatch in the nose tunnel and no latching mechanism. Lightest; this ship can never dock with anything.",
+              "pros": [
+                "Lightest",
+                "Cheapest"
+              ],
+              "cons": [
+                "Cannot dock"
+              ],
+              "real": "Vostok, Voskhod, Mercury and Gemini capsules (Gemini docked with its nose section, not a tunnel)"
+            },
+            {
+              "id": "probe_drogue",
+              "name": "Probe and drogue",
+              "note": "A probe on one ship slides into a cone (the drogue) on the other, then twelve latches pull the rings tight. The probe and drogue are removed by hand to open the tunnel.",
+              "pros": [
+                "Simple and proven"
+              ],
+              "cons": [
+                "+60 kg",
+                "+$30k",
+                "Only an active ship meets a passive one"
+              ],
+              "massD": 60,
+              "costD": 30000,
+              "real": "Apollo command module and lunar module (1968–75)"
+            },
+            {
+              "id": "ssvp",
+              "name": "SSVP probe-cone (Soyuz)",
+              "note": "The Russian probe-and-cone system with a ring of hooks: a probe ship and a cone ship, and an 80 cm tunnel between them once the hooks close.",
+              "pros": [
+                "Flown on every Soyuz and Progress for fifty years"
+              ],
+              "cons": [
+                "+70 kg",
+                "+$30k",
+                "Needs the opposite half on the other ship"
+              ],
+              "massD": 70,
+              "costD": 30000,
+              "real": "Soyuz and Progress SSVP-G4000 (since 1971); Russian ISS ports"
+            },
+            {
+              "id": "apas",
+              "name": "Androgynous ring (APAS)",
+              "note": "Both ships carry the same ring of three petals, so any two can dock. A soft-capture ring with dampers soaks up the bump.",
+              "pros": [
+                "Any two ships can mate",
+                "Soft capture"
+              ],
+              "cons": [
+                "+120 kg",
+                "+$60k"
+              ],
+              "massD": 120,
+              "costD": 60000,
+              "real": "APAS-75 (Apollo-Soyuz 1975), APAS-89/95 (Shuttle to Mir and the ISS); China's docking system is APAS-derived"
+            },
+            {
+              "id": "nds",
+              "name": "Low-impact docking ring (NDS / IDSS)",
+              "note": "The international standard: a soft-capture ring on electric actuators reaches out, catches the other port gently and pulls the ships together. The 80 cm tunnel opens straight through.",
+              "pros": [
+                "Works with any IDSS port",
+                "Gentle capture"
+              ],
+              "cons": [
+                "+100 kg",
+                "+$60k"
+              ],
+              "massD": 100,
+              "costD": 60000,
+              "real": "NASA Docking System on Orion, Starliner; Crew Dragon's IDSS-compatible port; ISS IDA adapters (2016)"
+            },
+            {
+              "id": "cbm",
+              "name": "Berthing ring (CBM)",
+              "note": "A wide square hatch in a ring of bolts. The ship cannot dock itself: it parks next to the station and a robot arm pulls it in. The widest door in space, about 1.27 m.",
+              "pros": [
+                "Big cargo fits through"
+              ],
+              "cons": [
+                "+180 kg",
+                "+$50k",
+                "Needs a robot arm at the other end"
+              ],
+              "massD": 180,
+              "costD": 50000,
+              "real": "Common Berthing Mechanism: ISS modules, Cygnus, HTV, Dragon 1 (CBM rings 200–311 kg), Dream Chaser"
+            }
+          ]
+        },
+        {
+          "key": "stowage",
+          "name": "Stowage",
+          "role": "How the cargo and supplies are packed inside.",
+          "art": "stowage",
+          "options": [
+            {
+              "id": "bags",
+              "name": "Cargo bags",
+              "note": "Soft cloth bags strapped to the walls: light and they fit anything.",
+              "pros": [
+                "Lightest"
+              ],
+              "cons": [],
+              "real": "Cargo transfer bags on every ISS supply ship"
+            },
+            {
+              "id": "racks",
+              "name": "Standard racks",
+              "note": "Metal racks the size of a refrigerator, bolted in, with power and cooling for experiments.",
+              "pros": [
+                "Everything held tight",
+                "Reliability +0.2 %"
+              ],
+              "cons": [
+                "+80 kg",
+                "+$50k"
+              ],
+              "massD": 80,
+              "costD": 50000,
+              "rel": 0.002,
+              "real": "International Standard Payload Racks (ISS, HTV, Cygnus)"
+            },
+            {
+              "id": "water_wall",
+              "name": "Water around the walls",
+              "note": "Bags of the trip's drinking water packed against the walls, where they also soak up radiation.",
+              "pros": [
+                "Reliability +0.3 %",
+                "Cheap"
+              ],
+              "cons": [
+                "+150 kg: water is heavy"
+              ],
+              "massD": 150,
+              "costD": 20000,
+              "rel": 0.003,
+              "real": "NASA studies of water and stores as radiation shielding for crews beyond low orbit"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

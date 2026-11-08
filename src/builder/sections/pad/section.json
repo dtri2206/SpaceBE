@@ -1,0 +1,2220 @@
+{
+  "name": "Launch pad",
+  "short": "Pad",
+  "blurb": "The ground hardware under the rocket at a real launch complex: what it stands on, where its fire goes, what holds it, feeds it, cools it and protects it until it leaves. Each complex comes with its own kit and its own weather.",
+  "sites": [
+    {
+      "id": "slc40",
+      "name": "SLC-40",
+      "place": "Cape Canaveral, Florida",
+      "placeVi": "Mũi Canaveral, Florida",
+      "region": "usa",
+      "years": "1965–",
+      "rockets": "Titan III and IV, then Falcon 9",
+      "real": "Space Launch Complex 40, Cape Canaveral Space Force Station · 28.6° N",
+      "note": "SpaceX's busiest pad. The Falcon 9 is put together lying down in a hangar, rolled out on its strongback and raised over a flame trench dug for the Air Force's Titan rockets. Four lightning towers stand around it, and a crew tower with an access arm and an escape chute was added in 2023–24. Florida winters are mild, with the odd cold front.",
+      "facts": [
+        "55 Titan launches from 1965 to 2005, then Falcon 9 since 4 June 2010.",
+        "1 September 2016: a Falcon 9 blew up here while it was being fuelled for a test firing (Amos-6). The pad was rebuilt and back in service in December 2017.",
+        "50 launches in 2023 alone. SpaceX Crew-9 (September 2024) was the first crew to fly from it."
+      ],
+      "pros": [
+        "A full modern kit for a fair price",
+        "Mild winter weather"
+      ],
+      "cons": [
+        "Florida has the most lightning in the USA (less in winter)"
+      ],
+      "fee": 15000,
+      "holdFee": 35000,
+      "scale": 0.93,
+      "designKN": 15000,
+      "kit": {
+        "mount": "trench",
+        "tower": "strongback",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "catenary",
+        "access": "chute",
+        "propellant": "loadgo",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Florida winter",
+        "meanC": 16,
+        "swingC": 4.5,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.06,
+        "sky": "clear",
+        "ground": "cape"
+      },
+      "aliases": [
+        "cape"
+      ]
+    },
+    {
+      "id": "lc39a",
+      "name": "LC-39A",
+      "place": "Kennedy Space Center, Florida",
+      "placeVi": "Trung tâm Vũ trụ Kennedy, Florida",
+      "region": "usa",
+      "years": "1967–",
+      "rockets": "Saturn V, Space Shuttle, Falcon Heavy",
+      "real": "Launch Complex 39A, Kennedy Space Center · 28.6° N",
+      "note": "The pad Apollo 11 left from. The ship is stacked indoors on a mobile launcher, carried to the pad by a giant crawler and set down over a flame trench built for the Saturn V. At ignition a flood of water cools the flame deflector and the trench. For the crew there is every way out: a slidewire, express lifts and a slide tube into a blast room under the pad. Here it comes with the Apollo-era kit.",
+      "facts": [
+        "12 of the 13 Saturn V launches, including Apollo 11 (16 July 1969), and 82 of the 135 Space Shuttle flights.",
+        "The flame trench is about 137 m long and 18 m wide. Its 635-tonne steel deflector, shaped like an upside-down V and coated in 10 cm of ceramic, rolls into place on rails.",
+        "For Apollo 4 (1967), 28,000 gallons of water a minute cooled the deflector and the trench.",
+        "Falcon Heavy's first flight (6 February 2018) and the first SpaceX crew (Demo-2, 30 May 2020) left from here."
+      ],
+      "pros": [
+        "Takes big ships at full thrust",
+        "Every safety system there is"
+      ],
+      "cons": [
+        "The most expensive pad",
+        "A day of waiting costs the most"
+      ],
+      "fee": 50000,
+      "holdFee": 60000,
+      "scale": 1.464,
+      "designKN": 34500,
+      "kit": {
+        "mount": "mlp",
+        "tower": "fixed",
+        "clamps": "release",
+        "deluge": "water",
+        "lightning": "mast",
+        "access": "blastroom",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Florida winter",
+        "meanC": 16,
+        "swingC": 4.5,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.06,
+        "sky": "clear",
+        "ground": "cape"
+      }
+    },
+    {
+      "id": "lc39b",
+      "name": "LC-39B",
+      "place": "Kennedy Space Center, Florida",
+      "placeVi": "Trung tâm Vũ trụ Kennedy, Florida",
+      "region": "usa",
+      "years": "1969–",
+      "rockets": "Saturn V (Apollo 10), Space Shuttle, SLS (Artemis)",
+      "real": "Launch Complex 39B, Kennedy Space Center · 28.6° N",
+      "note": "Pad 39A's twin, rebuilt for NASA's Moon rocket. SLS rides out on Mobile Launcher 1, whose tower stands about 120 m above the ground with arms that feed every stage. Its fire goes down a new one-way deflector into a trench lined with 96,000 heat-proof bricks, and a water tower pours about 1.5 million litres onto the platform and into the trench in under 30 seconds. Three 180 m lightning masts hold wires over it all.",
+      "facts": [
+        "Artemis I lifted off from here on 16 November 2022 with about 39 MN of thrust; the blast blew the doors off the launcher's lifts and broke dozens of panels and cabinets.",
+        "Artemis II carried four astronauts around the Moon: it lifted off on 1 April 2026.",
+        "A new liquid-hydrogen sphere, finished in 2022, holds about 1.25 million gallons (4.7 million litres).",
+        "For a crew in trouble, four baskets slide down 407 m cables from the crew level to the edge of the pad, where armoured vehicles wait."
+      ],
+      "pros": [
+        "Takes a huge ship at full thrust",
+        "The biggest water system of any pad"
+      ],
+      "cons": [
+        "Among the dearest pads",
+        "A day of waiting costs a lot"
+      ],
+      "fee": 30000,
+      "holdFee": 55000,
+      "scale": 1.118,
+      "designKN": 39140,
+      "kit": {
+        "mount": "mlp",
+        "tower": "fixed",
+        "clamps": "hold",
+        "deluge": "iop",
+        "lightning": "catenary",
+        "access": "slidewire",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Florida winter",
+        "meanC": 16,
+        "swingC": 4.5,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.06,
+        "sky": "clear",
+        "ground": "cape"
+      },
+      "look": {
+        "tower": "grey"
+      }
+    },
+    {
+      "id": "starbase",
+      "name": "Starbase Pad 1",
+      "place": "Boca Chica, Texas",
+      "placeVi": "Boca Chica, Texas",
+      "region": "usa",
+      "years": "2023–2025",
+      "rockets": "Starship and Super Heavy",
+      "real": "SpaceX Starbase orbital launch mount · 26.0° N",
+      "note": "A huge steel table on legs, beside a 146 m tower whose two giant arms (the 'chopsticks') stack the rocket and can even catch it when it flies back. On the first flight there was no water under the table; since then a water-cooled steel plate sprays water up into the fire. A lightning rod tops the tower. Here it comes as it flew from 2023 to 2025. Salt spray and Gulf winds; winters are mild.",
+      "facts": [
+        "20 April 2023, Starship's first flight: with no trench and no water, the 33 engines blew a crater under the table and threw concrete chunks across the site; fine concrete dust was found up to about 10 km away.",
+        "Before the second flight (18 November 2023) SpaceX laid a water-cooled steel plate under the table that sprays water up into the flame.",
+        "13 October 2024: the tower's arms caught a returning Super Heavy booster for the first time. The table has twenty clamps."
+      ],
+      "pros": [
+        "With its water plate, takes a huge amount of fire",
+        "A tall tower with catch arms"
+      ],
+      "cons": [
+        "Without the water a big ship tears up the pad",
+        "No crew escape, a windy salty coast"
+      ],
+      "fee": 140000,
+      "holdFee": 25000,
+      "scale": 3.9,
+      "designKN": 75000,
+      "kit": {
+        "mount": "raised",
+        "tower": "catch",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "rod",
+        "access": "none",
+        "propellant": "loadgo",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "South Texas winter",
+        "meanC": 17,
+        "swingC": 5,
+        "windKts": 13,
+        "windSwingKts": 6,
+        "lightning": 0.05,
+        "sky": "humid",
+        "ground": "starbase"
+      }
+    },
+    {
+      "id": "starbase2",
+      "name": "Starbase Pad 2",
+      "place": "Boca Chica, Texas",
+      "placeVi": "Boca Chica, Texas",
+      "region": "usa",
+      "years": "2026–",
+      "rockets": "Starship V3 and Super Heavy",
+      "real": "SpaceX Starbase orbital launch pad 2 · 26.0° N",
+      "note": "Starbase's second pad, built after the lessons of Pad 1. The square mount stands on four legs over a dug trench, with a water-cooled deck, and a steel flame diverter turns the fire down the trench instead of onto bare ground. Its tower has shorter, faster catch arms. Salt spray and Gulf winds; winters are mild.",
+      "facts": [
+        "The mount was lifted into place in May 2025; most of the work was digging the flame trench.",
+        "The first launch from this pad was Starship Flight 12, the first of the bigger V3 ships, on 22 May 2026.",
+        "Its tower has shorter catch arms than Pad 1's, so they move faster and use less energy."
+      ],
+      "pros": [
+        "Takes the most fire of any pad",
+        "A trench and water: far less damage than Pad 1"
+      ],
+      "cons": [
+        "Renting SpaceX's own site costs the most",
+        "No crew escape, a windy salty coast"
+      ],
+      "fee": 140000,
+      "holdFee": 25000,
+      "scale": 4.5,
+      "designKN": 90600,
+      "kit": {
+        "mount": "deflector",
+        "tower": "catch",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "rod",
+        "access": "none",
+        "propellant": "loadgo",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "South Texas winter",
+        "meanC": 17,
+        "swingC": 5,
+        "windKts": 13,
+        "windSwingKts": 6,
+        "lightning": 0.05,
+        "sky": "humid",
+        "ground": "starbase"
+      }
+    },
+    {
+      "id": "slc41",
+      "name": "SLC-41",
+      "place": "Cape Canaveral, Florida",
+      "placeVi": "Mũi Canaveral, Florida",
+      "region": "usa",
+      "years": "1965–",
+      "rockets": "Titan, then Atlas V and Vulcan",
+      "real": "Space Launch Complex 41, Cape Canaveral Space Force Station · 28.6° N",
+      "note": "A 'clean pad': almost nothing stands at the pad itself. The rocket is stacked on a mobile launch platform inside a tall building about 550 m away and rolled out on rails the day before launch. A slim crew tower with an access arm and a slidewire with seats was added for the Starliner capsule. Four lightning towers ring the pad.",
+      "facts": [
+        "Both of NASA's big Mars rovers left from here on Atlas V rockets: Curiosity (26 November 2011) and Perseverance (30 July 2020).",
+        "The assembly building is 89 m (292 ft) tall; the rocket rides out on its platform about a day before launch.",
+        "Atlas V since 21 August 2002, Vulcan since 8 January 2024. The first crewed Starliner flew from here on 5 June 2024."
+      ],
+      "pros": [
+        "The pad is busy for hours, not weeks",
+        "Big mobile platform over a flame duct"
+      ],
+      "cons": [
+        "No service tower at the pad: the rocket is worked on in the building"
+      ],
+      "fee": 25000,
+      "holdFee": 40000,
+      "scale": 0.69,
+      "designKN": 17000,
+      "kit": {
+        "mount": "mlp",
+        "tower": "none",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "catenary",
+        "access": "slidewire",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Florida winter",
+        "meanC": 16,
+        "swingC": 4.5,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.06,
+        "sky": "clear",
+        "ground": "cape"
+      }
+    },
+    {
+      "id": "slc4e",
+      "name": "SLC-4E",
+      "place": "Vandenberg, California",
+      "placeVi": "Vandenberg, California",
+      "region": "usa",
+      "years": "1964–",
+      "rockets": "Atlas-Agena, Titan, then Falcon 9",
+      "real": "Space Launch Complex 4 East, Vandenberg Space Force Base · 34.6° N",
+      "note": "On the Pacific coast. Rockets fly south over open ocean into orbits that pass over the poles. The old Titan towers were pulled down in 2011 and the Falcon 9 now rolls out on its strongback. The cold sea keeps the coast cool and foggy, but rarely freezing, and lightning is rare.",
+      "facts": [
+        "68 launches of Atlas-Agena and Titan rockets from 1964 to 2005, then Falcon 9 since 29 September 2013.",
+        "18 April 1986: a Titan 34D exploded just above the pad and damaged the complex.",
+        "Falcon 9 boosters land on the pad next door, LZ-4, since October 2018."
+      ],
+      "pros": [
+        "Almost no lightning",
+        "Cool and frost-free"
+      ],
+      "cons": [
+        "Sea fog",
+        "A smaller trench than the Florida pads"
+      ],
+      "fee": 20000,
+      "holdFee": 35000,
+      "scale": 0.72,
+      "designKN": 15900,
+      "kit": {
+        "mount": "trench",
+        "tower": "strongback",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "none",
+        "access": "none",
+        "propellant": "loadgo",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "California coast winter",
+        "meanC": 12,
+        "swingC": 3,
+        "windKts": 9,
+        "windSwingKts": 5,
+        "lightning": 0.01,
+        "sky": "sea fog",
+        "ground": "vandenberg"
+      },
+      "aliases": [
+        "vandenberg"
+      ]
+    },
+    {
+      "id": "lc34",
+      "name": "LC-34",
+      "place": "Cape Canaveral, Florida",
+      "placeVi": "Mũi Canaveral, Florida",
+      "region": "usa",
+      "years": "1961–1968",
+      "rockets": "Saturn I, Saturn IB (Apollo 7)",
+      "real": "Launch Complex 34, Cape Canaveral · 28.5° N",
+      "note": "The first Moon-rocket pad. The Saturn stood on a concrete pedestal 8 m high, open on all four sides, with a two-way steel wedge on the ground beneath it. Four arms held it down for three seconds while the engines were checked. A 73 m umbilical tower stood beside it, and a 94 m service gantry rolled up on rails for the work. Here it comes as it was in the 1960s.",
+      "facts": [
+        "27 January 1967: a fire in the Apollo 1 capsule during a test on this pad killed Gus Grissom, Ed White and Roger Chaffee.",
+        "Apollo 7 left from here on 11 October 1968, the first American crew of three and the last launch from LC-34.",
+        "Seven launches in all, from 1961 to 1968. Only the concrete pedestal still stands, with a memorial to the Apollo 1 crew."
+      ],
+      "pros": [
+        "Big engines checked on the pad before release",
+        "Mild Florida winter"
+      ],
+      "cons": [
+        "No trench: the fire spreads all round the pedestal",
+        "An old pad: the crew has only an access arm"
+      ],
+      "fee": 20000,
+      "holdFee": 35000,
+      "scale": 0.368,
+      "designKN": 7120,
+      "kit": {
+        "mount": "raised",
+        "tower": "fixed",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "rod",
+        "access": "arm",
+        "propellant": "auto",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Florida winter",
+        "meanC": 16,
+        "swingC": 4.5,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.06,
+        "sky": "clear",
+        "ground": "cape"
+      },
+      "look": {
+        "tower": "red",
+        "towerH": 0.95
+      }
+    },
+    {
+      "id": "slc17",
+      "name": "SLC-17",
+      "place": "Cape Canaveral, Florida",
+      "placeVi": "Mũi Canaveral, Florida",
+      "region": "usa",
+      "years": "1957–2011",
+      "rockets": "Thor, Delta, Delta II",
+      "real": "Space Launch Complex 17A and 17B, Cape Canaveral · 28.4° N",
+      "note": "Twin pads of the Delta II, the workhorse of NASA's Mars missions. The rocket and its strap-on solid boosters were stacked inside a 38 m mobile service tower, which rolled back hours before launch, leaving a fixed umbilical tower beside it. Here it comes as it was for the Mars rovers.",
+      "facts": [
+        "Mars Global Surveyor (7 November 1996), Mars Pathfinder (4 December 1996), the rovers Spirit (10 June 2003) and Opportunity (7 July 2003) and the Phoenix lander (4 August 2007) all left from here.",
+        "321 launches from 1957 to 2011, the last the Moon probes GRAIL (10 September 2011).",
+        "Both towers were brought down with explosives on 12 July 2018."
+      ],
+      "pros": [
+        "Sheltered work on the whole ship",
+        "The Mars pad of the 1990s and 2000s"
+      ],
+      "cons": [
+        "Built for a rocket of about 4 MN",
+        "No crew access"
+      ],
+      "fee": 15000,
+      "holdFee": 30000,
+      "scale": 0.201,
+      "designKN": 4050,
+      "kit": {
+        "mount": "deflector",
+        "tower": "mst",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "mast",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Florida winter",
+        "meanC": 16,
+        "swingC": 4.5,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.06,
+        "sky": "clear",
+        "ground": "cape"
+      }
+    },
+    {
+      "id": "wallops",
+      "name": "Wallops Pad 0A",
+      "place": "Wallops Island, Virginia",
+      "placeVi": "Đảo Wallops, Virginia",
+      "region": "usa",
+      "years": "2013–",
+      "rockets": "Antares",
+      "real": "Mid-Atlantic Regional Spaceport, Launch Pad 0A · 37.8° N",
+      "note": "A pad on a marshy barrier island on the coast of Virginia. The Antares rolled out lying down on a wheeled transporter-erector that raised it a day before launch and carried all its hoses. Behind it stand a 94 m water tower, four lightning towers and tanks of kerosene and liquid oxygen. Winters are cold, raw and windy.",
+      "facts": [
+        "28 October 2014: an Antares lost a main engine about 15 seconds after liftoff and fell back near the pad. Two of the four lightning towers came down; the water tower stood.",
+        "The repairs took almost a year and cost about $13 million; Antares flew again from here on 17 October 2016.",
+        "First Antares launch: 21 April 2013. The last, in 2023, carried supplies to the space station."
+      ],
+      "pros": [
+        "Water tower, trench and lightning towers for a fair price",
+        "Seldom any lightning in winter"
+      ],
+      "cons": [
+        "Cold, often near freezing in winter",
+        "Built for a rocket of about 3.8 MN"
+      ],
+      "fee": 12000,
+      "holdFee": 25000,
+      "scale": 0.141,
+      "designKN": 3844,
+      "kit": {
+        "mount": "trench",
+        "tower": "strongback",
+        "clamps": "hold",
+        "deluge": "tower",
+        "lightning": "catenary",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Virginia coast winter",
+        "meanC": 3.3,
+        "swingC": 5,
+        "windKts": 12,
+        "windSwingKts": 6,
+        "lightning": 0.01,
+        "sky": "broken cloud",
+        "ground": "wallops"
+      }
+    },
+    {
+      "id": "lc19",
+      "name": "LC-19",
+      "place": "Cape Canaveral, Florida",
+      "placeVi": "Mũi Canaveral, Florida",
+      "region": "usa",
+      "years": "1959–1966",
+      "rockets": "Titan I, Gemini-Titan II",
+      "real": "Launch Complex 19, Cape Canaveral · 28.5° N",
+      "note": "The Gemini pad. The Titan II rose on an erector with a small white room on top, where the two astronauts climbed in; the erector was lowered flat before launch. The rocket burned fuels that stay liquid at room temperature and ignite on contact, so it could wait fuelled for a long time. There was no escape tower: in trouble, the crew would have ejected in their seats.",
+      "facts": [
+        "12 December 1965: Gemini 6's engines lit and shut down about a second later, before it had moved, because a plug fell out of its tail too early. Wally Schirra chose not to eject, and the crew flew three days later.",
+        "Ten crewed Gemini flights left from here, from Gemini 3 (23 March 1965) to Gemini 12 (11 November 1966).",
+        "Each Titan II pushed about 1.9 MN at liftoff."
+      ],
+      "pros": [
+        "Cheap",
+        "A bad start can be caught before liftoff"
+      ],
+      "cons": [
+        "Built for a rocket of about 1.9 MN",
+        "No escape route: the erector is lowered before launch"
+      ],
+      "fee": 12000,
+      "holdFee": 25000,
+      "scale": 0.095,
+      "designKN": 1910,
+      "kit": {
+        "mount": "deflector",
+        "tower": "strongback",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "rod",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Florida winter",
+        "meanC": 16,
+        "swingC": 4.5,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.06,
+        "sky": "clear",
+        "ground": "cape"
+      }
+    },
+    {
+      "id": "lc14",
+      "name": "LC-14",
+      "place": "Cape Canaveral, Florida",
+      "placeVi": "Mũi Canaveral, Florida",
+      "region": "usa",
+      "years": "1957–1966",
+      "rockets": "Atlas, Mercury-Atlas, Atlas-Agena",
+      "real": "Launch Complex 14, Cape Canaveral · 28.5° N",
+      "note": "Where John Glenn left to become the first American in orbit. The Atlas stood on a launcher on a stand 7 m high at the top of a ramp, held until its engines were running. A 47 m service gantry with fourteen decks rolled 90 m back on rails before launch. A crane-like 'cherry picker' could swing a rescue cab to the capsule hatch.",
+      "facts": [
+        "20 February 1962: Friendship 7 lifted off at 9:47 a.m. after holds for a broken hatch bolt, a fuel top-off and liquid-oxygen ground equipment. Four earlier tries had been called off, mostly for weather.",
+        "All four Mercury orbital flights left from here (1962–63).",
+        "32 Atlas launches from 1957 to 1966; the gantry was pulled down in 1976."
+      ],
+      "pros": [
+        "Cheap",
+        "Engines checked before release"
+      ],
+      "cons": [
+        "Built for a rocket of about 1.6 MN: a big ship overloads it",
+        "Fuelled by hand from the blockhouse"
+      ],
+      "fee": 12000,
+      "holdFee": 25000,
+      "scale": 0.079,
+      "designKN": 1600,
+      "kit": {
+        "mount": "deflector",
+        "tower": "mst",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "rod",
+        "access": "arm",
+        "propellant": "manual",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Florida winter",
+        "meanC": 16,
+        "swingC": 4.5,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.06,
+        "sky": "clear",
+        "ground": "cape"
+      },
+      "look": {
+        "tower": "red"
+      }
+    },
+    {
+      "id": "site110",
+      "name": "Baikonur Site 110",
+      "place": "Baikonur, Kazakhstan",
+      "placeVi": "Baikonur, Kazakhstan",
+      "region": "russia",
+      "years": "1969–1988",
+      "rockets": "N1, Energia (Buran)",
+      "real": "Baikonur Cosmodrome Site 110, left pad 110/37 · 46.0° N",
+      "note": "The giant pads built for the Soviet Moon rocket N1 and later used for Energia and the Buran shuttle. A huge service tower turned on a circular track to swing away from the rocket before launch; the fire went down a flame trench running three ways, above five floors of rooms under the pad. For Energia an access tower was added, with an escape tunnel down to an underground bunker. Here it comes as it was for Buran in 1988.",
+      "facts": [
+        "3 July 1969: an N1 lost an engine a quarter of a second after liftoff, fell back onto the right-hand pad and destroyed it; windows broke 6 km away. Rebuilding took about 18 months.",
+        "15 November 1988: Energia lifted Buran from the left pad; the shuttle flew two orbits with nobody on board and landed by itself.",
+        "All four N1 launches failed. The pads still stand, falling apart."
+      ],
+      "pros": [
+        "Built for the biggest Soviet rockets",
+        "An escape tunnel to a bunker"
+      ],
+      "cons": [
+        "Bitter steppe winter",
+        "No clamps"
+      ],
+      "fee": 20000,
+      "holdFee": 40000,
+      "scale": 1.584,
+      "designKN": 35000,
+      "kit": {
+        "mount": "trench",
+        "tower": "rss",
+        "clamps": "none",
+        "deluge": "water",
+        "lightning": "mast",
+        "access": "blastroom",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Kazakh steppe winter",
+        "meanC": -9.6,
+        "swingC": 6,
+        "windKts": 9,
+        "windSwingKts": 5,
+        "lightning": 0,
+        "sky": "dry and clear",
+        "ground": "baikonur"
+      }
+    },
+    {
+      "id": "site81",
+      "name": "Baikonur Site 81",
+      "place": "Baikonur, Kazakhstan",
+      "placeVi": "Baikonur, Kazakhstan",
+      "region": "russia",
+      "years": "1965–",
+      "rockets": "Proton, Proton-M",
+      "real": "Baikonur Cosmodrome Site 81, pad 24 · 46.1° N",
+      "note": "The pad of the Proton, a heavy rocket whose fuels ignite on contact and stay liquid at room temperature, so it can wait fuelled for days. It arrives fully built, lying on a railway transporter, and an erector at the pad stands it upright on six supports just above its six engines. A service tower then rolls up around it. Most of the pad is half-buried, and its twin pad stands 600 m away so one could survive an explosion on the other.",
+      "facts": [
+        "The first Proton flew on 16 July 1965. On 12 February 2026 the last Proton with the Blok DM upper stage left this pad.",
+        "2 July 2013: a Proton-M turned over seconds after liftoff and crashed about 2.5 km from the pad, because sensors had been fitted upside down. Its toxic propellant raised fears of a poison cloud; rain washed it out.",
+        "Six engines push about 10 MN at liftoff."
+      ],
+      "pros": [
+        "Takes a big ship for its price",
+        "Sixty years of heavy launches"
+      ],
+      "cons": [
+        "Bitter steppe winter",
+        "No water, no clamps, no crew access"
+      ],
+      "fee": 15000,
+      "holdFee": 30000,
+      "scale": 0.645,
+      "designKN": 10000,
+      "kit": {
+        "mount": "deflector",
+        "tower": "mst",
+        "clamps": "none",
+        "deluge": "none",
+        "lightning": "mast",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Kazakh steppe winter",
+        "meanC": -9.6,
+        "swingC": 6,
+        "windKts": 9,
+        "windSwingKts": 5,
+        "lightning": 0,
+        "sky": "dry and clear",
+        "ground": "baikonur"
+      },
+      "aliases": [
+        "proton"
+      ]
+    },
+    {
+      "id": "gagarin",
+      "name": "Gagarin's Start",
+      "place": "Baikonur, Kazakhstan",
+      "placeVi": "Baikonur, Kazakhstan",
+      "region": "russia",
+      "years": "1957–2019",
+      "rockets": "R-7, Vostok, Soyuz",
+      "real": "Baikonur Site 1/5 · 45.9° N",
+      "note": "The pad Sputnik and Yuri Gagarin left from. The Soyuz arrives lying down by train and is raised over the edge of a huge flame pit dug out of the steppe. It hangs there in four steel support arms; at liftoff they swing back like the petals of a tulip. Two halves of a service gantry close around it for the work and are lowered before launch. Winters on the steppe are bitter.",
+      "facts": [
+        "First launch 15 May 1957 (an R-7 missile); Sputnik on 4 October 1957; Gagarin on 12 April 1961.",
+        "520 launches until 25 September 2019 (Soyuz MS-15), more than any other pad.",
+        "The launch platform is a 600-tonne steel table 40 m square, built from 16 railway-bridge trusses. The engines burn for about 17 seconds before they lift the rocket out of its arms.",
+        "26 September 1983: a Soyuz caught fire on this pad; the escape rocket pulled the crew away seconds before the explosion. The pad was out of use for almost a year.",
+        "Since 2019 crews fly from Site 31, a copy of this pad. On 27 November 2025 a service platform there, apparently left unsecured, fell into the flame pit seconds after a Soyuz left; a new one was in place by March 2026."
+      ],
+      "pros": [
+        "Cheap, with a deep pit for the fire",
+        "Long experience: more launches than any other pad"
+      ],
+      "cons": [
+        "Bitter winter: well below freezing most days",
+        "No clamps: once the thrust passes the weight, it flies"
+      ],
+      "fee": 15000,
+      "holdFee": 30000,
+      "scale": 0.29,
+      "designKN": 4000,
+      "kit": {
+        "mount": "deflector",
+        "tower": "gantry",
+        "clamps": "tulip",
+        "deluge": "none",
+        "lightning": "mast",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Kazakh steppe winter",
+        "meanC": -9.6,
+        "swingC": 6,
+        "windKts": 9,
+        "windSwingKts": 5,
+        "lightning": 0,
+        "sky": "dry and clear",
+        "ground": "baikonur"
+      },
+      "aliases": [
+        "baikonur"
+      ]
+    },
+    {
+      "id": "vostochny",
+      "name": "Vostochny Site 1S",
+      "place": "Amur Oblast, Russia",
+      "placeVi": "Tỉnh Amur, Nga",
+      "region": "russia",
+      "years": "2016–",
+      "rockets": "Soyuz-2",
+      "real": "Vostochny Cosmodrome Site 1S · 51.9° N",
+      "note": "Russia's newest cosmodrome, in the forests of the Far East. The Soyuz hangs in the classic four support arms over a huge diamond-shaped flame trench, but here a 1,600-tonne mobile service tower rolls over it on rails, so the payload can be fitted with the rocket standing. The tower rolls back about an hour before fuelling ends. Winters are among the coldest of any launch site.",
+      "facts": [
+        "First launch 28 April 2016. Luna-25, Russia's first Moon lander in 47 years, left from here on 11 August 2023.",
+        "The service tower is about 50 m tall and moves at up to 12 m a minute on four wheeled trucks.",
+        "The flame trench covers 27,000 m², and the pad's foundation goes down 32 m."
+      ],
+      "pros": [
+        "A sheltered tower over the Soyuz",
+        "Engines watched at low thrust before the lift"
+      ],
+      "cons": [
+        "Extreme cold: around −24 °C in January",
+        "Built for a rocket of about 4 MN"
+      ],
+      "fee": 18000,
+      "holdFee": 35000,
+      "scale": 0.258,
+      "designKN": 4000,
+      "kit": {
+        "mount": "deflector",
+        "tower": "mst",
+        "clamps": "tulip",
+        "deluge": "none",
+        "lightning": "mast",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Amur taiga winter",
+        "meanC": -24.4,
+        "swingC": 5,
+        "windKts": 5,
+        "windSwingKts": 3,
+        "lightning": 0,
+        "sky": "dry and clear",
+        "ground": "amur"
+      },
+      "look": {
+        "tower": "white"
+      }
+    },
+    {
+      "id": "plesetsk",
+      "name": "Plesetsk Site 43",
+      "place": "Arkhangelsk Oblast, Russia",
+      "placeVi": "Tỉnh Arkhangelsk, Nga",
+      "region": "russia",
+      "years": "1965–",
+      "rockets": "R-7, Vostok, Molniya, Soyuz-2",
+      "real": "Plesetsk Cosmodrome Site 43, pad 43/4 · 62.9° N",
+      "note": "The northern military cosmodrome, in the taiga south of the White Sea. Its two pads are copies of Gagarin's Start: the Soyuz hangs in four support arms over a flame pit and a service gantry closes around it. Rockets fly north into orbits that pass over the poles. Winters are long, dark and well below freezing.",
+      "facts": [
+        "18 March 1980: a Vostok rocket exploded during fuelling on pad 43/4, two hours before launch, and 48 people were killed. The probable cause was lead solder in filters reacting with hydrogen peroxide.",
+        "The disaster was kept secret until about 1989; the pad was out of use until 1984.",
+        "The first Soyuz-2 flew from Site 43 on 8 November 2004."
+      ],
+      "pros": [
+        "Cheap",
+        "A long record of Soyuz launches"
+      ],
+      "cons": [
+        "Northern winter: well below freezing",
+        "No water, no clamps"
+      ],
+      "fee": 12000,
+      "holdFee": 25000,
+      "scale": 0.258,
+      "designKN": 4000,
+      "kit": {
+        "mount": "deflector",
+        "tower": "gantry",
+        "clamps": "tulip",
+        "deluge": "none",
+        "lightning": "mast",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Northern taiga winter",
+        "meanC": -12.5,
+        "swingC": 6,
+        "windKts": 7,
+        "windSwingKts": 4,
+        "lightning": 0,
+        "sky": "broken cloud",
+        "ground": "plesetsk"
+      }
+    },
+    {
+      "id": "ela4",
+      "name": "ELA-4",
+      "place": "Kourou, French Guiana",
+      "placeVi": "Kourou, Guyane thuộc Pháp",
+      "region": "europe",
+      "years": "2024–",
+      "rockets": "Ariane 6",
+      "real": "Ensemble de Lancement Ariane 4 (ZL4), Guiana Space Centre · 5.3° N",
+      "note": "Europe's Ariane 6 pad. The core is built lying down in a hangar, driven 800 m to the pad and stood up inside an 89 m mobile gantry, where the solid boosters and the upper part are added. The 8,200-tonne gantry rolls 120 m back before launch, leaving a 66 m umbilical tower whose arms feed liquid hydrogen and oxygen. Two flame trenches take the fire, and a water tower pours 800,000 litres in a few tens of seconds.",
+      "facts": [
+        "Ariane 6 first flew from here on 9 July 2024.",
+        "The gantry moves at 7 m a minute along a double track.",
+        "The liquid hydrogen and oxygen tanks stand 300 m from the pad, linked to it by underground galleries."
+      ],
+      "pros": [
+        "A modern kit: tower, trenches, water and lightning masts",
+        "No frost, ever"
+      ],
+      "cons": [
+        "Rainy season: lightning is common",
+        "No crew access"
+      ],
+      "fee": 35000,
+      "holdFee": 50000,
+      "scale": 0.72,
+      "designKN": 19600,
+      "kit": {
+        "mount": "trench",
+        "tower": "mst",
+        "clamps": "hold",
+        "deluge": "tower",
+        "lightning": "catenary",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Equatorial rainy season",
+        "meanC": 26.6,
+        "swingC": 1.2,
+        "windKts": 9,
+        "windSwingKts": 3,
+        "lightning": 0.25,
+        "sky": "humid",
+        "ground": "kourou"
+      }
+    },
+    {
+      "id": "ela3",
+      "name": "ELA-3",
+      "place": "Kourou, French Guiana",
+      "placeVi": "Kourou, Guyane thuộc Pháp",
+      "region": "europe",
+      "years": "1996–2023",
+      "rockets": "Ariane 5",
+      "real": "Ensemble de Lancement Ariane 3, Guiana Space Centre · 5.2° N",
+      "note": "Europe's spaceport, 5° from the equator. The Ariane 5 was built on a mobile launch table and rolled almost 3 km to the pad, where three flame ducts take the main engine and the two big boosters. A 90 m water tower and four 100 m lightning towers stand around it. Hot and humid, with rain and storms in January.",
+      "facts": [
+        "117 Ariane 5 launches from 4 June 1996 to 5 July 2023, among them the James Webb Space Telescope (25 December 2021).",
+        "At liftoff the water tower pours about 1,500 m³ of water onto the table to soak up heat and sound.",
+        "The main engine ran for about 7 s on the pad while it was checked; only then were the solid boosters lit."
+      ],
+      "pros": [
+        "Well-cooled flame ducts and a huge water tower",
+        "No frost, ever"
+      ],
+      "cons": [
+        "Rainy season: lightning is common",
+        "No crew access"
+      ],
+      "fee": 40000,
+      "holdFee": 50000,
+      "scale": 0.47,
+      "designKN": 14000,
+      "kit": {
+        "mount": "mlp",
+        "tower": "none",
+        "clamps": "hold",
+        "deluge": "tower",
+        "lightning": "catenary",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Equatorial rainy season",
+        "meanC": 26.6,
+        "swingC": 1.2,
+        "windKts": 9,
+        "windSwingKts": 3,
+        "lightning": 0.25,
+        "sky": "humid",
+        "ground": "kourou"
+      },
+      "aliases": [
+        "kourou"
+      ]
+    },
+    {
+      "id": "els",
+      "name": "ELS",
+      "place": "Sinnamary, French Guiana",
+      "placeVi": "Sinnamary, Guyane thuộc Pháp",
+      "region": "europe",
+      "years": "2011–2022",
+      "rockets": "Soyuz-ST",
+      "real": "Ensemble de Lancement Soyouz, Guiana Space Centre · 5.3° N",
+      "note": "A Russian Soyuz pad in the South American jungle: the same four support arms over a flame trench cut into granite, but with a 52 m mobile gantry that encloses the rocket, the first at any Soyuz pad, so satellites could be fitted with the rocket standing. The gantry rolls 80 m away before launch. Four lightning towers stand around it. Here it comes as it was from 2011 to 2022.",
+      "facts": [
+        "First launch 21 October 2011, with Europe's first two Galileo navigation satellites; last launch 10 February 2022. 27 launches in all.",
+        "Soyuz flights from Kourou ended in 2022, when Russia pulled its teams out.",
+        "It was the first Soyuz pad with a mobile tower that encloses the rocket; at Baikonur and Plesetsk the rocket rolls out already built."
+      ],
+      "pros": [
+        "A sheltered gantry over the Soyuz",
+        "No frost, ever"
+      ],
+      "cons": [
+        "Rainy season: lightning is common",
+        "No water, no clamps"
+      ],
+      "fee": 25000,
+      "holdFee": 40000,
+      "scale": 0.258,
+      "designKN": 4000,
+      "kit": {
+        "mount": "deflector",
+        "tower": "mst",
+        "clamps": "tulip",
+        "deluge": "none",
+        "lightning": "catenary",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Equatorial rainy season",
+        "meanC": 26.6,
+        "swingC": 1.2,
+        "windKts": 9,
+        "windSwingKts": 3,
+        "lightning": 0.25,
+        "sky": "humid",
+        "ground": "kourou"
+      }
+    },
+    {
+      "id": "wenchang",
+      "name": "Wenchang LC-101",
+      "place": "Hainan, China",
+      "placeVi": "Hải Nam, Trung Quốc",
+      "region": "china",
+      "years": "2016–",
+      "rockets": "Long March 5",
+      "real": "Wenchang Space Launch Site, LC-101 · 19.6° N",
+      "note": "China's seaside spaceport on the tropical island of Hainan. The 5 m wide Long March 5 arrives by ship, is stacked on a mobile launch platform and rolled 2.8 km to the pad, where fixed umbilical towers and a water system wait. Rockets fly out over the sea, so spent stages do not fall on villages. Dry, mild winters.",
+      "facts": [
+        "Tianwen-1, China's first Mars mission with an orbiter, lander and rover, left from here on 23 July 2020.",
+        "Rockets launched here cross the coast within 10 km, so falling stages land in the ocean.",
+        "The site was finished in 2014; it has a seaport for rocket deliveries."
+      ],
+      "pros": [
+        "Mild, dry winter",
+        "Big platform, tower and water"
+      ],
+      "cons": [
+        "Among the dearer pads",
+        "No crew escape route"
+      ],
+      "fee": 30000,
+      "holdFee": 40000,
+      "scale": 0.34,
+      "designKN": 10620,
+      "kit": {
+        "mount": "mlp",
+        "tower": "fixed",
+        "clamps": "hold",
+        "deluge": "tower",
+        "lightning": "catenary",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Hainan dry season",
+        "meanC": 18.7,
+        "swingC": 3,
+        "windKts": 11,
+        "windSwingKts": 4,
+        "lightning": 0.04,
+        "sky": "clear",
+        "ground": "wenchang"
+      },
+      "look": {
+        "tower": "white"
+      }
+    },
+    {
+      "id": "xichang",
+      "name": "Xichang LC-2",
+      "place": "Sichuan, China",
+      "placeVi": "Tứ Xuyên, Trung Quốc",
+      "region": "china",
+      "years": "1990–",
+      "rockets": "Long March 3A, 3B, 3C",
+      "real": "Xichang Satellite Launch Center, Launch Complex 2 · 28.2° N",
+      "note": "A launch site in a mountain valley of south-west China, more than 1,500 m up. The rocket is stacked at the pad beside a fixed service tower. Spent stages fall on land, among the hills and villages. Winters here are dry, sunny and mild.",
+      "facts": [
+        "15 February 1996: the first Long March 3B tipped over two seconds after liftoff and crashed into a hillside village about 22 seconds later; the official count was 6 dead.",
+        "China's Moon probes Chang'e 1 to 4 left from Xichang (2007–2018).",
+        "Its rockets burn fuels that stay liquid at room temperature, with a hydrogen upper stage."
+      ],
+      "pros": [
+        "Dry, sunny, mild winter",
+        "Cheap"
+      ],
+      "cons": [
+        "Inland: falling stages land on villages",
+        "Built for a rocket of about 6 MN"
+      ],
+      "fee": 12000,
+      "holdFee": 25000,
+      "scale": 0.294,
+      "designKN": 5923,
+      "kit": {
+        "mount": "deflector",
+        "tower": "fixed",
+        "clamps": "none",
+        "deluge": "water",
+        "lightning": "mast",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Sichuan mountain winter",
+        "meanC": 10.2,
+        "swingC": 3,
+        "windKts": 5,
+        "windSwingKts": 3,
+        "lightning": 0.01,
+        "sky": "clear",
+        "ground": "xichang"
+      },
+      "look": {
+        "tower": "white"
+      }
+    },
+    {
+      "id": "jiuquan",
+      "name": "Jiuquan LC-43/921",
+      "place": "Gobi Desert, Inner Mongolia, China",
+      "placeVi": "Sa mạc Gobi, Nội Mông, Trung Quốc",
+      "region": "china",
+      "years": "1999–",
+      "rockets": "Long March 2F (Shenzhou)",
+      "real": "Jiuquan Satellite Launch Center, South Launch Site, pad 921 · 41.0° N",
+      "note": "China's crew pad, in the Gobi Desert about 1,000 m above the sea. The Long March 2F and its Shenzhou capsule are stacked upright in a tall assembly building and rolled 1.5 km to the pad on a mobile launch platform. A tall umbilical tower with swing arms stands beside the pad. The air is dry and clear, and the winter is bitterly cold.",
+      "facts": [
+        "15 October 2003: Yang Liwei became the first Chinese astronaut, flying 14 orbits on Shenzhou 5.",
+        "Every Shenzhou crew has left from this pad since Shenzhou 1 (1999).",
+        "About 300 days a year are good for launching, the desert air is so dry."
+      ],
+      "pros": [
+        "Stacked indoors, rolled out upright",
+        "Dry, clear skies"
+      ],
+      "cons": [
+        "Bitter desert winter: far below freezing",
+        "Built for a rocket of about 6 MN"
+      ],
+      "fee": 20000,
+      "holdFee": 30000,
+      "scale": 0.227,
+      "designKN": 5900,
+      "kit": {
+        "mount": "mlp",
+        "tower": "fixed",
+        "clamps": "none",
+        "deluge": "water",
+        "lightning": "mast",
+        "access": "arm",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Gobi winter",
+        "meanC": -10.4,
+        "swingC": 5,
+        "windKts": 8,
+        "windSwingKts": 5,
+        "lightning": 0,
+        "sky": "dry and clear",
+        "ground": "gobi"
+      },
+      "look": {
+        "tower": "white"
+      }
+    },
+    {
+      "id": "tanegashima",
+      "name": "Yoshinobu LA-Y1",
+      "place": "Tanegashima, Japan",
+      "placeVi": "Tanegashima, Nhật Bản",
+      "region": "japan",
+      "years": "1994–",
+      "rockets": "H-II, H-IIA",
+      "real": "Yoshinobu Launch Complex, Tanegashima Space Center · 30.4° N",
+      "note": "Japan's main spaceport on a green island, often called the most beautiful launch site in the world. The rocket is stacked on an 850-tonne mobile launcher in the assembly building and rolled to the pad about half a day before launch; the trip takes half an hour. The launch team sits 500 m away, 12 m underground. Winters are cool and windy, but frost-free.",
+      "facts": [
+        "Built in the early 1990s for the H-II; the H-IIA flew from LA-Y1 until 28 June 2025.",
+        "The UAE's Hope probe left for Mars from here on an H-IIA on 19 July 2020 (UTC).",
+        "Until April 2011 launches were allowed only on 190 days a year, to protect the local fishing."
+      ],
+      "pros": [
+        "Frost-free winter",
+        "Mobile launcher and lightning towers"
+      ],
+      "cons": [
+        "Windy",
+        "No crew access"
+      ],
+      "fee": 25000,
+      "holdFee": 40000,
+      "scale": 0.38,
+      "designKN": 9900,
+      "kit": {
+        "mount": "mlp",
+        "tower": "none",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "catenary",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Southern Japan winter",
+        "meanC": 11,
+        "swingC": 3,
+        "windKts": 14,
+        "windSwingKts": 6,
+        "lightning": 0.04,
+        "sky": "broken cloud",
+        "ground": "tanegashima"
+      }
+    },
+    {
+      "id": "uchinoura",
+      "name": "Uchinoura M pad",
+      "place": "Kagoshima, Japan",
+      "placeVi": "Kagoshima, Nhật Bản",
+      "region": "japan",
+      "years": "1962–",
+      "rockets": "Mu, M-V, Epsilon",
+      "real": "Uchinoura Space Center, Mu Center · 31.3° N",
+      "note": "Japan's first spaceport, on a mountain plateau 210 m above the Pacific. The all-solid rocket is stacked inside an enclosed service tower on a heavy launcher, which then swings it out of the tower. The old M-V was fired at a slant toward the sea; for the Epsilon the launcher stands it upright over a new flame duct. Winters are mild and fairly dry.",
+      "facts": [
+        "4 July 1998: Nozomi, Japan's first Mars probe, left from here on an M-V.",
+        "9 May 2003: Hayabusa left from here, and brought back dust from an asteroid.",
+        "The Epsilon can be checked and launched from a 'mobile control' room of a few computers."
+      ],
+      "pros": [
+        "Sheltered stacking in the tower",
+        "Mild winter"
+      ],
+      "cons": [
+        "No clamps: solid motors cannot be held back",
+        "No water, no crew access"
+      ],
+      "fee": 10000,
+      "holdFee": 20000,
+      "scale": 0.244,
+      "designKN": 3780,
+      "kit": {
+        "mount": "deflector",
+        "tower": "mst",
+        "clamps": "none",
+        "deluge": "none",
+        "lightning": "rod",
+        "access": "none",
+        "propellant": "manual",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Southern Kyushu winter",
+        "meanC": 7.5,
+        "swingC": 3,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.03,
+        "sky": "broken cloud",
+        "ground": "kagoshima"
+      },
+      "look": {
+        "tower": "white"
+      }
+    },
+    {
+      "id": "sriharikota",
+      "name": "Sriharikota FLP",
+      "place": "Sriharikota, India",
+      "placeVi": "Sriharikota, Ấn Độ",
+      "region": "india",
+      "years": "1993–",
+      "rockets": "PSLV, GSLV",
+      "real": "Satish Dhawan Space Centre, First Launch Pad · 13.7° N",
+      "note": "India's spaceport on a sandy island off the Bay of Bengal. At the First Launch Pad the PSLV is built up stage by stage on the pad itself, inside a 3,200-tonne mobile service tower that rolls back before launch. Its solid first stage and four of its six solid strap-ons are lit on the ground. January is warm and dry, after the monsoon.",
+      "facts": [
+        "5 November 2013: India's Mars Orbiter Mission (Mangalyaan) left from this pad on a PSLV-XL; it reached Mars on the first try.",
+        "Four strap-on boosters light on the ground and the other two about 25 seconds later.",
+        "The Second Launch Pad nearby builds rockets in a hangar instead, on a pedestal that rolls out on rails; Chandrayaan-3 left from it in 2023."
+      ],
+      "pros": [
+        "Warm, dry January",
+        "Sheltered work on the whole ship"
+      ],
+      "cons": [
+        "No clamps: solid motors cannot be held back",
+        "No crew access"
+      ],
+      "fee": 12000,
+      "holdFee": 25000,
+      "scale": 0.381,
+      "designKN": 7680,
+      "kit": {
+        "mount": "deflector",
+        "tower": "mst",
+        "clamps": "none",
+        "deluge": "water",
+        "lightning": "catenary",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "Bay of Bengal winter",
+        "meanC": 25.5,
+        "swingC": 1.5,
+        "windKts": 9,
+        "windSwingKts": 4,
+        "lightning": 0.05,
+        "sky": "humid",
+        "ground": "sriharikota"
+      }
+    },
+    {
+      "id": "naro",
+      "name": "Naro LC-2",
+      "place": "Goheung, South Korea",
+      "placeVi": "Goheung, Hàn Quốc",
+      "region": "korea",
+      "years": "2009–",
+      "rockets": "Nuri (KSLV-II)",
+      "real": "Naro Space Center, Launch Complex 2 · 34.4° N",
+      "note": "Korea's spaceport on a small island at the southern tip of the peninsula. Nuri rolls out lying down, is raised on an erector and plugged into an umbilical tower; under it a sloped steel deflector turns the fire sideways. The first pad next to it was built with Russian help for Naro-1. Winters are cold and clear.",
+      "facts": [
+        "30 January 2013: on its third try, Naro-1 put Korea's first satellite into orbit from the pad next door.",
+        "21 June 2022: Nuri, built in Korea, reached orbit; its first flight (21 October 2021) had come up just short.",
+        "Nuri's first stage has four 75-tonne engines, about 2.9 MN in all."
+      ],
+      "pros": [
+        "Cheap",
+        "Clear winter skies"
+      ],
+      "cons": [
+        "Cold, near freezing in January",
+        "Built for a rocket of about 3 MN"
+      ],
+      "fee": 15000,
+      "holdFee": 30000,
+      "scale": 0.146,
+      "designKN": 2942,
+      "kit": {
+        "mount": "deflector",
+        "tower": "fixed",
+        "clamps": "hold",
+        "deluge": "water",
+        "lightning": "mast",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "radar"
+      },
+      "climate": {
+        "name": "South Korean coast winter",
+        "meanC": 1.6,
+        "swingC": 4,
+        "windKts": 10,
+        "windSwingKts": 5,
+        "lightning": 0.01,
+        "sky": "clear",
+        "ground": "naro"
+      }
+    },
+    {
+      "id": "alcantara",
+      "name": "Alcântara VLS pad",
+      "place": "Maranhão, Brazil",
+      "placeVi": "Maranhão, Brazil",
+      "region": "brazil",
+      "years": "1990–",
+      "rockets": "VLS-1, sounding rockets",
+      "real": "Alcântara Launch Center · 2.3° S",
+      "note": "The land launch site closest to the equator, on Brazil's north coast. The small all-solid VLS-1 was stacked inside a mobile integration tower, a five-floor steel building on rails that rolls back before launch. Solid motors cannot be switched off, so nothing holds the rocket down. January is hot and humid, at the start of the rainy season.",
+      "facts": [
+        "22 August 2003: three days before launch, a booster of the VLS-1 lit by accident inside the integration tower. The tower burned and fell, and 21 people were killed.",
+        "The inquiry blamed a spark of static electricity in a detonator whose safety device had been removed. The tower was rebuilt by 2012.",
+        "At 2.3° south it gives rockets almost the full push of the Earth's spin."
+      ],
+      "pros": [
+        "Hot all year: no frost",
+        "Cheap"
+      ],
+      "cons": [
+        "Rainy season starts in January: storms",
+        "No clamps, no water: built for a 1.2 MN rocket"
+      ],
+      "fee": 10000,
+      "holdFee": 20000,
+      "scale": 0.078,
+      "designKN": 1212,
+      "kit": {
+        "mount": "deflector",
+        "tower": "mst",
+        "clamps": "none",
+        "deluge": "none",
+        "lightning": "mast",
+        "access": "none",
+        "propellant": "manual",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Equatorial Brazil, start of the rains",
+        "meanC": 27.6,
+        "swingC": 1.2,
+        "windKts": 10,
+        "windSwingKts": 4,
+        "lightning": 0.18,
+        "sky": "humid",
+        "ground": "alcantara"
+      }
+    },
+    {
+      "id": "sealaunch",
+      "name": "Sea Launch Odyssey",
+      "place": "Equator, Pacific Ocean (154° W)",
+      "placeVi": "Xích đạo, Thái Bình Dương (154° T)",
+      "region": "pacific",
+      "years": "1999–2014",
+      "rockets": "Zenit-3SL",
+      "real": "Ocean Odyssey launch platform, Sea Launch · 0° N, 154° W",
+      "note": "A launch pad on a converted oil-drilling platform that sailed to the equator for each launch. The Zenit rode out lying in a hangar on deck; at the launch spot the platform sank down 22 m on its floats to steady itself, the rocket was rolled out and raised by machines, and everyone left for a command ship 5 km away. Fuelling and launch were fully automatic. Warm sea, trade winds and no land for hundreds of kilometres.",
+      "facts": [
+        "First launch 27 March 1999; 36 launches in all, the last on 26 May 2014.",
+        "30 January 2007: a Zenit exploded at liftoff with about 500 tonnes of propellant aboard. Nobody was hurt, but the 270-tonne flame deflector was blown off into the sea.",
+        "The platform was built in Japan in 1983 as an oil-drilling rig and first drilled off Alaska."
+      ],
+      "pros": [
+        "On the equator: the most push from the Earth's spin",
+        "Nobody on board at launch"
+      ],
+      "cons": [
+        "A long voyage to every launch",
+        "No clamps and no lightning protection"
+      ],
+      "fee": 30000,
+      "holdFee": 45000,
+      "scale": 0.36,
+      "designKN": 7250,
+      "kit": {
+        "mount": "deflector",
+        "tower": "strongback",
+        "clamps": "none",
+        "deluge": "water",
+        "lightning": "none",
+        "access": "none",
+        "propellant": "auto",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Equatorial Pacific",
+        "meanC": 27,
+        "swingC": 0.8,
+        "windKts": 12,
+        "windSwingKts": 4,
+        "lightning": 0.04,
+        "sky": "broken cloud",
+        "ground": "ocean"
+      }
+    },
+    {
+      "id": "mahia",
+      "name": "Rocket Lab LC-1",
+      "place": "Mahia Peninsula, New Zealand",
+      "placeVi": "Bán đảo Mahia, New Zealand",
+      "region": "pacific",
+      "years": "2016–",
+      "rockets": "Electron",
+      "real": "Rocket Lab Launch Complex 1 · 39.3° S",
+      "note": "Rocket Lab called it the world's first private orbital launch site (2016), on a sheep-farming peninsula. Everything is sized for the small Electron rocket, down to the strongback that raises it. It is cheap and quick, but a big ship is far too strong for it. January is summer here: mild and breezy.",
+      "facts": [
+        "Pad A opened in 2016; Pad B, a copy of it, opened in February 2022.",
+        "Licensed for a launch every 72 hours.",
+        "Electron's nine small engines push less than a tenth of what a Falcon 9 does."
+      ],
+      "pros": [
+        "The cheapest pad",
+        "Summer weather"
+      ],
+      "cons": [
+        "Built for a small rocket: a big ship overloads it",
+        "No water, no lightning protection"
+      ],
+      "fee": 8000,
+      "holdFee": 15000,
+      "scale": 0.0245,
+      "designKN": 224,
+      "kit": {
+        "mount": "raised",
+        "tower": "strongback",
+        "clamps": "hold",
+        "deluge": "none",
+        "lightning": "none",
+        "access": "none",
+        "propellant": "loadgo",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "New Zealand summer",
+        "meanC": 18,
+        "swingC": 3,
+        "windKts": 13,
+        "windSwingKts": 6,
+        "lightning": 0.03,
+        "sky": "clear",
+        "ground": "mahia"
+      }
+    },
+    {
+      "id": "omelek",
+      "name": "Omelek Island",
+      "place": "Kwajalein Atoll, Marshall Islands",
+      "placeVi": "Đảo san hô Kwajalein, Quần đảo Marshall",
+      "region": "pacific",
+      "years": "2006–2009",
+      "rockets": "Falcon 1",
+      "real": "SpaceX launch site, Omelek Island, Reagan Test Site · 9.0° N",
+      "note": "A tiny coral island in the middle of the Pacific where SpaceX began. The small Falcon 1 was raised on an erector beside a hangar and held down on its launch mount until its single engine was checked. Almost everything came by boat. Warm all year, with trade winds and salty air that corrodes metal.",
+      "facts": [
+        "24 March 2006: the first Falcon 1 caught fire and fell back near the island; the review blamed a fuel-line nut corroded by the sea air.",
+        "28 September 2008: on the fourth try, Falcon 1 became the first privately built liquid-fuel rocket to reach orbit.",
+        "Only five launches, the last on 14 July 2009; then SpaceX moved on to Falcon 9."
+      ],
+      "pros": [
+        "Warm, no frost",
+        "Engine checked before release"
+      ],
+      "cons": [
+        "Built for a rocket of 0.4 MN: almost any ship overloads it",
+        "Salty trade winds; everything comes by boat"
+      ],
+      "fee": 25000,
+      "holdFee": 30000,
+      "scale": 0.0456,
+      "designKN": 410,
+      "kit": {
+        "mount": "raised",
+        "tower": "strongback",
+        "clamps": "hold",
+        "deluge": "none",
+        "lightning": "none",
+        "access": "none",
+        "propellant": "manual",
+        "weather": "balloons"
+      },
+      "climate": {
+        "name": "Marshall Islands dry season",
+        "meanC": 27.4,
+        "swingC": 0.8,
+        "windKts": 15,
+        "windSwingKts": 5,
+        "lightning": 0.03,
+        "sky": "broken cloud",
+        "ground": "atoll"
+      }
+    }
+  ],
+  "equipment": [
+    {
+      "key": "mount",
+      "name": "Launch mount and flame trench",
+      "role": "What the ship stands on, and where its fire goes in the first seconds. It sets how much thrust the pad takes.",
+      "options": [
+        {
+          "id": "slab",
+          "name": "Flat concrete pad",
+          "fee": 0,
+          "reliability": 0,
+          "heatKN": 320,
+          "debris": 1.6,
+          "repair": 1,
+          "note": "The ship stands on a plain concrete slab. At ignition the exhaust slams into the concrete, splashes back up at the engines and blasts gravel and chunks of concrete around the pad.",
+          "pros": [
+            "Free",
+            "Nothing to build"
+          ],
+          "cons": [
+            "Takes very little fire",
+            "Hot gas and debris bounce back at the engines"
+          ],
+          "real": "The German V-2 (1944) was fired from a small steel table set on a road or a forest clearing, with a cone under the nozzle to spread the blast."
+        },
+        {
+          "id": "raised",
+          "name": "Raised mount, no trench",
+          "fee": 15000,
+          "reliability": 0.002,
+          "heatKN": 900,
+          "debris": 1.3,
+          "repair": 1.2,
+          "note": "A steel table on legs lifts the engines several metres off the ground, so the fire spreads out before it hits the concrete. There is no trench: what the fire digs up flies everywhere. With water, the water-cooled steel plate under it also turns the fire, so this mount gains the most from water.",
+          "pros": [
+            "Cheap for a strong steel table",
+            "Gains the most from a water deluge"
+          ],
+          "cons": [
+            "No trench: without water the ground under it takes the full blast",
+            "Repairs are dear when it is overloaded"
+          ],
+          "real": "Starbase's orbital launch mount: a 370 t steel table on legs. On Starship's first flight (20 April 2023) the bare concrete under it failed and a crater opened; a water-cooled steel plate went in before the second flight.",
+          "waterPlate": 0.85
+        },
+        {
+          "id": "deflector",
+          "name": "Flame pit or bucket, one-way deflector",
+          "fee": 25000,
+          "reliability": 0.004,
+          "heatKN": 1550,
+          "debris": 0.7,
+          "repair": 0.8,
+          "note": "The fire goes down into a deep pit or a flame bucket under the ship, where a sloped steel deflector turns it sideways and sends it out of one open side, far from the ship.",
+          "pros": [
+            "Takes a lot of fire for its price",
+            "The fire leaves one way, away from the ship"
+          ],
+          "cons": [
+            "One side of the pad is a fire zone",
+            "The deflector lining wears and needs repairs"
+          ],
+          "real": "Gagarin's Start at Baikonur: the Soyuz hangs over a pit dug out of the steppe, and a deflector at its bottom sends the flame out of one side. Pad 39B's new deflector for SLS (2018) is one-way too: about 17 m wide and 13 m high, its face sloped at 58° to send the exhaust north. At Starbase Pad 2 (2026) a steel flame diverter turns the fire into a dug trench."
+        },
+        {
+          "id": "trench",
+          "name": "Flame trench and deflector",
+          "fee": 45000,
+          "reliability": 0.006,
+          "heatKN": 1700,
+          "debris": 0.5,
+          "repair": 0.7,
+          "note": "A concrete trench runs under the pad. In it, a steel wedge shaped like a roof splits the exhaust and sends it out of both ends, far from the ship. The walls are lined with heat-proof brick.",
+          "pros": [
+            "Fire and debris go far from the ship and the tower",
+            "Takes big rockets"
+          ],
+          "cons": [
+            "A big concrete job",
+            "Bricks and steel plates wear out"
+          ],
+          "real": "LC-39 at Kennedy: the trench is about 137 m long and 18 m wide; for Apollo its 635-tonne deflector, an upside-down V coated in 10 cm of ceramic, rolled into place on rails and split the fire both ways. ELA-4 at Kourou has two trenches, one on each side."
+        },
+        {
+          "id": "mlp",
+          "name": "Mobile launch platform over a trench",
+          "fee": 65000,
+          "reliability": 0.008,
+          "heatKN": 2000,
+          "debris": 0.4,
+          "repair": 0.6,
+          "note": "The ship is assembled indoors on a two-storey steel platform, which is then carried to the pad and set down over the flame trench. The engines sit higher above the trench floor, so the fire spreads more before it hits anything.",
+          "pros": [
+            "Takes the most fire",
+            "Built and checked under a roof",
+            "The pad stays free for other launches"
+          ],
+          "cons": [
+            "The most expensive mount",
+            "A slow, careful trip to the pad"
+          ],
+          "real": "Shuttle mobile launcher platform: 49 × 41 m, 7.6 m high, 3,730 t, carried by the crawler at about 1.6 km/h. SLS's Mobile Launcher 1 stands on six mounts 6.7 m high, with a flame hole 10 × 20 m (34 × 64 ft) for the core stage and both boosters."
+        }
+      ]
+    },
+    {
+      "key": "deluge",
+      "name": "Water deluge and sound suppression",
+      "role": "A flood of water under and around the engines at ignition. It soaks up heat, so the pad takes more thrust; it keeps the concrete in place; and it soaks up the roar that shakes the ship.",
+      "options": [
+        {
+          "id": "none",
+          "name": "No water",
+          "fee": 0,
+          "reliability": 0,
+          "heatF": 1,
+          "debrisF": 1,
+          "acousticF": 1,
+          "note": "The roar of the engines bounces off the pad and back up at the ship, loud enough to shake wiring loose. The pad takes the full heat.",
+          "pros": [
+            "Free"
+          ],
+          "cons": [
+            "The pad takes the full heat",
+            "The full roar shakes the ship"
+          ]
+        },
+        {
+          "id": "water",
+          "name": "Water deluge",
+          "fee": 15000,
+          "reliability": 0,
+          "heatF": 1.3,
+          "debrisF": 0.6,
+          "acousticF": 0.6,
+          "note": "Pipes and nozzles around the mount spray water into the exhaust at ignition. The water turns to steam and soaks up part of the heat and the sound.",
+          "pros": [
+            "The pad takes about a third more thrust",
+            "Less vibration on the ship"
+          ],
+          "cons": [
+            "Pad fee"
+          ],
+          "real": "After Starship's first flight, Starbase laid a water-cooled steel plate under the mount that sprays water straight up into the exhaust; it has carried every Starship launch since."
+        },
+        {
+          "id": "tower",
+          "name": "Water tower and rainbirds",
+          "fee": 40000,
+          "reliability": 0,
+          "heatF": 1.6,
+          "debrisF": 0.35,
+          "acousticF": 0.35,
+          "note": "A tall water tower empties its tank onto the pad in under a minute. Big 'rainbird' nozzles flood the deck and the trench. The white cloud at every big launch is mostly this water turning to steam.",
+          "pros": [
+            "The pad takes the most thrust",
+            "The quietest ride for the ship"
+          ],
+          "cons": [
+            "Expensive",
+            "A huge tank to refill after every launch"
+          ],
+          "real": "LC-39B: a tower of about 1.5 million litres; ELA-3 at Kourou: a 90 m tower pouring about 1,500 m³ at liftoff. On the Shuttle's first flight (1981) the blast wave at ignition bent a strut in the nose; NASA added more water for every flight after."
+        },
+        {
+          "id": "iop",
+          "name": "Overpressure water: tower, rainbirds and water bags",
+          "fee": 50000,
+          "reliability": 0,
+          "heatF": 1.75,
+          "debrisF": 0.3,
+          "acousticF": 0.25,
+          "note": "The biggest water system: a water tower, rainbirds that flood the deck and the trench, and water sprayed into the exhaust holes and held in bags across them, so the pressure wave of ignition hits water instead of the ship.",
+          "pros": [
+            "The pad takes the most thrust",
+            "Damps the pressure wave at ignition"
+          ],
+          "cons": [
+            "The dearest water system",
+            "Hundreds of tonnes of water to refill"
+          ],
+          "real": "After the Shuttle's first flight (1981), when the boosters' ignition wave bent a strut in the nose, NASA added water troughs across the booster exhaust holes and more water sprayed into them. Pad 39B's ignition overpressure and sound suppression tower for SLS holds about 400,000 gallons (1.5 million litres)."
+        }
+      ]
+    },
+    {
+      "key": "clamps",
+      "name": "Hold-down clamps",
+      "role": "Hold the ship on the pad while the engines come up to full thrust, so the computer can check every engine before letting go.",
+      "options": [
+        {
+          "id": "none",
+          "name": "No hold-down",
+          "fee": 0,
+          "reliability": 0,
+          "catch": 0,
+          "holdS": 0,
+          "note": "The ship lifts as soon as its thrust is greater than its weight, whatever the engines are doing.",
+          "pros": [
+            "Free"
+          ],
+          "cons": [
+            "An engine that starts badly is found out in the air"
+          ]
+        },
+        {
+          "id": "tulip",
+          "name": "Support arms (the \"tulip\")",
+          "fee": 10000,
+          "reliability": 0,
+          "catch": 0.35,
+          "holdS": 17,
+          "note": "The ship hangs by its sides in four steel support arms over the flame pit; nothing bolts it down. Its engines are lit about 15 to 20 seconds before liftoff and come up through low-thrust stages while the weight still holds it in the arms, so a bad start can still be stopped. When the thrust passes the weight the ship rises, and the arms swing back on their counterweights like the petals of a tulip opening.",
+          "pros": [
+            "Nothing to unlatch: the ship lets itself go",
+            "Engines watched at low power before the lift"
+          ],
+          "cons": [
+            "Once the thrust passes the weight, nothing holds the ship",
+            "Catches fewer bad engines than clamps at full thrust"
+          ],
+          "real": "R-7 and Soyuz since 1957: four support trusses at Gagarin's Start, Baikonur Site 31, Plesetsk, Vostochny and Kourou's ELS. Ignition comes about 20 s before liftoff; the engines pass through preliminary and intermediate stages before main thrust.",
+          "holdLine": {
+            "en": "The support arms held the ship by its weight while the engines came up through their low-thrust stages; it rose when the thrust passed the weight.",
+            "vi": "Các tay đỡ giữ tàu bằng chính sức nặng của nó trong lúc động cơ tăng dần qua các nấc lực đẩy thấp; tàu chỉ bay lên khi lực đẩy vượt trọng lượng."
+          },
+          "holdBy": "weight"
+        },
+        {
+          "id": "hold",
+          "name": "Hold-down clamps",
+          "fee": 20000,
+          "reliability": 0,
+          "catch": 0.55,
+          "holdS": 3,
+          "note": "Clamps grip the base of the ship for a few seconds after ignition while the computer checks every engine. If one is not right, the engines shut down and the ship stays on the pad.",
+          "pros": [
+            "Catches about half of bad engines on the ground"
+          ],
+          "cons": [
+            "Pad fee",
+            "A shutdown on the pad still means days of checks"
+          ],
+          "real": "Falcon 9's clamps let go only after the computer has seen all nine engines at full thrust. The Space Shuttle shut its engines down on the pad five times (1984–1994) after they had lit.",
+          "holdLine": {
+            "en": "Hold-down clamps kept the ship on the pad for {holdS} s while the computer checked every engine.",
+            "vi": "Kẹp giữ ghì tàu trên bệ {holdS} giây trong lúc máy tính kiểm tra từng động cơ."
+          }
+        },
+        {
+          "id": "release",
+          "name": "Hold-down arms, slow release",
+          "fee": 40000,
+          "reliability": 0,
+          "catch": 0.7,
+          "holdS": 6,
+          "note": "Heavy hold-down arms hold the ship longer, and a 'controlled release' lets it go gently: tapered steel pins are pulled through dies as the ship rises, so there is no jolt.",
+          "pros": [
+            "Catches most bad engines on the ground",
+            "No jolt on the structure at release"
+          ],
+          "cons": [
+            "The most expensive clamps",
+            "Heavy steel to refurbish after each launch"
+          ],
+          "real": "Saturn V: the engine start began 8.9 s before liftoff; four hold-down arms let go only when the computers saw all five F-1s at full thrust, and pins pulled through dies eased the rocket free.",
+          "holdLine": {
+            "en": "Hold-down arms kept the ship on the pad for {holdS} s while the computer checked every engine, then let it go gently.",
+            "vi": "Tay giữ ghì tàu trên bệ {holdS} giây trong lúc máy tính kiểm tra từng động cơ, rồi thả ra từ từ."
+          }
+        }
+      ]
+    },
+    {
+      "key": "tower",
+      "name": "Service tower and umbilicals",
+      "role": "Gives people, hoses and cables a way up the ship: propellant, power, cooling air and data reach it until the last seconds.",
+      "options": [
+        {
+          "id": "none",
+          "name": "No tower",
+          "fee": 0,
+          "reliability": 0,
+          "exposure": 0,
+          "note": "Only a small plug at the base of the ship carries propellant and power. Nothing reaches the upper ship, so a last-minute problem up there means rolling back to the hangar.",
+          "pros": [
+            "Free",
+            "Nothing for the fire to damage"
+          ],
+          "cons": [
+            "No way to reach the upper ship on the pad"
+          ],
+          "real": "SLC-41 is a 'clean pad': the Atlas V is reached in its assembly building and rolls out with only the umbilicals on its platform."
+        },
+        {
+          "id": "tsm",
+          "name": "Tail service masts",
+          "fee": 8000,
+          "reliability": 0.002,
+          "exposure": 0.15,
+          "note": "Two short masts on the launch deck beside the ship's tail carry its propellant, power and data lines. At liftoff the lines pull free, the masts swing them back inside and a heavy hood drops shut over them before the fire arrives.",
+          "pros": [
+            "Cheap",
+            "Low, so little for the fire to damage"
+          ],
+          "cons": [
+            "Reaches only the tail: the upper ship is serviced in the hangar"
+          ],
+          "real": "Space Shuttle mobile launcher platforms: two 9.4 m (31 ft) tail service masts, one for liquid oxygen and one for liquid hydrogen. Each Saturn V mobile launcher had three. SLS's Mobile Launcher 1 has two tail service mast umbilicals."
+        },
+        {
+          "id": "strongback",
+          "name": "Strongback",
+          "fee": 20000,
+          "reliability": 0.004,
+          "exposure": 0.3,
+          "note": "The ship is put together lying down. A steel frame, the strongback, rolls it to the pad and lifts it upright. It carries the hoses and holds the ship until it tilts back a few minutes before launch.",
+          "pros": [
+            "Quick to set up",
+            "Tilts away from the fire"
+          ],
+          "cons": [
+            "The upper ship is hard to reach once upright"
+          ],
+          "real": "Falcon 9's strongback pulls back about 4½ minutes before liftoff. Soyuz and Rocket Lab's Electron are also raised at the pad on their erectors."
+        },
+        {
+          "id": "gantry",
+          "name": "Swing-up service gantry",
+          "fee": 25000,
+          "reliability": 0.0045,
+          "exposure": 0.35,
+          "note": "Two halves of a steel service tower lie folded beside the pad. Once the ship is upright they are raised and close around it like a clam shell, with a floor at every level. Before launch they are lowered back down; a cable mast and a fuelling mast stay to the last seconds and swing clear at liftoff.",
+          "pros": [
+            "Reach every level of the ship",
+            "Lowered out of the fire before launch"
+          ],
+          "cons": [
+            "Open to the wind and the cold: no roof"
+          ],
+          "real": "The Soyuz pads at Baikonur (Gagarin's Start, Site 31) and Plesetsk: two service gantry halves raised around the rocket after it is set upright and lowered before launch."
+        },
+        {
+          "id": "fixed",
+          "name": "Fixed umbilical tower",
+          "fee": 35000,
+          "reliability": 0.005,
+          "exposure": 1,
+          "note": "A steel lattice tower beside the ship, with floors every few metres and swing arms that carry hoses and cables to each level. The arms swing clear in the last seconds; the tower stays and takes the heat.",
+          "pros": [
+            "Reach every level of the ship",
+            "Propellant and power topped up until liftoff"
+          ],
+          "cons": [
+            "Scorched when the pad is overloaded",
+            "Its arms must swing clear on time"
+          ],
+          "real": "Saturn V's launch umbilical tower stood 116 m tall with nine swing arms."
+        },
+        {
+          "id": "catch",
+          "name": "Integration tower with catch arms",
+          "fee": 45000,
+          "reliability": 0.006,
+          "exposure": 1,
+          "note": "A tall tower with two huge arms on a carriage. The arms lift the parts of the ship onto the mount and stack them, and a quick-disconnect arm feeds the upper stage. They could even catch the booster when it flies back.",
+          "pros": [
+            "Stacks the ship on the pad, no hangar crane needed",
+            "Feeds the upper ship"
+          ],
+          "cons": [
+            "Right beside the fire",
+            "A big, costly machine"
+          ],
+          "real": "Starbase's tower is 146 m tall; its 'chopsticks' caught a returning Super Heavy booster on 13 October 2024."
+        },
+        {
+          "id": "mst",
+          "name": "Mobile service tower",
+          "fee": 50000,
+          "reliability": 0.006,
+          "exposure": 0.4,
+          "note": "A tall building on rails rolls over the ship at the pad. It has floors and doors at every level and a roof against rain and wind, so the payload can be fitted with the ship standing. Hours before launch it rolls back tens of metres, leaving only a slim umbilical mast beside the ship.",
+          "pros": [
+            "Sheltered work on the whole ship, standing up",
+            "Rolled away from the fire before launch"
+          ],
+          "cons": [
+            "Expensive",
+            "Hours to roll back"
+          ],
+          "real": "Kourou's Soyuz pad (ELS) and Ariane 6 pad (ELA-4), Vostochny Site 1S, Sriharikota's First Launch Pad and the Delta II pads of SLC-17 at Cape Canaveral."
+        },
+        {
+          "id": "rss",
+          "name": "Rotating service structure",
+          "fee": 55000,
+          "reliability": 0.007,
+          "exposure": 1,
+          "note": "A fixed tower plus a tall enclosed building on a hinge that swings around the ship like a door. Closed, it is a clean room for loading the payload and a shield from rain and wind.",
+          "pros": [
+            "Clean, sheltered work on the upper ship",
+            "Protects the ship from the weather"
+          ],
+          "cons": [
+            "The most expensive tower",
+            "Hours to swing back"
+          ],
+          "real": "Space Shuttle pads 39A and 39B: the rotating service structure turned 120 degrees on a hinge pin to close around the orbiter's payload bay."
+        }
+      ]
+    },
+    {
+      "key": "lightning",
+      "name": "Lightning protection",
+      "role": "Gives lightning something taller than the ship to hit, and a path to the ground that does not run through the ship.",
+      "options": [
+        {
+          "id": "none",
+          "name": "No protection",
+          "fee": 0,
+          "reliability": 0,
+          "strikeF": 1,
+          "note": "The ship is the tallest metal thing for kilometres. A strike on the pad can damage its electronics.",
+          "pros": [
+            "Free"
+          ],
+          "cons": [
+            "The ship is the lightning rod"
+          ]
+        },
+        {
+          "id": "rod",
+          "name": "Lightning rod on the tower",
+          "fee": 3000,
+          "reliability": 0.001,
+          "strikeF": 0.6,
+          "note": "A pointed rod on top of the service tower, wired to the ground through the tower's steel. It protects a cone below it, so a ship standing close beside a taller tower is mostly covered.",
+          "pros": [
+            "Almost free",
+            "Covers the ship beside the tower"
+          ],
+          "cons": [
+            "The strike runs down the tower right beside the ship"
+          ],
+          "real": "Starbase's 146 m launch tower carries a lightning rod and a small weather station on its top."
+        },
+        {
+          "id": "mast",
+          "name": "Lightning mast",
+          "fee": 8000,
+          "reliability": 0.002,
+          "strikeF": 0.35,
+          "note": "A tall pointed mast with a steel cable running down to the ground on each side. Lightning hits the mast instead of the ship.",
+          "pros": [
+            "Cheap",
+            "Stops most direct strikes on the ship"
+          ],
+          "cons": [
+            "A strike nearby can still upset cables and electronics"
+          ],
+          "real": "On 25 August 2006 a strike of about 100,000 amps hit the mast on pad 39B with Atlantis waiting below (STS-115). The mast took it, but the checks delayed the launch."
+        },
+        {
+          "id": "catenary",
+          "name": "Lightning towers and wires",
+          "fee": 20000,
+          "reliability": 0.003,
+          "strikeF": 0.12,
+          "note": "Three or four towers taller than anything else around the pad, joined by steel wires that hang above the ship like a tent. Lightning hits the wires and runs to the ground far from the ship.",
+          "pros": [
+            "Covers the whole pad, not just the tower"
+          ],
+          "cons": [
+            "Extra towers to build"
+          ],
+          "real": "LC-39B (Artemis): three towers about 180 m tall carry the wires. ELA-3 at Kourou has four 100 m lightning towers."
+        }
+      ]
+    },
+    {
+      "key": "access",
+      "name": "Crew access and escape",
+      "role": "How the crew gets into the capsule on the pad, and how they get away fast if something goes wrong before launch.",
+      "options": [
+        {
+          "id": "none",
+          "name": "Lift only, no escape route",
+          "fee": 0,
+          "reliability": 0,
+          "escape": 0,
+          "note": "The crew rides a lift up a service gantry, which is pulled away before launch. If something goes wrong after that, the escape rocket on top of the capsule is the only way out.",
+          "pros": [
+            "Free"
+          ],
+          "cons": [
+            "No way down from a ship in trouble on the pad"
+          ],
+          "real": "Soyuz T-10-1, 26 September 1983: the rocket caught fire on the pad at Baikonur and the escape rocket pulled the capsule away seconds before the explosion. The crew landed 4 km away."
+        },
+        {
+          "id": "arm",
+          "name": "Crew access arm",
+          "fee": 10000,
+          "reliability": 0.002,
+          "escape": 0.5,
+          "note": "A covered walkway from a tower to the hatch, ending in a small 'white room' where suit technicians help the crew in. It swings back minutes before launch and can swing back to the hatch quickly if needed.",
+          "pros": [
+            "The crew boards sheltered, with help",
+            "Can return to the hatch fast"
+          ],
+          "cons": [
+            "Pad fee"
+          ],
+          "real": "Apollo crews boarded through Swing Arm 9 of the Saturn V tower. SpaceX added a crew access arm to LC-39A in 2018."
+        },
+        {
+          "id": "chute",
+          "name": "Arm and escape chute",
+          "fee": 18000,
+          "reliability": 0.003,
+          "escape": 0.7,
+          "note": "Adds an escape route: a fabric chute packed at the crew level. In an emergency it unrolls down cables to the ground and the crew slides down inside it in seconds, where vehicles wait to drive them away.",
+          "pros": [
+            "Ground in seconds, no power needed",
+            "Takes little room on the tower"
+          ],
+          "cons": [
+            "Ends at the foot of the tower: a ride away is still needed"
+          ],
+          "real": "SpaceX's crew tower at SLC-40: an enclosed chute that deploys from about 70 m (230 ft) along cables to the ground, tested on 26 February 2024 before the first crew flew from the pad (Crew-9, September 2024)."
+        },
+        {
+          "id": "slidewire",
+          "name": "Arm and slidewire baskets",
+          "fee": 25000,
+          "reliability": 0.004,
+          "escape": 0.85,
+          "note": "Adds an escape route: baskets hang on steel wires from the crew level down to a bunker far from the pad. The crew jumps in, pulls a lever and slides away from the ship in about half a minute.",
+          "pros": [
+            "A fast way off a ship in trouble",
+            "Works with no power at all"
+          ],
+          "cons": [
+            "One more system to test and maintain"
+          ],
+          "real": "Shuttle pads: seven baskets for three people each slid about 370 m (1,200 ft) to a bunker, where armoured vehicles waited. For Artemis, Pad 39B has four baskets for up to five people each on 1,335 ft (407 m) cables from about 114 m (375 ft) up (NASA, 2024). SLC-41 has a slidewire with seats for Starliner."
+        },
+        {
+          "id": "blastroom",
+          "name": "Slidewire, express lifts and blast room",
+          "fee": 35000,
+          "reliability": 0.005,
+          "escape": 0.92,
+          "note": "Every way out there is. Besides the slidewire, express lifts drop the crew thirty floors in seconds, and a steel tube lets them slide straight down into a padded room deep under the pad, built to survive the whole rocket exploding above it.",
+          "pros": [
+            "A way out even when there is no time to get away",
+            "The safest pad for a crew"
+          ],
+          "cons": [
+            "The dearest escape system",
+            "A bunker to build under the pad"
+          ],
+          "real": "Launch Complex 39 for Apollo: high-speed lifts to the base of the mobile launcher, an escape tube ending on a rubber ramp, and a blast room 12 m (40 ft) under each pad whose crew could survive at least 24 hours while rescuers dug them out (NASA SP-4204, Moonport)."
+        }
+      ]
+    },
+    {
+      "key": "propellant",
+      "name": "Propellant loading",
+      "role": "How propellant gets from storage into the ship, and how it stays topped up while the super-cold liquid boils away. It also sets what a day of waiting costs.",
+      "options": [
+        {
+          "id": "manual",
+          "name": "Tanker trucks, hand valves",
+          "fee": 0,
+          "reliability": 0,
+          "holdF": 1,
+          "note": "Tanker trucks pump propellant in while technicians open and close valves by hand from a checklist. It is slow, liquid oxygen boils off while you wait, and a day of waiting means draining and refilling.",
+          "pros": [
+            "Free",
+            "Simple"
+          ],
+          "cons": [
+            "Slow and easy to get wrong",
+            "Waiting a day costs the most"
+          ],
+          "real": "The V-2 was fuelled in the field from road tankers by crews working right beside the rocket."
+        },
+        {
+          "id": "loadgo",
+          "name": "Load-and-go, chilled",
+          "fee": 12000,
+          "reliability": 0.002,
+          "holdF": 0.6,
+          "note": "Propellant is chilled far below its boiling point and pumped in fast in the last half hour. Colder propellant is denser and boils off less, and a hold before loading wastes almost nothing.",
+          "pros": [
+            "Fast",
+            "A day of waiting costs little"
+          ],
+          "cons": [
+            "A tight timeline: little time to spot a problem"
+          ],
+          "real": "Falcon 9 loads liquid oxygen at about −207 °C (it boils at −183 °C), starting about 35 minutes before launch. In 2016 a Falcon 9 exploded on its pad while loading (Amos-6)."
+        },
+        {
+          "id": "auto",
+          "name": "Storage spheres, auto top-off",
+          "fee": 20000,
+          "reliability": 0.004,
+          "holdF": 0.75,
+          "note": "Big insulated spheres beside the pad feed the ship through pipes. A computer runs the fill, slows down near full and keeps topping up the boil-off until the last minutes.",
+          "pros": [
+            "Precise and repeatable",
+            "Tanks are full at liftoff"
+          ],
+          "cons": [
+            "Pad fee",
+            "Hours of loading"
+          ],
+          "real": "In the Shuttle era, LC-39A's spheres held 3.4 million litres of liquid oxygen and 3.2 million litres of liquid hydrogen; filling the external tank took about three hours."
+        }
+      ]
+    },
+    {
+      "key": "weather",
+      "name": "Weather watch",
+      "role": "Knowing tomorrow's weather, the winds high up and the electric charge in the clouds, so the forecast is right and the ship only flies when the sky is safe.",
+      "options": [
+        {
+          "id": "none",
+          "name": "Look at the sky",
+          "fee": 0,
+          "reliability": 0,
+          "errorC": 3,
+          "triggerF": 1,
+          "note": "Someone looks up and guesses. The forecast can be several degrees wrong, and clouds full of electric charge cannot be seen from the ground.",
+          "pros": [
+            "Free"
+          ],
+          "cons": [
+            "The forecast can be several degrees off",
+            "Charged clouds go unnoticed"
+          ],
+          "real": "Apollo 12 (14 November 1969) launched into rain clouds and set off lightning twice in its first minute. The crew restored power and flew on to the Moon."
+        },
+        {
+          "id": "balloons",
+          "name": "Weather balloons, wind towers",
+          "fee": 5000,
+          "reliability": 0.002,
+          "errorC": 1.5,
+          "triggerF": 0.8,
+          "note": "Balloons go up in the hours before launch to measure the wind and temperature at every height, and towers around the pad record the gusts.",
+          "pros": [
+            "Cheap",
+            "A better forecast"
+          ],
+          "cons": [
+            "Blind to electric charge in the clouds"
+          ],
+          "real": "For Apollo and the Shuttle, 'Jimsphere' balloons covered in small cones were tracked by radar to measure the wind layer by layer before launch."
+        },
+        {
+          "id": "radar",
+          "name": "Radar and field mills",
+          "fee": 15000,
+          "reliability": 0.004,
+          "errorC": 0.6,
+          "triggerF": 0.25,
+          "note": "Adds weather radar, a ring of field mills that measure the electric charge in the air, and a launch weather officer. The forecast is close, and no launch goes through a charged cloud.",
+          "pros": [
+            "The forecast is within about a degree",
+            "Spots the clouds that set off lightning"
+          ],
+          "cons": [
+            "Pad fee"
+          ],
+          "real": "At Cape Canaveral no launch may go if the field mills read more than 1,500 V/m within about 9 km in the last 15 minutes. The rules were written after Apollo 12 and the loss of Atlas-Centaur 67 to lightning in 1987."
+        }
+      ]
+    }
+  ]
+}

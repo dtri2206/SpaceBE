@@ -1,9 +1,10 @@
 // RETURN (spec §6.3 step 7): an automatic cinematic home. Mars liftoff → cruise → Earth entry → splashdown, with
 // captions and Halcyon-1's final log, then the Homecoming ending. Enter skips.
 import { cinematic, graphics } from '/src/graphics/index.js';
-import { contract, economy, events, requestState, ui } from '/src/core/index.js';
+import { contract, economy, events, input, requestState, ui } from '/src/core/index.js';
 import data from './data.json';
 import { button, el, wait } from './dom.js';
+import { SILENT_RETURN_CAPTION, choiceFromKey, failureForChoice } from './tributeFlow.js';
 import { radio } from './radio.js';
 import { showView } from './views.js';
 
@@ -37,18 +38,37 @@ export function showReturn() {
   ui.mount(root);
   root.style.pointerEvents = 'none';
 
+  let choosing = false; // the Silent Return choice cannot be skipped with Enter
+  let doomed = false; // the player skipped the suits: the entry segment ends in the Silent Return ending
   const finish = () => {
-    if (!alive) return;
+    if (!alive || choosing) return;
+    if (doomed) return fail();
     alive = false;
     cinematic.stop();
     economy.reward(economy.balance.homecomingBonus, 'homecoming');
     events.emit('ending:show', { endingId: contract.ENDINGS.homecoming, cause: '', cost: 0, historyLessonId: null });
     requestState('ENDING');
   };
+  // Through the same path as any other failure: story's flight:failed handler charges the cost and shows the ending.
+  const fail = () => {
+    if (!alive) return;
+    alive = false;
+    cinematic.stop();
+    events.emit('flight:failed', failureForChoice('skip'));
+  };
+  const choose = () => {
+    choosing = true;
+    return new Promise((resolve) => {
+      const done = showSilentReturnChoice((c) => { choosing = false; resolve(c); });
+      const stop = setInterval(() => { if (!alive) { clearInterval(stop); done(); } }, 500);
+    });
+  };
   skip.append(button('Skip', finish, { key: 'Enter' }));
 
   (async () => {
-    for (const shot of data.returnTrip) {
+    for (let shot of data.returnTrip) {
+      if (!alive) return;
+      if (shot.choice === 'suitUp' && (await choose()) === 'skip') { doomed = true; shot = { ...shot, caption: SILENT_RETURN_CAPTION }; }
       if (!alive) return;
       const view = showView(shot.planet === 'none' ? 'space' : shot.planet);
       if (shot.planet === 'none') {
@@ -68,6 +88,7 @@ export function showReturn() {
       await wait(400);
       if (alive) caption.style.opacity = '1';
       await playing;
+      if (doomed) return fail();
     }
     graphics.fade({ to: 0, duration: 0.6 });
     finish();
@@ -78,4 +99,36 @@ export function showReturn() {
     cinematic.stop();
     graphics.fade({ to: 0, duration: 0.3 });
   };
+}
+
+/**
+ * The choice card before Earth entry. Needs a click on a button, or key 1 / 2 (Enter and Space do nothing).
+ * onChoose('suitUp' | 'skip') is called once. Returns dispose().
+ */
+export function showSilentReturnChoice(onChoose = () => {}) {
+  const C = data.returnChoice;
+  const root = el('div', 'role4-screen');
+  root.dataset.screen = 'RETURN';
+  root.style.pointerEvents = 'none';
+  const card = el('div', 'hud hud-panel role4-card role4-choice');
+  card.dataset.block = 'silent-return-choice';
+  card.append(el('div', 'hud-label', 'Entry preparation'), el('div', 'role4-text', C.prompt));
+  const row = el('div', 'role4-row');
+  let done = false;
+  const pick = (c) => {
+    if (done) return;
+    done = true;
+    off.forEach((f) => f?.());
+    ui.unmount(root);
+    onChoose(c);
+  };
+  const off = [];
+  row.append(button(C.suitUp, () => pick('suitUp'), { primary: true }), button(C.skip, () => pick('skip')));
+  for (const code of ['Digit1', 'Numpad1', 'Digit2', 'Numpad2']) off.push(input.onPress(code, () => pick(choiceFromKey(code))));
+  row.firstChild.textContent = `${C.suitUp} [1]`;
+  row.lastChild.textContent = `${C.skip} [2]`;
+  card.append(row);
+  root.append(card);
+  ui.mount(root);
+  return () => { done = true; off.forEach((f) => f?.()); if (root.isConnected) ui.unmount(root); };
 }

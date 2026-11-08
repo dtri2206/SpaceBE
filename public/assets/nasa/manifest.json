@@ -335,6 +335,96 @@
       "file": "rassor.glb",
       "source": "Regolith Advanced Surface Systems Operations Robot (RASSOR)/Regolith Advanced Surface Systems Operations Robot (RASSOR).glb",
       "bytes": 6283464
+    },
+    "cos_spectrograph": {
+      "file": "cos_spectrograph.glb",
+      "source": "Cosmic Origins Spectrograph/Cosmic Origins Spectrograph.glb",
+      "bytes": 440592
+    },
+    "ladee": {
+      "file": "ladee.glb",
+      "source": "Lunar Atmosphere and Dust Environment Explorer (LADEE)/Lunar Atmosphere and Dust Environment Explorer (LADEE).glb",
+      "bytes": 235468
+    },
+    "mgs_launch": {
+      "file": "mgs_launch.glb",
+      "source": "Mars Global Surveyor/Mars Global Surveyor (launch).glb",
+      "bytes": 58252
+    },
+    "swift": {
+      "file": "swift.glb",
+      "source": "Swift/Swift.glb",
+      "bytes": 211404
+    },
+    "tdrs_a": {
+      "file": "tdrs_a.glb",
+      "source": "Tracking and Data Relay Satellites (TDRS) (A)/Tracking and Data Relay Satellites (TDRS) (A).glb",
+      "bytes": 96792
+    },
+    "dscovr": {
+      "file": "dscovr.glb",
+      "source": "Deep Space Climate Observatory (DSCOVR) (Triana)/Deep Space Climate Observatory (DSCOVR) (Triana).glb",
+      "bytes": 112488
+    },
+    "spartan": {
+      "file": "spartan.glb",
+      "source": "Spartan 201/Spartan 201.glb",
+      "bytes": 137564
+    },
+    "shuttle_door": {
+      "file": "shuttle_door.glb",
+      "source": "Space Shuttle (D)/Space Shuttle (D) door-prt.glb",
+      "bytes": 36044
+    },
+    "kepler_b": {
+      "file": "kepler_b.glb",
+      "source": "Kepler (B)/Kepler (B).glb",
+      "bytes": 9656
+    },
+    "mro_b": {
+      "file": "mro_b.glb",
+      "source": "Mars Reconnaissance Orbiter (MRO) (B)/Mars Reconnaissance Orbiter (MRO) (B).glb",
+      "bytes": 16544
+    },
+    "galileo": {
+      "file": "galileo.glb",
+      "source": "Galileo/Galileo.glb",
+      "bytes": 248532
+    },
+    "voyager_a": {
+      "file": "voyager_a.glb",
+      "source": "Voyager Probe (A)/Voyager Probe (A).glb",
+      "bytes": 285936
+    },
+    "grace_a": {
+      "file": "grace_a.glb",
+      "source": "Gravity Recovery and Climate Experiment (GRACE) (A)/Gravity Recovery and Climate Experiment (GRACE) (A).glb",
+      "bytes": 22620
+    },
+    "tall_dish_turntable": {
+      "file": "tall_dish_turntable.glb",
+      "source": "Tall Dish/Tall Dish (turntable).glb",
+      "bytes": 50680
+    },
+    "helmet": {
+      "file": "helmet.glb",
+      "source": "Helmet/Helmet.glb",
+      "bytes": 232496
+    },
+    "mobile_launcher_pad": {
+      "file": "mobile_launcher_pad.glb",
+      "source": "Mobile Launcher/Mobile Launcher (pad only).glb",
+      "bytes": 149408
+    },
+    "tess_a": {
+      "file": "tess_a.glb",
+      "source": "Transiting Exoplanet Survey Satellite (TESS) (A)/Transiting Exoplanet Survey Satellite (TESS) (A).glb",
+      "bytes": 206576
+    },
+    "cubesat_icecube": {
+      "file": "cubesat_icecube.glb",
+      "source": "CubeSat - ICECube/CubeSat - ICECube.glb",
+      "bytes": 309684
     }
   }
 }

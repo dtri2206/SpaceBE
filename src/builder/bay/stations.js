@@ -13,7 +13,7 @@ export const STATIONS = [
   { id: 'warehouse', name: 'Parts warehouse', role: 'Logistics', deg: 226, prompt: 'Open the parts inventory', blurb: 'Every part the agency can buy, with pictures and what it is for.' },
   { id: 'teststand', name: 'Test & launch readiness', role: 'Test conductor', deg: 304, prompt: 'Open the test console', blurb: 'Static fire on the stand, a hold-down liftoff test, then the readiness poll.' },
   { id: 'handbook', name: "Engineer's handbook", role: 'You', deg: 150, prompt: 'Read the handbook', blurb: 'How to build a ship that comes back, and your own notes.', radius: HALL.radius - 2.3, isDesk: true },
-  { id: 'launchwindow', name: 'Range & weather', role: 'Range safety officer', deg: 332, prompt: 'Open the range terminal', blurb: 'Pick the launch window: the soonest is cold and free, later ones cost pad fees.', small: true },
+  { id: 'launchwindow', name: 'Launch pad', role: 'Pad manager', deg: 332, prompt: 'Open the launch pad desk', blurb: 'Choose the launch complex and its ground hardware: flame trench, water, clamps, tower. The weather is what the day brings.', small: true },
 ];
 
 const SCREEN_W = 640, SCREEN_H = 360;

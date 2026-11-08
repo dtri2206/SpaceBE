@@ -1,27 +1,47 @@
 {
+  "_about": "Material options per family. mass and cost multiply the part's dry mass and price; reliability is added. The first option is the default. Densities in g/cm³, strengths in MPa, from the alloy data sheets.",
   "families": {
     "structure": {
       "name": "Structure",
       "options": [
-        { "id": "al_li", "name": "Aluminium-lithium alloy", "mass": 1.0, "cost": 1.0, "reliability": 0, "note": "The standard for tanks and shells since the 1990s: light, well understood, easy to weld.", "pros": ["Light", "Proven on every modern launcher"], "cons": ["Softens above 150 °C"] },
-        { "id": "stainless", "name": "Stainless steel", "mass": 1.3, "cost": 0.7, "reliability": 0.004, "note": "Heavy but cheap, and it keeps its strength when hot and when cryogenic (Starship, Atlas).", "pros": ["Cheapest", "Takes heat and cold without complaint"], "cons": ["30 % heavier: every tonne costs propellant"] },
-        { "id": "carbon", "name": "Carbon-fibre composite", "mass": 0.78, "cost": 1.7, "reliability": -0.008, "note": "The lightest option; hand-laid and baked in an autoclave. It cracks instead of bending, and liquid oxygen can attack it.", "pros": ["Lightest by far"], "cons": ["Expensive", "Brittle: hidden cracks fail without warning"] },
-        { "id": "titanium", "name": "Titanium", "mass": 0.9, "cost": 2.1, "reliability": 0.006, "note": "Strong, light and corrosion-proof; hard to machine, so the bill is high.", "pros": ["Strong and light", "Shrugs off heat"], "cons": ["Most expensive"] }
+        { "id": "al_li", "name": "Aluminium-lithium 2195", "mass": 1.0, "cost": 1.0, "reliability": 0, "note": "The modern tank alloy: 5 % lighter and stronger than plain aluminium. Shuttle super-lightweight tank, Falcon 9, SLS.", "facts": "2.71 g/cm³ · 590 MPa · friction-stir welded", "pros": ["Light", "Proven on every modern launcher"], "cons": ["Softens above 150 °C", "Twice the price of plain aluminium", "Bursts more easily when holed: a 1 cm debris hole can split a tank wall"], "source": "Crack sizing: a tank at half its yield (about 280 MPa for 2195-T8) with K_IC about 35 MPa m^0.5 bursts once a hole reaches 2 (K_IC/sigma)^2 / pi, about 1 cm, against about 1.8 cm for 2219 or titanium and 9 cm for cryogenic stainless (Griffith-Irwin; NASA TP-2003-210788 for the hole a debris hit makes; src/builder/traits/structure.json)" },
+        { "id": "al2219", "name": "Aluminium-copper 2219", "mass": 1.07, "cost": 0.8, "reliability": 0.002, "note": "The classic: Apollo, Delta II, the first Shuttle tanks. Easy to weld, cheap, a little heavier.", "facts": "2.84 g/cm³ · 415 MPa · weldable, cryogenic-tough", "pros": ["Cheapest aluminium", "Easy to weld and repair"], "cons": ["7 % heavier than Al-Li"] },
+        { "id": "stainless", "name": "Stainless steel 30X", "mass": 1.3, "cost": 0.7, "reliability": 0.004, "note": "Starship's choice: heavy, cheap, and stronger when cryogenic and when red hot, so it needs less heat shielding.", "facts": "7.9 g/cm³ · 1,000+ MPa cold-rolled · to 800 °C", "pros": ["Cheapest of all", "Takes heat and cold without complaint"], "cons": ["30 % heavier: every tonne costs propellant"] },
+        { "id": "carbon", "name": "Carbon-fibre composite", "mass": 0.78, "cost": 1.7, "reliability": -0.008, "note": "The lightest option; hand-laid and baked in an autoclave. It cracks instead of bending, and liquid oxygen can attack it. Electron, fairings.", "facts": "1.6 g/cm³ · 600+ MPa along the fibres · to 120 °C", "pros": ["Lightest by far"], "cons": ["Expensive", "Brittle: hidden cracks fail without warning"] },
+        { "id": "titanium", "name": "Titanium Ti-6Al-4V", "mass": 0.9, "cost": 2.1, "reliability": 0.006, "note": "Strong, light and corrosion-proof; hard to machine, so the bill is high. Pressure bottles, kick-motor cases, fittings.", "facts": "4.43 g/cm³ · 900 MPa · to 400 °C", "pros": ["Strong and light", "Shrugs off heat"], "cons": ["Most expensive"] }
       ]
     },
     "engine": {
       "name": "Combustion chamber",
       "options": [
-        { "id": "copper", "name": "Copper-alloy chamber", "mass": 1.0, "cost": 1.0, "reliability": 0, "note": "Copper carries heat away from the chamber wall into the cooling channels. The classic choice.", "pros": ["Cools well", "Proven"], "cons": ["Heavy"] },
-        { "id": "inconel", "name": "Inconel chamber", "mass": 1.1, "cost": 1.4, "reliability": 0.01, "note": "A nickel superalloy that stays strong at glowing temperatures. Long life, many restarts.", "pros": ["Survives heat", "Most reliable"], "cons": ["Heavier and dearer"] },
-        { "id": "printed", "name": "3D-printed chamber", "mass": 0.85, "cost": 0.8, "reliability": -0.01, "note": "Laser-sintered in one piece with its channels (like Rocket Lab's Rutherford). Light and cheap, but porosity is hard to inspect.", "pros": ["Light", "Cheap"], "cons": ["Newer process: a little less reliable"] }
+        { "id": "copper", "name": "Copper-alloy chamber (GRCop)", "mass": 1.0, "cost": 1.0, "reliability": 0, "note": "Copper carries heat away from the chamber wall into the cooling channels. The classic choice: RS-25, Merlin, Raptor.", "facts": "8.8 g/cm³ · 350 W/m·K · channel-wall liner", "pros": ["Cools well", "Proven"], "cons": ["Heavy"] },
+        { "id": "inconel", "name": "Inconel 718 chamber", "mass": 1.1, "cost": 1.4, "reliability": 0.01, "note": "A nickel superalloy that stays strong at glowing temperatures. Long life, many restarts.", "facts": "8.2 g/cm³ · 1,000 MPa at 650 °C", "pros": ["Survives heat", "Most reliable"], "cons": ["Heavier and dearer"] },
+        { "id": "printed", "name": "3D-printed chamber", "mass": 0.85, "cost": 0.8, "reliability": -0.01, "note": "Laser-sintered in one piece with its channels (Rutherford, Raptor parts). Light and cheap, but porosity is hard to inspect.", "facts": "Inconel or copper powder · one piece, no welds", "pros": ["Light", "Cheap"], "cons": ["Newer process: a little less reliable"] }
       ]
     },
     "equipment": {
       "name": "Housing",
       "options": [
-        { "id": "aluminium", "name": "Aluminium housing", "mass": 1.0, "cost": 1.0, "reliability": 0, "note": "Machined aluminium box, gold-foil insulation on top.", "pros": ["Light", "Standard"], "cons": [] },
-        { "id": "rad_hard", "name": "Radiation-hardened housing", "mass": 1.2, "cost": 1.5, "reliability": 0.01, "note": "Thicker walls and shielded electronics that shrug off solar storms.", "pros": ["Survives radiation", "More reliable"], "cons": ["Heavier", "Dearer"] }
+        { "id": "aluminium", "name": "Aluminium housing", "mass": 1.0, "cost": 1.0, "reliability": 0, "note": "Machined aluminium box, gold-foil insulation on top.", "facts": "Al 6061-T6 · 2.7 g/cm³", "pros": ["Light", "Standard"], "cons": [] },
+        { "id": "rad_hard", "name": "Radiation-hardened housing", "mass": 1.2, "cost": 1.5, "reliability": 0.01, "note": "Thicker walls and shielded electronics that shrug off solar storms.", "facts": "Tantalum-lined vault · rad-hard chips", "pros": ["Survives radiation", "More reliable"], "cons": ["Heavier", "Dearer"] },
+        { "id": "titanium_box", "name": "Titanium housing", "mass": 0.9, "cost": 1.8, "reliability": 0.004, "note": "Lighter than aluminium for the same strength, and it does not care about heat.", "facts": "Ti-6Al-4V · 4.43 g/cm³", "pros": ["Light and strong"], "cons": ["Expensive"] },
+        { "id": "composite_box", "name": "Composite housing", "mass": 0.8, "cost": 1.4, "reliability": -0.004, "note": "Carbon-fibre panels on an aluminium frame.", "facts": "CFRP skins · 1.6 g/cm³", "pros": ["Lightest"], "cons": ["Conducts heat poorly", "Brittle"] }
+      ]
+    },
+    "pressure": {
+      "name": "Pressure vessel",
+      "options": [
+        { "id": "copv", "name": "Composite-overwrapped (COPV)", "mass": 1.0, "cost": 1.0, "reliability": -0.002, "note": "A thin aluminium liner wound in carbon fibre. The lightest bottle for 300 bar, and the one that failed on AMOS-6.", "facts": "Al liner + T1000 carbon · 300–350 bar", "pros": ["Lightest"], "cons": ["Fibre can be damaged unseen"] },
+        { "id": "titanium", "name": "Titanium sphere", "mass": 1.6, "cost": 1.3, "reliability": 0.006, "note": "A forged, welded titanium ball. Heavier, and nothing hidden inside it.", "facts": "Ti-6Al-4V · 4.43 g/cm³", "pros": ["Nothing hidden", "Reliability +0.6 %"], "cons": ["60 % heavier"] },
+        { "id": "steel", "name": "Steel bottle", "mass": 2.4, "cost": 0.6, "reliability": 0.008, "note": "A plain steel pressure bottle. Heavy, cheap, utterly boring.", "facts": "4130 steel · 7.85 g/cm³", "pros": ["Cheapest", "Most reliable"], "cons": ["More than twice the mass"] }
+      ]
+    },
+    "solid": {
+      "name": "Motor case",
+      "options": [
+        { "id": "steel_case", "name": "Steel case", "mass": 1.0, "cost": 1.0, "reliability": 0.004, "note": "Rolled and welded steel segments, as the Shuttle boosters used. Heavy and forgiving.", "facts": "D6AC steel · 7.85 g/cm³", "pros": ["Forgiving", "Cheap"], "cons": ["Heavy"] },
+        { "id": "composite_case", "name": "Graphite-epoxy case", "mass": 0.85, "cost": 1.5, "reliability": -0.004, "note": "Carbon fibre wound over a mandrel: the GEM in GEM-40. 15 % lighter.", "facts": "Filament-wound graphite-epoxy", "pros": ["15 % lighter"], "cons": ["Brittle", "+50 % cost"] },
+        { "id": "titanium_case", "name": "Titanium case", "mass": 0.9, "cost": 1.8, "reliability": 0.006, "note": "A spun titanium sphere, as the Star 48 uses.", "facts": "6Al-4V titanium · 4.43 g/cm³", "pros": ["Light and tough"], "cons": ["Expensive"] }
       ]
     }
   }

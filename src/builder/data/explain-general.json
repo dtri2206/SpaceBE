@@ -1,0 +1,392 @@
+{
+  "_about": "Plain-language explanations shared by every card, English and Vietnamese (content agent): the part families (family:<id>) and key words (term:<word>, lower case with hyphens: thrust, delta-v, isp, twr, reliability, max-q, propellant, oxidizer, cryogenic, turbopump, gimbal, nozzle, staging, fairing, heat-shield, ablator, centre-of-mass, centre-of-pressure, stability, boil-off, pressure-fed, hypergolic, rcs, reentry, dynamic-pressure, and power and drag for the card's number lines). Keys and fields: see src/builder/explain.js. _todo marks a fact still to check.",
+  "entries": {
+    "family:command": {
+      "en": {
+        "what": "The cabin where the crew lives and flies the ship."
+      },
+      "vi": {
+        "what": "Khoang lái (crew capsule): nơi phi hành đoàn sống và lái tàu.",
+        "name": "Khoang lái"
+      }
+    },
+    "family:fairing": {
+      "en": {
+        "what": "Covers for the top of the ship that part the air on the climb, from pointed cones to big two-piece fairings."
+      },
+      "vi": {
+        "what": "Mũi và vỏ chụp (fairing): lớp che đỉnh tàu rẽ không khí khi bay lên, từ mũi nhọn tới vỏ chụp lớn hai nửa.",
+        "name": "Mũi và vỏ chụp"
+      }
+    },
+    "family:stages": {
+      "en": {
+        "what": "The rings, frames and guidance sections that hold the stack together and carry its loads."
+      },
+      "vi": {
+        "what": "Kết cấu tầng (stage structure): các vòng, khung và khối dẫn đường giữ cả thân tàu liền một khối và gánh lực.",
+        "name": "Kết cấu tầng"
+      }
+    },
+    "family:tanks": {
+      "en": {
+        "what": "Tanks of fuel and oxidizer: most of the ship's mass, and the source of its Δv."
+      },
+      "vi": {
+        "what": "Bồn nhiên liệu (propellant tank): chứa nhiên liệu và chất oxy hóa, chiếm phần lớn khối lượng tàu, và là nguồn Δv của nó.",
+        "name": "Bồn nhiên liệu"
+      }
+    },
+    "family:engines": {
+      "en": {
+        "what": "Liquid rocket engines: pumps, a chamber where the propellant burns, and a nozzle that turns the hot gas into thrust."
+      },
+      "vi": {
+        "what": "Động cơ nhiên liệu lỏng (engine): bơm, buồng đốt nơi nhiên liệu cháy, và vòi phun biến khí nóng thành lực đẩy.",
+        "name": "Động cơ"
+      }
+    },
+    "family:boosters": {
+      "en": {
+        "what": "Extra motors for more push: solid motors, which burn to the end once lit, and liquid strap-on boosters, which are small rockets of their own."
+      },
+      "vi": {
+        "what": "Động cơ đẩy thêm (booster): động cơ nhiên liệu rắn, đã châm là cháy tới hết, và tên lửa đẩy phụ nhiên liệu lỏng, mỗi chiếc là một tên lửa nhỏ.",
+        "name": "Động cơ rắn"
+      }
+    },
+    "family:structure": {
+      "en": {
+        "what": "Fins, engine fairings, and the lines and bottles fitted along the outside of the ship."
+      },
+      "vi": {
+        "what": "Vây và phụ kiện (fins & fittings): vây, nắp che động cơ, cùng ống dẫn và bình khí gắn dọc bên ngoài tàu.",
+        "name": "Vây và phụ kiện"
+      }
+    },
+    "family:control": {
+      "en": {
+        "what": "What points and steers the ship: engine gimbals, thrusters, reaction wheels and star trackers."
+      },
+      "vi": {
+        "what": "Điều khiển (control): những thứ định hướng và lái tàu: khớp xoay động cơ, động cơ đẩy nhỏ, bánh xe phản lực và máy theo dõi sao.",
+        "name": "Điều khiển"
+      }
+    },
+    "family:thermal": {
+      "en": {
+        "what": "What handles heat: heat shields for entry, radiators and insulation."
+      },
+      "vi": {
+        "what": "Nhiệt (thermal): những thứ xử lý nhiệt: tấm chắn nhiệt khi vào khí quyển, tấm tản nhiệt và lớp cách nhiệt.",
+        "name": "Nhiệt"
+      }
+    },
+    "family:recovery": {
+      "en": {
+        "what": "What brings the ship down gently: parachutes, landing legs, airbags and floats."
+      },
+      "vi": {
+        "what": "Thu hồi (recovery): những thứ đưa tàu xuống nhẹ nhàng: dù, chân đáp, túi khí và phao.",
+        "name": "Thu hồi"
+      }
+    },
+    "family:life": {
+      "en": {
+        "what": "What keeps the crew alive: oxygen, air cleaning, water and a shelter from radiation."
+      },
+      "vi": {
+        "what": "Duy trì sự sống (life support): những thứ giữ phi hành đoàn sống: oxy, lọc không khí, nước và hầm trú phóng xạ.",
+        "name": "Duy trì sự sống"
+      }
+    },
+    "family:power": {
+      "en": {
+        "what": "Where the ship's electricity comes from: solar panels, batteries, fuel cells and nuclear batteries."
+      },
+      "vi": {
+        "what": "Nguồn điện (power): nơi con tàu lấy điện: tấm pin mặt trời, pin sạc, pin nhiên liệu và pin hạt nhân.",
+        "name": "Nguồn điện"
+      }
+    },
+    "family:comms": {
+      "en": {
+        "what": "Antennas and relays that carry voice and data between the ship and Earth."
+      },
+      "vi": {
+        "what": "Liên lạc (comms): ăng-ten và vệ tinh chuyển tiếp mang giọng nói và dữ liệu giữa tàu và Trái Đất.",
+        "name": "Liên lạc"
+      }
+    },
+    "family:protection": {
+      "en": {
+        "what": "Shields against strikes from space debris."
+      },
+      "vi": {
+        "what": "Bảo vệ (protection): lớp che chắn chống va đập của rác vũ trụ.",
+        "name": "Bảo vệ"
+      }
+    },
+    "family:science": {
+      "en": {
+        "what": "Instruments that study Mars, and the containers that bring samples home."
+      },
+      "vi": {
+        "what": "Khoa học (science): thiết bị nghiên cứu Sao Hỏa, và hộp mang mẫu về nhà.",
+        "name": "Khoa học"
+      }
+    },
+    "family:seals": {
+      "en": {
+        "what": "The rubber seals in the joints. Cheap ones save money and fail in the cold."
+      },
+      "vi": {
+        "what": "Gioăng (seals): vòng cao su ở các mối nối. Loại rẻ tiết kiệm tiền nhưng hỏng khi trời lạnh.",
+        "name": "Gioăng"
+      }
+    },
+    "family:abort": {
+      "en": {
+        "what": "Towers and engines that pull or push the crew clear of a failing rocket."
+      },
+      "vi": {
+        "what": "Hệ thống thoát hiểm (escape system): tháp và động cơ kéo hoặc đẩy phi hành đoàn ra khỏi tên lửa đang gặp nạn.",
+        "name": "Hệ thống thoát hiểm"
+      }
+    },
+    "family:adapters": {
+      "en": {
+        "what": "Cones that join parts of different widths; the game fits them for you."
+      },
+      "vi": {
+        "what": "Bộ chuyển đường kính (adapter): khúc nón nối các phần có bề rộng khác nhau; game tự lắp cho bạn.",
+        "name": "Bộ chuyển đường kính"
+      }
+    },
+    "family:thrust": {
+      "en": {
+        "what": "The frames that carry the engines' push into the ship and decide how many engines it has."
+      },
+      "vi": {
+        "what": "Khung đỡ lực đẩy (thrust structure): khung truyền cú đẩy của động cơ vào tàu và quyết định tàu có bao nhiêu động cơ.",
+        "name": "Khung đỡ lực đẩy"
+      }
+    },
+    "term:thrust": {
+      "en": {
+        "what": "The push an engine gives. It is measured in newtons: 1 kN is about the weight of 100 kg on Earth. Falcon 9's nine engines give about 7,600 kN at liftoff."
+      },
+      "vi": {
+        "what": "Lực đẩy (thrust) là sức đẩy động cơ tạo ra, đo bằng niutơn: 1 kN xấp xỉ sức nặng của 100 kg trên Trái Đất. Chín động cơ của Falcon 9 cho khoảng 7.600 kN lúc rời bệ."
+      }
+    },
+    "term:delta-v": {
+      "en": {
+        "what": "Δv, said “delta-v”, is how much the ship can change its speed with the propellant it carries. It grows with a more efficient engine (higher Isp) and with more of the ship being propellant. Every part of a trip costs some: reaching orbit around Earth takes about 9.4 km/s, counting the losses to gravity and air."
+      },
+      "vi": {
+        "what": "Δv (đọc là “delta-v”) là tổng mức con tàu có thể thay đổi vận tốc với lượng nhiên liệu nó mang theo. Nó tăng khi động cơ hiệu quả hơn (Isp cao hơn) và khi phần lớn con tàu là nhiên liệu. Mỗi chặng đường đều tốn một ít: lên được quỹ đạo quanh Trái Đất cần khoảng 9,4 km/s, tính cả phần hao do trọng lực và không khí."
+      }
+    },
+    "term:isp": {
+      "en": {
+        "what": "Specific impulse, or Isp, is how efficiently an engine uses its propellant, measured in seconds. It is how long one kilogram of propellant can push with a force equal to its own weight. In vacuum, solid motors reach about 270 s, kerosene engines about 310 to 350 s, and hydrogen engines up to about 465 s."
+      },
+      "vi": {
+        "what": "Xung lực riêng (specific impulse, Isp) cho biết động cơ dùng nhiên liệu hiệu quả tới đâu, đo bằng giây. Đó là thời gian một ki-lô-gam nhiên liệu đẩy được với lực bằng chính sức nặng của nó. Trong chân không, động cơ rắn đạt khoảng 270 s, động cơ dầu hỏa khoảng 310 tới 350 s, động cơ hydro tới khoảng 465 s."
+      }
+    },
+    "term:twr": {
+      "en": {
+        "what": "Thrust-to-weight ratio: the engines' push divided by the ship's weight. Above 1 the ship rises; below 1 it sits on the pad. Rockets usually leave the pad at about 1.2 to 1.5, because a slow start wastes propellant just holding the ship up."
+      },
+      "vi": {
+        "what": "Tỉ số lực đẩy trên trọng lượng (TWR): lực đẩy của động cơ chia cho sức nặng của tàu. Lớn hơn 1 thì tàu bay lên; nhỏ hơn 1 thì tàu nằm yên trên bệ. Tên lửa thường rời bệ với TWR khoảng 1,2 tới 1,5, vì đi lên chậm thì phí nhiên liệu chỉ để giữ tàu khỏi rơi."
+      }
+    },
+    "term:reliability": {
+      "en": {
+        "what": "The chance that a part works when it is needed. The ship works only if every part does, so the chances multiply. 100 parts at 99 % each give a ship that works only about 37 % of the time, which is why backups matter."
+      },
+      "vi": {
+        "what": "Độ tin cậy (reliability) là xác suất một bộ phận chạy tốt khi cần. Con tàu chỉ chạy được khi mọi bộ phận đều chạy, nên các xác suất nhân với nhau. 100 bộ phận, mỗi cái 99 %, cho một con tàu chỉ chạy được khoảng 37 % số lần. Vì thế dự phòng rất quan trọng."
+      }
+    },
+    "term:max-q": {
+      "en": {
+        "what": "Max-Q is the moment of the climb when the air pushes hardest on the rocket, usually about a minute after liftoff and around 10 to 14 km up. Rockets often throttle down to get through it; the Space Shuttle eased its engines to about two thirds."
+      },
+      "vi": {
+        "what": "Max-Q là thời điểm trong lúc bay lên mà không khí ép lên tên lửa mạnh nhất, thường khoảng một phút sau khi rời bệ, ở độ cao chừng 10 tới 14 km. Tên lửa hay giảm ga để vượt qua nó; tàu con thoi giảm ga động cơ xuống còn khoảng hai phần ba."
+      }
+    },
+    "term:propellant": {
+      "en": {
+        "what": "Everything a rocket burns: the fuel and the oxidizer together. There is no air in space, so a rocket carries its own oxygen."
+      },
+      "vi": {
+        "what": "Nhiên liệu đẩy (propellant), gọi tắt là nhiên liệu: tất cả những gì tên lửa đốt, gồm chất đốt (fuel) và chất oxy hóa. Ngoài không gian không có không khí, nên tên lửa phải tự mang oxy."
+      }
+    },
+    "term:oxidizer": {
+      "en": {
+        "what": "The chemical that lets the fuel burn: usually liquid oxygen, kept at −183 °C. It is often the heavier half: Falcon 9 carries more than twice as much oxygen as kerosene."
+      },
+      "vi": {
+        "what": "Chất oxy hóa (oxidizer) là chất giúp nhiên liệu cháy: thường là oxy lỏng, giữ ở −183 °C. Nó thường là nửa nặng hơn: Falcon 9 chở lượng oxy nhiều hơn gấp đôi lượng dầu hỏa."
+      }
+    },
+    "term:cryogenic": {
+      "en": {
+        "what": "Super-cold. Liquid oxygen boils at −183 °C, liquid methane at −162 °C and liquid hydrogen at −253 °C. Cryogenic propellants must be kept cold, or they boil away."
+      },
+      "vi": {
+        "what": "Siêu lạnh (cryogenic). Oxy lỏng sôi ở −183 °C, metan lỏng ở −162 °C, hydro lỏng ở −253 °C. Nhiên liệu siêu lạnh phải luôn được giữ lạnh, nếu không sẽ bay hơi mất."
+      }
+    },
+    "term:turbopump": {
+      "en": {
+        "what": "A turbine and a pump on one shaft. Hot gas spins the turbine, and the pump forces propellant into the chamber at high pressure. The F-1 engine's turbopump made about 55,000 horsepower."
+      },
+      "vi": {
+        "what": "Bơm tuabin (turbopump) gồm một tuabin và một bơm chung một trục. Khí nóng quay tuabin, và bơm ép nhiên liệu vào buồng đốt ở áp suất cao. Bơm tuabin của động cơ F-1 mạnh khoảng 55.000 mã lực."
+      }
+    },
+    "term:gimbal": {
+      "en": {
+        "what": "A swivel joint that lets an engine tilt a few degrees. Tilting the push steers the rocket, the way you keep a broom balanced on your hand by moving your hand."
+      },
+      "vi": {
+        "what": "Khớp xoay (gimbal) cho động cơ nghiêng vài độ. Nghiêng hướng đẩy là lái được tên lửa, giống cách bạn giữ cây chổi dựng thăng bằng trên lòng bàn tay bằng cách di chuyển bàn tay."
+      }
+    },
+    "term:nozzle": {
+      "en": {
+        "what": "The bell at the bottom of an engine. It lets the hot gas expand and speeds it up to several kilometres a second, and that is where the push comes from. A short bell works best in air, a long bell in vacuum."
+      },
+      "vi": {
+        "what": "Vòi phun (nozzle) là chiếc chuông ở đáy động cơ. Nó cho khí nóng giãn nở và tăng tốc tới vài ki-lô-mét mỗi giây, và lực đẩy sinh ra từ đó. Chuông ngắn hợp với không khí, chuông dài hợp với chân không."
+      }
+    },
+    "term:staging": {
+      "en": {
+        "what": "Dropping empty parts in flight, such as tanks and engines that have done their job, so the rest of the rocket is lighter. Every rocket that has reached orbit so far has dropped parts on the way up. In this game the ship flies as one stage: nothing is dropped."
+      },
+      "vi": {
+        "what": "Tách tầng (staging) là vứt bỏ các phần đã cạn khi đang bay, như bồn và động cơ đã xong việc, để phần còn lại của tên lửa nhẹ hơn. Mọi tên lửa từng lên tới quỹ đạo đều đã bỏ lại vài phần trên đường bay lên. Trong game này con tàu bay như một tầng duy nhất: không có gì bị bỏ lại."
+      }
+    },
+    "term:fairing": {
+      "en": {
+        "what": "A light shell that covers the top of a rocket during the climb through the air. A few minutes after liftoff, once the air is thin, it splits and falls away."
+      },
+      "vi": {
+        "what": "Vỏ chụp (fairing) là lớp vỏ nhẹ trùm đỉnh tên lửa khi xuyên qua không khí. Vài phút sau khi rời bệ, khi không khí đã loãng, nó tách ra và rơi đi."
+      }
+    },
+    "term:heat-shield": {
+      "en": {
+        "what": "The armour on the bottom of a capsule that faces the hot air of entry. On Apollo's return from the Moon, the shield faced about 2,760 °C."
+      },
+      "vi": {
+        "what": "Tấm chắn nhiệt (heat shield) là lớp giáp dưới đáy khoang lái, hứng luồng khí nóng khi vào khí quyển. Khi Apollo trở về từ Mặt Trăng, tấm chắn của nó phải chịu khoảng 2.760 °C."
+      }
+    },
+    "term:ablator": {
+      "en": {
+        "what": "A heat-shield material that is meant to burn away. As its surface chars and flakes off, it carries the heat with it, and the gas it gives off pushes the hottest air away. Avcoat and PICA are ablators."
+      },
+      "vi": {
+        "what": "Vật liệu cháy mòn (ablator) là vật liệu tấm chắn nhiệt được thiết kế để cháy mất dần. Khi bề mặt cháy thành than và bong ra, nó mang nhiệt đi theo, còn khí nó thoát ra đẩy lớp khí nóng nhất ra xa. Avcoat và PICA là các vật liệu cháy mòn."
+      }
+    },
+    "term:centre-of-mass": {
+      "en": {
+        "what": "The ship's balance point: where it would balance on a finger. It moves as the tanks drain."
+      },
+      "vi": {
+        "what": "Trọng tâm (centre of mass) là điểm cân bằng của con tàu: nơi nó có thể nằm thăng bằng trên một ngón tay. Điểm này dịch chuyển khi các bồn cạn dần."
+      }
+    },
+    "term:centre-of-pressure": {
+      "en": {
+        "what": "The point where the push of the air on the ship's side acts, on average. Fins at the tail pull it back; a wide nose pulls it forward."
+      },
+      "vi": {
+        "what": "Tâm áp (centre of pressure) là điểm mà sức đẩy của không khí lên hông tàu tác dụng, tính trung bình. Vây ở đuôi kéo nó lùi về sau; mũi rộng kéo nó lên phía trước."
+      }
+    },
+    "term:stability": {
+      "en": {
+        "what": "A rocket in the air is stable when its centre of mass is ahead of its centre of pressure. Then any wobble makes the air push the nose back into line, as with an arrow. If they swap places, the rocket wants to fly tail first and tumbles, unless its engine steers it straight."
+      },
+      "vi": {
+        "what": "Tên lửa bay trong không khí ổn định (stable) khi trọng tâm nằm phía trước tâm áp. Khi đó mỗi lần chao đảo, không khí lại đẩy mũi về đúng hướng, giống mũi tên. Nếu hai điểm đổi chỗ, tên lửa muốn bay đuôi đi trước và lộn nhào, trừ khi động cơ lái giữ nó thẳng."
+      }
+    },
+    "term:boil-off": {
+      "en": {
+        "what": "Super-cold propellant slowly warming and turning into gas. The gas must be let out, so the tank slowly loses propellant. Hydrogen boils off fastest, because it is the coldest."
+      },
+      "vi": {
+        "what": "Bay hơi (boil-off) là khi nhiên liệu siêu lạnh ấm dần lên và hóa thành khí. Khí phải được xả ra, nên bồn mất dần nhiên liệu. Hydro bay hơi nhanh nhất vì nó lạnh nhất."
+      }
+    },
+    "term:pressure-fed": {
+      "en": {
+        "what": "An engine with no pump: gas pressure in the tanks pushes the propellant into the chamber. It is simple and very reliable, but the tanks must be thick and the chamber pressure stays low. The Apollo service module engine worked this way."
+      },
+      "vi": {
+        "what": "Nạp bằng áp suất (pressure-fed) là động cơ không có bơm: áp suất khí trong bồn đẩy nhiên liệu vào buồng đốt. Nó đơn giản và rất đáng tin cậy, nhưng bồn phải dày và áp suất buồng đốt thấp. Động cơ của khoang dịch vụ Apollo hoạt động theo cách này."
+      }
+    },
+    "term:hypergolic": {
+      "en": {
+        "what": "Propellants that burst into flame the moment they touch, with no igniter. They keep in their tanks for years and light every time, but most are toxic. Crew Dragon's abort engines and the Apollo service module engine use them."
+      },
+      "vi": {
+        "what": "Nhiên liệu tự cháy (hypergolic) là cặp chất bùng cháy ngay khi chạm vào nhau, không cần bộ đánh lửa. Chúng nằm trong bồn được nhiều năm và lần nào cũng cháy, nhưng phần lớn rất độc. Động cơ thoát hiểm của Crew Dragon và động cơ khoang dịch vụ Apollo dùng loại này."
+      }
+    },
+    "term:rcs": {
+      "en": {
+        "what": "Reaction control system: small thrusters around the ship that fire short puffs to turn it in space, or to nudge it sideways when docking."
+      },
+      "vi": {
+        "what": "Hệ thống điều khiển phản lực (RCS): các động cơ đẩy nhỏ quanh tàu, phụt từng nhát ngắn để xoay tàu ngoài không gian, hoặc đẩy nhẹ sang ngang khi ghép nối."
+      }
+    },
+    "term:reentry": {
+      "en": {
+        "what": "Coming back into an atmosphere from space. The ship arrives very fast: Perseverance hit the top of Mars's air at about 5.4 km/s, and Apollo came home from the Moon at about 11 km/s. The air slows the ship and turns its speed into heat."
+      },
+      "vi": {
+        "what": "Trở lại khí quyển (reentry) là lúc từ không gian lao vào một bầu khí quyển. Con tàu tới rất nhanh: xe Perseverance chạm lớp khí trên cùng của Sao Hỏa ở khoảng 5,4 km/s, còn Apollo trở về từ Mặt Trăng ở khoảng 11 km/s. Không khí hãm tàu lại và biến tốc độ của nó thành nhiệt."
+      }
+    },
+    "term:dynamic-pressure": {
+      "en": {
+        "what": "The push of the air on something moving through it. It grows with how thick the air is and with the square of the speed: twice as fast means four times the push. It is what you feel on your hand out of a car window."
+      },
+      "vi": {
+        "what": "Áp suất động (dynamic pressure) là sức ép của không khí lên vật đang lao qua nó. Nó tăng theo độ đặc của không khí và theo bình phương tốc độ: nhanh gấp đôi thì sức ép gấp bốn. Đó là cảm giác trên bàn tay khi bạn thò tay ra cửa sổ ô tô."
+      }
+    },
+    "term:power": {
+      "en": {
+        "what": "Electricity, measured in watts: 1 kW is 1,000 W, about what a microwave oven draws. Near Earth, sunlight brings about 1,360 W to every square metre facing the Sun; at Mars, about 590 W."
+      },
+      "vi": {
+        "what": "Công suất điện (power), đo bằng oát (W): 1 kW là 1.000 W, cỡ một chiếc lò vi sóng đang chạy. Gần Trái Đất, ánh nắng mang khoảng 1.360 W tới mỗi mét vuông hướng về Mặt Trời; ở Sao Hỏa chỉ khoảng 590 W."
+      }
+    },
+    "term:drag": {
+      "en": {
+        "what": "The air pushing back on anything moving through it. A parachute or a heat shield works by making a lot of drag; a pointed nose works by making little. The game counts it as a drag area in square metres: the bigger the area, the harder the air brakes."
+      },
+      "vi": {
+        "what": "Lực cản (drag) là sức không khí đẩy ngược lại vật đang lao qua nó. Dù và tấm chắn nhiệt hoạt động nhờ tạo ra nhiều lực cản; mũi nhọn thì nhờ tạo ra ít. Game tính nó bằng diện tích cản theo mét vuông: diện tích càng lớn, không khí hãm càng mạnh."
+      }
+    }
+  }
+}

@@ -78,6 +78,31 @@ test('Mars entry to landing, paced like the game: lands softly in <= 150 s real'
   assert.ok(frames * FRAME <= 150, `real ${frames * FRAME}`);
 });
 
+test('guided Mars descent: nose stays near vertical (<=30 deg below 1 km, <=10 deg below 200 m, upright at touchdown)', () => {
+  const fc = mk({ shipSpec: MOCK_SHIPS.reliable, planetId: 'mars', start: { ...STARTS.marsEntry, flightPathDeg: -22.8 }, fuel: 5000 });
+  approachBack(fc, 40);
+  const corridor = computeCorridor(fc);
+  const ap = createAutopilot();
+  let frames = 0, max1k = 0, max200 = 0, last = 0, hAt = null;
+  const tiltOf = () => (Math.acos(Math.max(-1, Math.min(1, dot(fc.forward, fc.up)))) * 180) / Math.PI;
+  while (!fc.failed && !fc.landed && frames < 60 * 900) {
+    const input = ap.update(fc, { corridor });
+    fc.update(FRAME, input, { timeWarp: 1 });
+    const alt = fc.altitude, tl = tiltOf();
+    if (alt < 1000 && fc.vel && !fc.landed) max1k = Math.max(max1k, tl);
+    if (alt < 200 && !fc.landed) max200 = Math.max(max200, tl);
+    if (!fc.landed) { last = tl; const t = fc.telemetry; hAt = t.horizontalSpeed; }
+    frames++;
+  }
+  console.log(`    (guided descent: max tilt below 1 km ${max1k.toFixed(1)}, below 200 m ${max200.toFixed(1)}, touchdown tilt ${last.toFixed(1)}, drift ${hAt?.toFixed(2)} m/s)`);
+  assert.equal(fc.failed, null, JSON.stringify(fc.failed));
+  assert.equal(fc.landed, true);
+  assert.ok(max1k <= 30, `tilt below 1 km ${max1k}`);
+  assert.ok(max200 <= 10, `tilt below 200 m ${max200}`);
+  assert.ok(last <= 5, `touchdown tilt ${last}`);
+  assert.ok(hAt <= 1, `touchdown drift ${hAt}`);
+});
+
 test('autopilot does nothing during the countdown / before liftoff', () => {
   const fc = mk({ shipSpec: MOCK_SHIPS.reliable });
   const ap = createAutopilot();

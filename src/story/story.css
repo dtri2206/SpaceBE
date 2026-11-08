@@ -102,3 +102,37 @@
 .role4-prelaunch textarea:focus { outline: 1px solid var(--hud-accent); }
 @keyframes role4-pl-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .role4-prelaunch, .role4-pl-step, .role4-pl-step * { animation: none !important; } }
+
+/* Memorial sequence: black, calm, no colour except a faint warm flame. */
+.role4-tribute { position: absolute; inset: 0; background: #000; opacity: 0; transition: opacity 2s; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; padding: 8vh 20px 12vh; font-family: Georgia, 'Times New Roman', serif; color: #e9e4d6; }
+.role4-tribute-on { opacity: 1; }
+.role4-tribute-page { max-width: 720px; margin: 0 auto; display: grid; gap: 40px; min-height: 60vh; }
+.role4-tribute-page > *, .role4-tribute-crew { opacity: 0; transform: translateY(6px); transition: opacity 1.6s, transform 1.6s; }
+.role4-tribute-page > .role4-tribute-show, .role4-tribute-crew.role4-tribute-show { opacity: 1; transform: none; }
+.role4-tribute-opening { margin: 0; font-size: clamp(22px, 4.2vw, 34px); line-height: 1.4; text-align: center; color: #fff; font-weight: 400; }
+.role4-tribute-card { display: flex; gap: 22px; align-items: center; justify-content: center; flex-wrap: wrap; }
+.role4-emblem { width: 120px; height: 120px; flex: none; }
+.role4-tribute-facts { display: grid; gap: 4px; text-align: left; }
+.role4-tribute-mission { font-size: clamp(22px, 3.4vw, 28px); letter-spacing: 0.04em; color: #fff; }
+.role4-tribute-fact { font-size: 16px; color: #b9b3a3; }
+.role4-tribute-page > .role4-tribute-crew { display: flex; gap: 14px; align-items: flex-start; margin-bottom: -22px; }
+.role4-flame { flex: none; width: 10px; height: 10px; margin-top: 10px; border-radius: 50%; background: #ffcf7a; box-shadow: 0 0 10px 3px rgb(255 190 90 / 0.7), 0 0 22px 8px rgb(255 150 50 / 0.25); animation: role4-flicker 2.4s ease-in-out infinite; }
+@keyframes role4-flicker { 0%, 100% { opacity: 0.95; } 40% { opacity: 0.7; } 60% { opacity: 1; } }
+.role4-tribute-name { font-size: clamp(20px, 3vw, 24px); color: #fff; }
+.role4-tribute-role { font-size: 15px; color: #a39d8e; letter-spacing: 0.05em; }
+.role4-tribute-line { font-size: 14px; color: #8d8879; line-height: 1.5; margin-top: 4px; }
+.role4-tribute-block { display: grid; gap: 12px; }
+.role4-tribute-label { margin: 0; font-size: 13px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase; color: #a39d8e; }
+.role4-tribute-text, .role4-tribute-lesson { margin: 0; font-size: 19px; line-height: 1.7; }
+.role4-tribute-lesson { color: #fff; font-style: italic; }
+.role4-tribute-list { margin: 0; padding-left: 20px; font-size: 18px; line-height: 1.7; }
+.role4-tribute-quote { margin: 0; padding-left: 18px; border-left: 2px solid #5b5648; font-size: 20px; line-height: 1.6; font-style: italic; }
+.role4-tribute-by { font-size: 15px; color: #a39d8e; padding-left: 20px; }
+.role4-tribute-sources { font-size: 13px; }
+.role4-tribute-sources a { color: #8d8879; overflow-wrap: anywhere; }
+.role4-tribute-actions { display: flex; justify-content: center; }
+.role4-tribute-actions .hud-button { pointer-events: auto; }
+@media (max-width: 520px) { .role4-tribute { padding-top: 5vh; } .role4-tribute-card { flex-direction: column; text-align: center; } .role4-tribute-facts { text-align: center; } }
+
+/* Silent Return choice card */
+.role4-choice { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(520px, calc(100vw - 40px)); display: grid; gap: 14px; background: var(--hud-surface-strong); }

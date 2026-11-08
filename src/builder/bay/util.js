@@ -93,9 +93,32 @@ export function drawScreen(ctx, w, h, { title = '', lines = [], accent = '#67e8f
   for (let yy = 0; yy < h; yy += 3) ctx.fillRect(0, yy, w, 1);
 }
 
+/** Frees an object's GPU buffers. Geometry shared with a loaded model (userData.sharedGeometry) is kept: the model's
+ * prototype and every other copy still use it. Materials are per copy (nasaPartArt clones them), so they are freed. */
+/**
+ * Objects taken out of a scene, disposed a few frames later (tick() once per frame): by then the new objects drawn in
+ * their place use the same shader programs, so three.js keeps those programs instead of freeing them and compiling
+ * them again (a 1-3 s freeze on every shape switch).
+ */
+export function createDisposalQueue(frames = 3) {
+  let queue = [];
+  return {
+    add(obj) { if (obj) queue.push({ obj, left: frames }); },
+    tick() {
+      if (!queue.length) return;
+      const keep = [];
+      for (const q of queue) { q.left -= 1; if (q.left > 0) keep.push(q); else disposeObject(q.obj); }
+      queue = keep;
+    },
+    flush() { for (const q of queue) disposeObject(q.obj); queue = []; },
+  };
+}
+
 export function disposeObject(obj) {
+  // every node of a loaded model's copy carries sharedGeometry (its buffers belong to the cached model); what the art
+  // adds under such a copy later (a fairing's see-through skirt, struts, clamps) does not, and is freed
   obj.traverse((o) => {
-    if (o.geometry) o.geometry.dispose();
+    if (o.geometry && !o.userData?.sharedGeometry) o.geometry.dispose();
     if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m.dispose?.());
   });
 }

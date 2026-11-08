@@ -1,0 +1,30 @@
+/* The Launch pad card (designPad.js). Built on the design page's vd- classes; only what the pad adds lives here. */
+
+/* fallback when the page's item() has no quick button: a small CHOOSE button at the right end of the row */
+.vp-pickable { position: relative; }
+.vp-pickable .vd-item-row { padding-right: 84px; }
+.vp-pick {
+  position: absolute; top: 14px; right: 8px;
+  font: 600 10px var(--hud-font); letter-spacing: 0.1em;
+  color: #03161b; background: var(--hud-cyan); border: 1px solid var(--hud-cyan); border-radius: var(--hud-radius);
+  padding: 4px 9px; cursor: pointer;
+}
+.vp-pick:hover { background: #9df3ff; }
+
+/* the equipment's own header: picture, name and what it is for (opens the explanation card) */
+.vp-eqhead {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; text-align: left;
+  font: inherit; color: var(--hud-ink); background: color-mix(in srgb, var(--hud-amber) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--hud-amber) 35%, transparent); border-radius: var(--hud-radius); cursor: pointer;
+}
+.vp-eqhead:hover { background: color-mix(in srgb, var(--hud-amber) 12%, transparent); }
+.vp-eqhead .vd-item-img { width: 56px; height: 56px; flex-basis: 56px; }
+.vp-eqhead-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+/* a quiet heading over each region's complexes in the complex list */
+.vp-region {
+  margin: 10px 2px 2px; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--hud-amber) 80%, var(--hud-ink));
+  border-bottom: 1px solid color-mix(in srgb, var(--hud-amber) 25%, transparent); padding-bottom: 2px;
+}
+.vp-region:first-of-type { margin-top: 4px; }

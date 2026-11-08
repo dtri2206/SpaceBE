@@ -1,0 +1,317 @@
+{
+  "challenger": {
+    "fatal": true,
+    "mission": "STS-51-L",
+    "vehicle": "Space Shuttle Challenger",
+    "date": "1986-01-28",
+    "dateText": "28 January 1986",
+    "place": "over the Atlantic Ocean, off Cape Canaveral, Florida",
+    "opening": "On 28 January 1986, this happened to seven real people.",
+    "crew": [
+      {
+        "name": "Francis R. (Dick) Scobee",
+        "role": "Commander",
+        "line": "He enlisted in the US Air Force and earned his aerospace engineering degree through night classes before becoming a pilot and then a shuttle commander.",
+        "source": "https://www.nasa.gov/history/the-crew-of-the-space-shuttle-challenger-sts-51l-mission/"
+      },
+      {
+        "name": "Michael J. Smith",
+        "role": "Pilot",
+        "line": "A US Navy test pilot who had logged more than 4,300 flight hours, he was making his first spaceflight.",
+        "source": "https://www.nasa.gov/history/the-crew-of-the-space-shuttle-challenger-sts-51l-mission/"
+      },
+      {
+        "name": "Ellison S. Onizuka",
+        "role": "Mission Specialist",
+        "line": "Born in Kealakekua, Hawaii, he was the first Asian American to fly in space, and was on his second flight.",
+        "source": "https://www.nasa.gov/history/the-crew-of-the-space-shuttle-challenger-sts-51l-mission/"
+      },
+      {
+        "name": "Judith A. Resnik",
+        "role": "Mission Specialist",
+        "line": "An electrical engineer with a doctorate, she was among the first women selected as NASA astronauts and became the second American woman in orbit.",
+        "source": "https://www.nasa.gov/history/the-crew-of-the-space-shuttle-challenger-sts-51l-mission/"
+      },
+      {
+        "name": "Ronald E. McNair",
+        "role": "Mission Specialist",
+        "line": "A laser physicist with a doctorate from MIT, he was also a karate black belt and a saxophone player, and the second Black American in space.",
+        "source": "https://www.nasa.gov/history/the-crew-of-the-space-shuttle-challenger-sts-51l-mission/"
+      },
+      {
+        "name": "Gregory B. Jarvis",
+        "role": "Payload Specialist",
+        "line": "An engineer at Hughes Aircraft, he was chosen to fly after competing against about 600 of his Hughes colleagues.",
+        "source": "https://www.nasa.gov/history/the-crew-of-the-space-shuttle-challenger-sts-51l-mission/"
+      },
+      {
+        "name": "S. Christa McAuliffe",
+        "role": "Payload Specialist (Teacher in Space)",
+        "line": "A high-school social studies teacher from Concord, New Hampshire, chosen from more than 11,000 applicants, she had planned to teach lessons from orbit, including one called \"The Ultimate Field Trip\".",
+        "source": "https://sma.nasa.gov/sma-disciplines/accllp/challenger"
+      }
+    ],
+    "happened": [
+      "Challenger lifted off on a cold morning, and about 73 seconds later the vehicle broke apart.",
+      "The Rogers Commission found that the failure began at a joint in the right solid rocket booster, where hot gases escaped past damaged O-ring seals.",
+      "The commission also found that warnings about the joint and the cold had not been given enough weight in the decision to launch."
+    ],
+    "changed": [
+      "President Reagan set up the Rogers Commission, which investigated the accident and made recommendations to NASA.",
+      "The solid rocket booster field joint was redesigned and tested with full-scale firings before flights resumed.",
+      "NASA added a crew escape system for some flight conditions and pressure suits for launch and entry.",
+      "NASA strengthened its safety oversight and management structure, and shuttle flights resumed with STS-26 on 29 September 1988, 32 months later."
+    ],
+    "lesson": "Safety concerns raised by the people closest to the hardware must be heard and acted on, even when there is pressure to keep to the schedule.",
+    "quote": {
+      "text": "The crew of the space shuttle Challenger honored us by the manner in which they lived their lives.",
+      "by": "President Ronald Reagan, address to the nation, 28 January 1986",
+      "source": "https://www.reaganlibrary.gov/archives/speech/address-nation-explosion-space-shuttle-challenger"
+    },
+    "sources": [
+      {
+        "title": "NASA History: The Crew of the Space Shuttle Challenger STS-51L Mission",
+        "url": "https://www.nasa.gov/history/the-crew-of-the-space-shuttle-challenger-sts-51l-mission/"
+      },
+      {
+        "title": "NASA Safety Center: Challenger (STS-51L) accident summary",
+        "url": "https://sma.nasa.gov/sma-disciplines/accllp/challenger"
+      },
+      {
+        "title": "NASA History: 35 Years Ago, STS-26 Returns the Space Shuttle to Flight",
+        "url": "https://www.nasa.gov/history/35-years-ago-sts-26-returns-the-space-shuttle-to-flight"
+      },
+      {
+        "title": "Reagan Presidential Library: Address to the Nation on the Explosion of the Space Shuttle Challenger",
+        "url": "https://www.reaganlibrary.gov/archives/speech/address-nation-explosion-space-shuttle-challenger"
+      }
+    ]
+  },
+  "columbia": {
+    "fatal": true,
+    "mission": "STS-107",
+    "vehicle": "Space Shuttle Columbia",
+    "date": "2003-02-01",
+    "dateText": "1 February 2003",
+    "place": "over Texas and Louisiana, during re-entry, about 16 minutes before the planned landing in Florida",
+    "opening": "On 1 February 2003, this happened to seven real people.",
+    "crew": [
+      {
+        "name": "Rick D. Husband",
+        "role": "Commander",
+        "line": "A US Air Force colonel and test pilot, he had piloted STS-96, the first shuttle mission to dock with the International Space Station.",
+        "source": "https://www.nasa.gov/remembering-columbia-sts-107"
+      },
+      {
+        "name": "William C. McCool",
+        "role": "Pilot",
+        "line": "A US Navy commander and former test pilot, he was making his first spaceflight; his nickname was Willie.",
+        "source": "https://www.nasa.gov/remembering-columbia-sts-107"
+      },
+      {
+        "name": "Michael P. Anderson",
+        "role": "Payload Commander",
+        "line": "An Air Force lieutenant colonel with a physics degree, he was in charge of the science mission aboard STS-107 and had flown to the Mir space station in 1998.",
+        "source": "https://www.nasa.gov/remembering-columbia-sts-107"
+      },
+      {
+        "name": "David M. Brown",
+        "role": "Mission Specialist",
+        "line": "He was both a US Navy aviator and a flight surgeon, flying in space for the first time.",
+        "source": "https://www.nasa.gov/feature/20-years-ago-remembering-columbia-and-her-crew"
+      },
+      {
+        "name": "Kalpana Chawla",
+        "role": "Mission Specialist and Flight Engineer",
+        "line": "Born in Karnal, India, she studied aeronautical engineering in Punjab, earned a doctorate in the United States and became the first woman of Indian origin to fly in space.",
+        "source": "https://www.nasa.gov/remembering-columbia-sts-107"
+      },
+      {
+        "name": "Laurel B. Clark",
+        "role": "Mission Specialist",
+        "line": "A Navy captain-select and flight surgeon, she was on her first spaceflight and worked on science experiments in the Spacehab module.",
+        "source": "https://www.nasa.gov/feature/20-years-ago-remembering-columbia-and-her-crew"
+      },
+      {
+        "name": "Ilan Ramon",
+        "role": "Payload Specialist",
+        "line": "A colonel and fighter pilot in the Israeli Air Force, he was Israel's first astronaut, and carried a replica of 'Moon Landscape', a drawing by Petr Ginz, a boy killed in the Holocaust.",
+        "source": "https://www.yadvashem.org/press-release/11-may-2003-08-38.html"
+      }
+    ],
+    "happened": [
+      "During launch, a piece of foam broke off the external tank and struck Columbia's wing, damaging its thermal protection system.",
+      "Sixteen days later, as Columbia returned to Earth, the damaged wing let hot gases in during re-entry and the orbiter broke apart.",
+      "The Columbia Accident Investigation Board found both the physical cause and organisational causes, including accepting known risks as normal."
+    ],
+    "changed": [
+      "The Columbia Accident Investigation Board made 29 recommendations, 15 of which NASA had to meet before the shuttle flew again.",
+      "The foam on the external tank was redesigned, and shuttles gained a boom with a laser scanner to inspect the heat shield in orbit.",
+      "Shuttle flights resumed with STS-114 on 26 July 2005, which included inspection of the orbiter's heat shield in orbit.",
+      "The shuttle program ended with its last flight, STS-135, in July 2011."
+    ],
+    "lesson": "A known problem that goes unresolved can become a disaster, so unexpected damage must be investigated rather than accepted as normal.",
+    "quote": {
+      "text": "It is today that we remember and honor the crews of Apollo 1 and Challenger.",
+      "by": "Commander Rick Husband, aboard Columbia, 28 January 2003, four days before the accident",
+      "source": "https://www.nasa.gov/feature/20-years-ago-remembering-columbia-and-her-crew"
+    },
+    "sources": [
+      {
+        "title": "NASA History: Remembering Columbia STS-107 (crew biographies and CAIB links)",
+        "url": "https://www.nasa.gov/remembering-columbia-sts-107"
+      },
+      {
+        "title": "NASA: 20 Years Ago, Remembering Columbia and Her Crew",
+        "url": "https://www.nasa.gov/feature/20-years-ago-remembering-columbia-and-her-crew"
+      },
+      {
+        "title": "NASA Safety Center: Columbia (STS-107) accident summary",
+        "url": "https://sma.nasa.gov/sma-disciplines/accllp/columbia"
+      },
+      {
+        "title": "NASA: STS-114 (Return to Flight)",
+        "url": "https://www.nasa.gov/mission/sts-114/"
+      },
+      {
+        "title": "NASA: 10 Years Ago, STS-135, the Space Shuttle's Grand Finale",
+        "url": "https://www.nasa.gov/feature/10-years-ago-sts-135-the-space-shuttle-s-grand-finale"
+      },
+      {
+        "title": "Yad Vashem: Moon Landscape by Petr Ginz",
+        "url": "https://www.yadvashem.org/press-release/11-may-2003-08-38.html"
+      }
+    ]
+  },
+  "apollo1": {
+    "fatal": true,
+    "mission": "AS-204 (Apollo 1)",
+    "vehicle": "Apollo command module 012, on its launch pad",
+    "date": "1967-01-27",
+    "dateText": "27 January 1967",
+    "place": "Launch Complex 34, Cape Kennedy, Florida, during a ground test",
+    "opening": "On 27 January 1967, this happened to three real people.",
+    "crew": [
+      {
+        "name": "Virgil I. \"Gus\" Grissom",
+        "role": "Command Pilot",
+        "line": "One of the original Mercury Seven astronauts, he was the first American to fly in space twice.",
+        "source": "https://www.nasa.gov/history/detailed-biographies-of-the-apollo-1-crew/"
+      },
+      {
+        "name": "Edward H. White II",
+        "role": "Senior Pilot",
+        "line": "He became the first American to walk in space on Gemini 4 in 1965, and as a young man ran the 400-metre hurdles and narrowly missed the 1952 US Olympic team.",
+        "source": "https://www.nasa.gov/history/detailed-biographies-of-the-apollo-1-crew/"
+      },
+      {
+        "name": "Roger B. Chaffee",
+        "role": "Pilot",
+        "line": "An Eagle Scout who loved hunting, woodworking and building models, he was preparing for his first spaceflight.",
+        "source": "https://www.nasa.gov/history/detailed-biographies-of-the-apollo-1-crew/"
+      }
+    ],
+    "happened": [
+      "The crew was taking part in a ground rehearsal of the launch, called a plugs-out test, about 25 days before their planned liftoff.",
+      "A fire started inside the cabin, which held pure oxygen at a pressure above sea level, and it spread too fast for them to escape.",
+      "The Apollo 204 Review Board found that the pure-oxygen atmosphere, combustible materials, wiring faults and a hatch that could not be opened quickly all contributed, and that the test had not been treated as hazardous."
+    ],
+    "changed": [
+      "The three-piece hatch was replaced with a single hatch that opened outward in seconds.",
+      "NASA severely restricted and controlled the amount and location of combustible material in the spacecraft, and developed flame-resistant spacesuit materials.",
+      "Wiring was better protected, and NASA adopted a mixed-gas cabin atmosphere for Apollo instead of testing on the pad in pure oxygen.",
+      "The mission was renamed Apollo 1 in the crew's honour, and later crews flew the redesigned Block II spacecraft to the Moon."
+    ],
+    "lesson": "A test that looks routine can be deadly, so every test must be planned with the same care as a real flight.",
+    "quote": {
+      "text": "There will be risks, as there are in any experimental program, and sooner or later, we're going to run head-on into the law of averages and lose somebody.",
+      "by": "Gus Grissom, written shortly before his death, as quoted in NASA's biography of the Apollo 1 crew (cited there to his book Gemini)",
+      "source": "https://www.nasa.gov/history/detailed-biographies-of-the-apollo-1-crew/"
+    },
+    "sources": [
+      {
+        "title": "NASA History: Detailed Biographies of the Apollo 1 Crew",
+        "url": "https://www.nasa.gov/history/detailed-biographies-of-the-apollo-1-crew/"
+      },
+      {
+        "title": "NASA History: Apollo 204 Accident",
+        "url": "https://www.nasa.gov/history/Apollo204"
+      },
+      {
+        "title": "NASA History: Apollo 204 Review Board, Findings, Determinations and Recommendations",
+        "url": "https://www.nasa.gov/wp-content/uploads/static/history/Apollo204/find.html"
+      },
+      {
+        "title": "NASA: 55 Years Ago, Tragedy on the Launch Pad",
+        "url": "https://www.nasa.gov/missions/apollo/55-years-ago-tragedy-on-the-launch-pad"
+      },
+      {
+        "title": "NASA: 55 Years Ago, The Apollo 1 Fire and its Aftermath",
+        "url": "https://www.nasa.gov/missions/apollo/55-years-ago-the-apollo-1-fire-and-its-aftermath/"
+      }
+    ]
+  },
+  "soyuz11": {
+    "fatal": true,
+    "mission": "Soyuz 11",
+    "vehicle": "Soyuz 11 spacecraft",
+    "date": "1971-06-30",
+    "dateText": "30 June 1971",
+    "place": "high above the Earth, during the return from the Salyut 1 space station",
+    "opening": "On 30 June 1971, this happened to three real people.",
+    "crew": [
+      {
+        "name": "Georgy Dobrovolsky",
+        "role": "Commander",
+        "line": "A military pilot and parachutist, he commanded the first crew to live aboard a space station.",
+        "source": "https://www.astronomy.com/space-exploration/remembering-the-crew-of-soyuz-11-the-only-astronauts-to-die-in-space/"
+      },
+      {
+        "name": "Vladislav Volkov",
+        "role": "Flight Engineer",
+        "line": "An aeronautical engineer, he was on his second spaceflight.",
+        "source": "https://www.spacefacts.de/mission/english/soyuz-11.htm"
+      },
+      {
+        "name": "Viktor Patsayev",
+        "role": "Test Engineer",
+        "line": "A mechanical engineer, he became the first person to celebrate a birthday in space, aboard Salyut 1.",
+        "source": "https://www.astronomy.com/space-exploration/remembering-the-crew-of-soyuz-11-the-only-astronauts-to-die-in-space/"
+      }
+    ],
+    "happened": [
+      "The crew had spent about 23 days aboard Salyut 1, the world's first space station, and were the only crew ever to live aboard it.",
+      "When their descent module separated from the rest of the spacecraft before re-entry, a pressure-equalisation valve opened by mistake and the cabin lost its air.",
+      "The crew were not wearing pressure suits, and they could not be revived after landing; they are the only people known to have died in space."
+    ],
+    "changed": [
+      "Soyuz valves were redesigned and made more robust.",
+      "The spacecraft was reconfigured to carry two cosmonauts instead of three, so that both could wear pressure suits.",
+      "Pressure suits became standard for launch and re-entry on Soyuz flights."
+    ],
+    "lesson": "Even a routine return home needs protection against a single failure, so crews must be given a safety margin at every stage of the flight.",
+    "quote": {
+      "text": "",
+      "by": "",
+      "source": ""
+    },
+    "sources": [
+      {
+        "title": "Spacefacts: Soyuz 11 mission",
+        "url": "https://www.spacefacts.de/mission/english/soyuz-11.htm"
+      },
+      {
+        "title": "Astronomy magazine: Remembering the crew of Soyuz 11",
+        "url": "https://www.astronomy.com/space-exploration/remembering-the-crew-of-soyuz-11-the-only-astronauts-to-die-in-space/"
+      },
+      {
+        "title": "RussianSpaceWeb: Soyuz-11 accident",
+        "url": "https://www.russianspaceweb.com/soyuz11-accident.html"
+      }
+    ]
+  },
+  "closing": {
+    "text": "In August 1971 the crew of Apollo 15 left a small aluminium figure, 'Fallen Astronaut', on the Moon beside a plaque bearing the names of 14 astronauts and cosmonauts who had died. The exploration continues because of them.",
+    "source": "https://science.nasa.gov/resource/memorial-to-fallen-astronauts-on-the-moon"
+  }
+}

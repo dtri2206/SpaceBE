@@ -179,6 +179,7 @@ test('manual hint wins over every other hint and follows lockReady', () => {
   assert.deepEqual(fly, { text: 'MANUAL · keep ○ on +', level: 'warn' });
   const lock = steeringHint(fc, { manualOffer: true, countdown: true, manual: { lockReady: true } });
   assert.deepEqual(lock, { text: 'LOCK READY · SPACE or CLICK', level: 'ok' });
+  assert.deepEqual(steeringHint(fc, { manual: { free: true } }), { text: 'MANUAL · F gives it back', level: 'ok' });
   assert.match(steeringHint(fc, { manual: null }).text, /^AUTO/);
   const ro = steeringReadout(fc, {}, { manual: { lockReady: true } });
   if (ro) assert.equal(ro.hint.text, 'LOCK READY · SPACE or CLICK');

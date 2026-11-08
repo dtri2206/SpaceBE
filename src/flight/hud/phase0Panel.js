@@ -35,14 +35,25 @@ export function createPhase0Panel({ parent, flightHud }) {
 .p0 .ask button:hover,.p0 .ask button:focus-visible{background:#7dffa833;outline:none}
 .p0 .ask button.scrub{border-color:var(--amber);background:#ffbe7512;color:var(--amber)}.p0 .ask button.scrub:hover{background:#ffbe7530}
 .p0 .ask .ok{color:var(--green)}.p0 .ask .note{color:#ffe3b3;font-size:13px;line-height:1.5}
+.p0 .reticle{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border:2px solid #ffffffcc;border-radius:50%;box-shadow:0 0 6px #000a;opacity:0;transition:opacity .4s,transform .15s,border-color .15s,background .15s}
+.p0 .reticle.on{opacity:1}.p0 .reticle.ok{transform:scale(2.2);border-color:var(--cyan);background:#72e6e033}.p0 .reticle.warn{transform:scale(2.2);border-color:var(--amber);background:#ffbe7522}.p0 .reticle.done{transform:scale(1.6);border-color:var(--green)}
+.p0 .rlabel{position:absolute;left:calc(50% + 26px);top:50%;transform:translateY(-50%);padding:4px 10px;border:1px solid #72e6e066;background:#071419e6;color:var(--cyan);font-size:12px;letter-spacing:.08em;white-space:nowrap;opacity:0;transition:opacity .15s}
+.p0 .rlabel.on{opacity:1}.p0 .rlabel.warn{border-color:#ffbe7588;color:var(--amber)}.p0 .rlabel.done{border-color:#7dffa866;color:var(--green)}
+.p0 .choice{top:300px;border-color:#ffbe7566}.p0 .choice button{display:block;width:100%;margin:6px 0;text-align:left;pointer-events:auto;cursor:pointer;font:inherit;font-size:13px;letter-spacing:.04em;padding:9px 12px;border:1px solid var(--cyan);background:#72e6e014;color:#d8eff1}
+.p0 .choice button:hover,.p0 .choice button:focus-visible{background:#72e6e033;outline:none}.p0 .choice button b{color:var(--amber);margin-right:8px}
+.p0 .caution{left:auto;right:32px;top:96px;width:320px;border-color:var(--amber);background:#2a1a05d8}.p0 .caution .lamp{color:var(--amber);font-size:13px;letter-spacing:.06em;animation:p0blink 1.4s ease-in-out infinite}
+.p0 .caution button{pointer-events:auto;cursor:pointer;margin-top:10px;font:inherit;font-size:12px;letter-spacing:.06em;padding:8px 12px;border:1px solid var(--amber);background:#ffbe7512;color:var(--amber)}.p0 .caution button:hover{background:#ffbe7530}
+.p0 .progress{position:absolute;left:50%;bottom:160px;transform:translateX(-50%);width:min(420px,80%);text-align:center;color:var(--cyan);font-size:13px;letter-spacing:.06em;opacity:0;transition:opacity .3s}.p0 .progress.on{opacity:1}
+.p0 .progress i{display:block;height:4px;margin-top:8px;background:#72e6e033}.p0 .progress i b{display:block;height:100%;width:0;background:var(--cyan)}
+@keyframes p0blink{50%{opacity:.45}}
 @keyframes p0in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
 @media(max-width:700px){.p0 .box{left:16px;top:84px;width:min(300px,calc(100% - 32px))}.p0 .fact{bottom:80px;font-size:12px}.p0 .keys{font-size:9px}}
 </style>
-<div class="box checklist"></div><div class="box poll"></div><div class="fact"></div><div class="keys"></div><div class="skip"></div><div class="caption"></div>`;
+<div class="box checklist"></div><div class="box poll"></div><div class="box choice"></div><div class="box caution"></div><div class="progress"></div><div class="fact"></div><div class="keys"></div><div class="skip"></div><div class="caption"></div><div class="reticle"></div><div class="rlabel"></div>`;
   parent.append(root);
   flightHud?.root?.classList.add('p0-on');
   const q = (c) => root.querySelector(`.${c}`);
-  const els = { list: q('checklist'), poll: q('poll'), fact: q('fact'), keys: q('keys'), skip: q('skip'), caption: q('caption') };
+  const els = { list: q('checklist'), poll: q('poll'), fact: q('fact'), keys: q('keys'), skip: q('skip'), caption: q('caption'), reticle: q('reticle'), rlabel: q('rlabel'), choice: q('choice'), caution: q('caution'), progress: q('progress') };
   let factTimer = 0;
   let ask = null;
   const text = (tag, cls, str) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = str; return e; };
@@ -56,7 +67,7 @@ export function createPhase0Panel({ parent, flightHud }) {
       const rows = steps.map((st) => {
         const row = document.createElement('div');
         row.className = `step ${st.status}`;
-        row.append(text('span', 'key', st.key), text('span', null, st.label), text('span', 'tick', '✓'));
+        row.append(text('span', 'key', st.fallback ? st.key : '•'), text('span', null, st.fallback ? `${st.label} · ${st.fallbackText}` : st.label), text('span', 'tick', '✓'));
         return row;
       });
       els.list.replaceChildren(text('small', null, copy.checklistHeading), ...rows);
@@ -67,6 +78,45 @@ export function createPhase0Panel({ parent, flightHud }) {
       els.fact.classList.toggle('hint', hint);
       els.fact.classList.toggle('on', !!str);
       if (str && seconds) factTimer = setTimeout(() => els.fact.classList.remove('on'), seconds * 1000);
+    },
+    // reticle: null hides it; else { tone: null|'ok'|'warn'|'done', label }
+    setReticle(r) {
+      els.reticle.classList.toggle('on', !!r);
+      for (const t of ['ok', 'warn', 'done']) els.reticle.classList.toggle(t, r?.tone === t);
+      els.rlabel.textContent = r?.label ?? '';
+      els.rlabel.classList.toggle('on', !!r?.label);
+      for (const t of ['warn', 'done']) els.rlabel.classList.toggle(t, r?.tone === t);
+    },
+    // the cabin atmosphere choice: { title, options: [{ key, label, onPick }] } or null
+    setChoice(c) {
+      els.choice.classList.toggle('on', !!c);
+      if (!c) return;
+      const rows = c.options.map((o) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.append(text('b', null, o.key), document.createTextNode(o.label));
+        b.addEventListener('click', () => o.onPick?.());
+        return b;
+      });
+      els.choice.replaceChildren(text('small', null, c.title), ...rows);
+    },
+    // the amber caution lamp with its purge button: { text, button, onPurge } or null
+    setCaution(c) {
+      els.caution.classList.toggle('on', !!c);
+      if (!c) return;
+      const b = text('button', null, c.button);
+      b.type = 'button';
+      b.addEventListener('click', () => c.onPurge?.());
+      els.caution.replaceChildren(text('div', 'lamp', `● ${c.text}`), b);
+    },
+    // a fill / purge progress bar: { label, frac } or null
+    setProgress(p) {
+      els.progress.classList.toggle('on', !!p);
+      if (!p) return;
+      const bar = document.createElement('i'), fill = document.createElement('b');
+      fill.style.width = `${Math.round(p.frac * 100)}%`;
+      bar.append(fill);
+      els.progress.replaceChildren(document.createTextNode(p.label), bar);
     },
     setKeys(str) { els.keys.textContent = str ?? ''; els.keys.classList.toggle('on', !!str); },
     setSkip(str) { els.skip.textContent = str ?? ''; els.skip.classList.toggle('on', !!str); },

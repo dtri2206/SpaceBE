@@ -1,57 +1,1072 @@
 {
   "gonogo": {
     "consoles": [
-      { "id": "structure", "name": "STRUCTURE" },
-      { "id": "propulsion", "name": "PROPULSION" },
-      { "id": "guidance", "name": "GUIDANCE" },
-      { "id": "thermal", "name": "THERMAL" },
-      { "id": "recovery", "name": "RECOVERY" },
-      { "id": "life", "name": "LIFE SUPPORT" },
-      { "id": "comms", "name": "COMMS" },
-      { "id": "weather", "name": "WEATHER" },
-      { "id": "quality", "name": "QUALITY" },
-      { "id": "budget", "name": "BUDGET" }
+      {
+        "id": "structure",
+        "name": "STRUCTURE"
+      },
+      {
+        "id": "propulsion",
+        "name": "PROPULSION"
+      },
+      {
+        "id": "guidance",
+        "name": "GUIDANCE"
+      },
+      {
+        "id": "thermal",
+        "name": "THERMAL"
+      },
+      {
+        "id": "recovery",
+        "name": "RECOVERY"
+      },
+      {
+        "id": "life",
+        "name": "LIFE SUPPORT"
+      },
+      {
+        "id": "comms",
+        "name": "COMMS"
+      },
+      {
+        "id": "weather",
+        "name": "WEATHER"
+      },
+      {
+        "id": "pad",
+        "name": "PAD"
+      },
+      {
+        "id": "quality",
+        "name": "QUALITY"
+      },
+      {
+        "id": "budget",
+        "name": "BUDGET"
+      }
     ],
     "go": {
-      "structure": "All parts connected. Capsule secured.",
-      "propulsion": "Engine lit on the stand. Δv {deltaV} m/s, TWR {twrEarth}.",
-      "guidance": "Centre of pressure behind the centre of mass. Thrusters answer.",
-      "thermal": "Heat shield installed and inspected.",
-      "recovery": "Landing legs locked.",
-      "life": "Spare oxygen {spareO2Tanks}, shelter stocked.",
-      "comms": "Antenna deployed. Earth is listening.",
-      "weather": "{tempC} °C at the pad. Seals within rating.",
-      "quality": "Reliability {reliability} %.",
-      "budget": "Ship {cost}. Funds {money}."
+      "structure": "Everything is bolted to the stack.",
+      "propulsion": "Engines and propellant look good.",
+      "guidance": "She points the right way and steers.",
+      "thermal": "Heat shield on and inspected.",
+      "recovery": "Legs and chutes are packed.",
+      "life": "Air, water and spare oxygen aboard.",
+      "comms": "Antenna up. Earth is listening.",
+      "weather": "{tempC} °C at the pad. Seals within their rating.",
+      "quality": "Paperwork signed.",
+      "budget": "The money is there.",
+      "pad": "Trench, water and clamps ready."
+    },
+    "thin": {
+      "propulsion": "Margins are thin.",
+      "guidance": "She'll keep her nose into the wind. Just.",
+      "thermal": "A few tiles are chipped. They always are.",
+      "recovery": "No parachute. The engines will do all the braking.",
+      "life": "One spare bottle of oxygen, no more.",
+      "weather": "{tempC} °C at the pad. A cold one.",
+      "quality": "Some of these parts came from the lowest bidder.",
+      "budget": "This takes nearly everything we have.",
+      "pad": "She pushes harder than the pad can take: a slow start, and repairs after."
     },
     "problems": {
-      "NO_CAPSULE": { "console": "structure", "text": "No capsule. Nobody is flying this.", "guidebook": "crew-life" },
-      "NO_ENGINE": { "console": "propulsion", "text": "No engine. It is a very expensive tower.", "guidebook": "newtons-laws" },
-      "NO_FUEL": { "console": "propulsion", "text": "No fuel the engine can burn.", "guidebook": "specific-impulse" },
-      "NOT_CONNECTED": { "console": "structure", "text": "Some parts are not attached to the stack.", "guidebook": "newtons-laws" },
-      "OVER_BUDGET": { "console": "budget", "text": "Ship costs {cost}, the agency has {money}.", "guidebook": "getting-to-mars" },
-      "LOW_DV": { "console": "propulsion", "text": "Δv {deltaV} m/s is below the {needed} m/s this trip needs.", "guidebook": "rocket-equation" },
-      "LOW_TWR": { "console": "propulsion", "text": "TWR {twrEarth} is under 1.2. It will crawl off the pad, or never leave it.", "guidebook": "twr" },
-      "NO_HEAT_SHIELD": { "console": "thermal", "text": "No heat shield. Entry heating goes with speed cubed.", "guidebook": "atmospheric-entry" },
-      "NO_LEGS": { "console": "recovery", "text": "No landing legs. Any touchdown is a crash.", "guidebook": "getting-to-mars" },
-      "UNSTABLE": { "console": "guidance", "text": "Centre of pressure is ahead of the centre of mass. It will flip in thick air.", "guidebook": "center-of-mass" },
-      "LOW_O2": { "console": "life", "text": "No spare oxygen. One EVA tank, then nothing.", "guidebook": "crew-life" },
-      "NO_ANTENNA": { "console": "comms", "text": "No antenna. Nothing you find can be sent home.", "guidebook": "getting-to-mars" },
-      "NO_SHELTER": { "console": "life", "text": "No radiation shelter. A solar storm in cruise is a lethal dose.", "guidebook": "radiation" },
-      "COLD_SEALS": { "console": "weather", "text": "{tempC} °C at launch and the seals are not rated for cold.", "guidebook": "challenger" },
-      "LOW_RELIABILITY": { "console": "quality", "text": "Reliability {reliability} %. Cheap parts fail without warning.", "guidebook": "columbia" }
+      "NO_CAPSULE": {
+        "console": "structure",
+        "text": "No capsule. Nobody is flying this.",
+        "guidebook": "crew-life"
+      },
+      "NO_ENGINE": {
+        "console": "propulsion",
+        "text": "No engine. It is a very expensive tower.",
+        "guidebook": "newtons-laws"
+      },
+      "NO_FUEL": {
+        "console": "propulsion",
+        "text": "Nothing in the tanks the engines can burn.",
+        "guidebook": "specific-impulse"
+      },
+      "NOT_CONNECTED": {
+        "console": "structure",
+        "text": "Some parts are not attached to the stack.",
+        "guidebook": "newtons-laws"
+      },
+      "OVER_BUDGET": {
+        "console": "budget",
+        "text": "The bill is {cost} and the agency has {money}.",
+        "guidebook": "getting-to-mars"
+      },
+      "LOW_DV": {
+        "console": "propulsion",
+        "text": "Trajectory says the numbers don't close for the whole trip.",
+        "guidebook": "rocket-equation"
+      },
+      "LOW_TWR": {
+        "console": "propulsion",
+        "text": "She'll crawl off the pad, if she leaves it at all.",
+        "guidebook": "twr"
+      },
+      "NO_HEAT_SHIELD": {
+        "console": "thermal",
+        "text": "Nothing between the crew and the heat of entry.",
+        "guidebook": "atmospheric-entry"
+      },
+      "NO_LEGS": {
+        "console": "recovery",
+        "text": "Nothing to stand on at the other end.",
+        "guidebook": "getting-to-mars"
+      },
+      "UNSTABLE": {
+        "console": "guidance",
+        "text": "Aero says she wants to fly tail first.",
+        "guidebook": "center-of-mass"
+      },
+      "LOW_O2": {
+        "console": "life",
+        "text": "Only the oxygen in the suits. Nothing spare.",
+        "guidebook": "crew-life"
+      },
+      "NO_ANTENNA": {
+        "console": "comms",
+        "text": "Out there we won't hear a word from them.",
+        "guidebook": "getting-to-mars"
+      },
+      "NO_SHELTER": {
+        "console": "life",
+        "text": "Nowhere to hide if the Sun flares.",
+        "guidebook": "radiation"
+      },
+      "COLD_SEALS": {
+        "console": "weather",
+        "text": "{tempC} °C at the pad. The seal engineers are worried.",
+        "guidebook": "challenger"
+      },
+      "LOW_RELIABILITY": {
+        "console": "quality",
+        "text": "Too many parts we don't trust.",
+        "guidebook": "columbia"
+      }
+    },
+    "director": {
+      "name": "LAUNCH DIRECTOR",
+      "hold": "Holding for a day. Pad crew on standby: {fee} more in pad fees.",
+      "reflight": "This ship has flown {flights} {times}. Refurbished for {price} instead of {full}; wear {wear} %.",
+      "owed": "Still owed from the bay: {owed}.",
+      "scrub": {
+        "holdDown": "Abort at ignition. {defect} The clamps held her on the pad. A new unit goes in tonight; we try again tomorrow.",
+        "noLight": "Abort at ignition. {defect} The computer stopped the count. A new unit goes in tonight; we try again tomorrow.",
+        "noLift": "Abort at ignition. The engines lit but could not lift her: {defect} A new unit goes in tonight; we try again tomorrow."
+      }
+    },
+    "calls": {
+      "lightning": {
+        "console": "weather",
+        "text": "Thunderstorms within ten miles of the pad. That breaks the lightning rule.",
+        "guidebook": null
+      },
+      "wind": {
+        "console": "weather",
+        "text": "Ground winds {windKts} knots at the pad, over our limit.",
+        "guidebook": null
+      }
     }
   },
   "formulas": {
-    "weight": { "title": "Weight", "formula": "W = m · g", "plain": "Mass is how much stuff the ship is made of; weight is how hard a planet pulls on that stuff. The ship weighs the same amount of stuff on Mars, but Mars pulls less than half as hard, so it is lighter to lift there.", "real": "Why you jump higher on Mars: same mass, 38 % of the weight.", "guidebook": "weight-vs-mass" },
-    "twr": { "title": "Newton's 2nd law & TWR", "formula": "a = F/m − g,  TWR = F/(m·g)", "plain": "The engine pushes up, gravity pulls down. If the push is bigger than the pull, the ship rises; the bigger the difference, the faster it picks up speed. TWR is simply push divided by pull: below 1 nothing happens, above 1.2 it climbs briskly.", "real": "Pushing a full shopping cart versus an empty one.", "guidebook": "twr" },
-    "rocketEquation": { "title": "Rocket equation", "formula": "Δv = Isp · g0 · ln(m_wet / m_dry)", "plain": "How much can the ship change its speed before the tank runs dry? It depends on two things: how fast the engine throws exhaust (Isp), and how much of the ship is fuel compared with everything else. Doubling the fuel does not double the result, because the extra fuel has to be carried too. That is the curve flattening.", "real": "Carrying more water on a hike makes you heavier, so you need even more water.", "guidebook": "rocket-equation" },
-    "centerOfMass": { "title": "Centre of mass & pressure", "formula": "x_cm = Σ(mᵢ·xᵢ) / Σmᵢ", "plain": "The centre of mass is where the ship would balance on a finger. The centre of pressure is where the air pushes on it. If the air pushes behind the balance point, any wobble straightens itself out. If it pushes ahead, the wobble grows and the ship swaps ends. Fins low on the stack move the air push back.", "real": "Arrows and shuttlecocks fly straight for the same reason: the heavy end leads, the feathers trail.", "guidebook": "center-of-mass" },
-    "deltaVBudget": { "title": "Δv budget", "formula": "Σ Δv_legs ≤ Δv_ship", "plain": "The trip is a list of speed changes: climb to orbit, push off toward Mars, slow down to land, and the same again to come home. Add them up and compare with what the ship can do. Reaching Mars needs the first three; coming home on your own fuel needs all four, or methane made on Mars.", "real": "A road-trip fuel budget, leg by leg.", "guidebook": "getting-to-mars" }
+    "weight": {
+      "title": "Weight",
+      "formula": "W = m · g",
+      "plain": "Mass is how much stuff the ship is made of; weight is how hard a planet pulls on that stuff. The ship weighs the same amount of stuff on Mars, but Mars pulls less than half as hard, so it is lighter to lift there.",
+      "real": "Why you jump higher on Mars: same mass, 38 % of the weight.",
+      "guidebook": "weight-vs-mass"
+    },
+    "twr": {
+      "title": "Newton's 2nd law & TWR",
+      "formula": "a = F/m − g,  TWR = F/(m·g)",
+      "plain": "The engine pushes up, gravity pulls down. If the push is bigger than the pull, the ship rises; the bigger the difference, the faster it picks up speed. TWR is simply push divided by pull: below 1 nothing happens, above 1.2 it climbs briskly.",
+      "real": "Pushing a full shopping cart versus an empty one.",
+      "guidebook": "twr"
+    },
+    "rocketEquation": {
+      "title": "Rocket equation",
+      "formula": "Δv = Isp · g0 · ln(m_wet / m_dry)",
+      "plain": "How much can the ship change its speed before the tank runs dry? It depends on two things: how fast the engine throws exhaust (Isp), and how much of the ship is fuel compared with everything else. Doubling the fuel does not double the result, because the extra fuel has to be carried too. That is the curve flattening.",
+      "real": "Carrying more water on a hike makes you heavier, so you need even more water.",
+      "guidebook": "rocket-equation"
+    },
+    "centerOfMass": {
+      "title": "Centre of mass & pressure",
+      "formula": "x_cm = Σ(mᵢ·xᵢ) / Σmᵢ",
+      "plain": "The centre of mass is where the ship would balance on a finger. The centre of pressure is where the air pushes on it. If the air pushes behind the balance point, any wobble straightens itself out. If it pushes ahead, the wobble grows and the ship swaps ends. Fins low on the stack move the air push back.",
+      "real": "Arrows and shuttlecocks fly straight for the same reason: the heavy end leads, the feathers trail.",
+      "guidebook": "center-of-mass"
+    },
+    "deltaVBudget": {
+      "title": "Δv budget",
+      "formula": "Σ Δv_legs ≤ Δv_ship",
+      "plain": "The trip is a list of speed changes: climb to orbit, push off toward Mars, slow down to land, and the same again to come home. Add them up and compare with what the ship can do. Reaching Mars needs the first three; coming home on your own fuel needs all four, or methane made on Mars.",
+      "real": "A road-trip fuel budget, leg by leg.",
+      "guidebook": "getting-to-mars"
+    }
   },
   "hangar": {
     "hint": "Select a glowing node on the rocket, then a part from the palette.",
     "insolvent": "Funds are below the cheapest ship the agency can fly. The board is meeting.",
     "snap": "Snapped."
+  },
+  "luck": {
+    "defects": {
+      "unit": {
+        "en": " (engine {i} of {n})",
+        "vi": " (động cơ số {i}/{n})"
+      },
+      "sections": {
+        "nose": {
+          "en": "nose",
+          "vi": "mũi"
+        },
+        "body": {
+          "en": "body",
+          "vi": "thân"
+        },
+        "tail": {
+          "en": "tail",
+          "vi": "đuôi"
+        },
+        "any": {
+          "en": "outer",
+          "vi": "bên ngoài"
+        }
+      },
+      "weak": {
+        "en": "{part}{unit} ran {pct} % weak: it never reached full power.",
+        "vi": "{part}{unit} yếu {pct} %: không lúc nào đạt đủ công suất."
+      },
+      "out": {
+        "en": "{part}{unit} ran fine on the pad, then shut down in flight. The others flew on with {pct} % less push, as Apollo 13's second stage did in 1970.",
+        "vi": "{part}{unit} chạy tốt trên bệ rồi tắt máy giữa chuyến bay. Các động cơ còn lại vẫn bay tiếp, lực đẩy giảm {pct} %, như tầng hai của Apollo 13 năm 1970."
+      },
+      "outPair": {
+        "en": "{part}{unit} shut down in flight, and with no engine-out structure the computer stopped the opposite engine too, to keep the push even: {pct} % less push.",
+        "vi": "{part}{unit} tắt máy giữa chuyến bay. Khung đỡ không được làm để bay tiếp khi mất một động cơ, nên máy tính tắt luôn động cơ đối diện cho lực đẩy cân bằng: lực đẩy giảm {pct} %."
+      },
+      "noLight": {
+        "en": "{part}{unit} would not come up to thrust at ignition.",
+        "vi": "{part}{unit} không lên được lực đẩy lúc đánh lửa."
+      },
+      "grain": {
+        "en": "{part} had a void in its cast propellant: it burned unevenly and pushed {pct} % less.",
+        "vi": "{part} có lỗ rỗng trong khối thuốc phóng đúc: cháy không đều và đẩy yếu đi {pct} %."
+      },
+      "leak": {
+        "en": "{part} had a slow leak: about {kg} kg of propellant lost before it was needed.",
+        "vi": "{part} bị rò rỉ chậm: mất khoảng {kg} kg nhiên liệu trước khi kịp dùng."
+      },
+      "debris": {
+        "en": "Concrete and debris thrown up by the exhaust hit {part}{unit}: it ran {pct} % weak.",
+        "vi": "Bê tông và mảnh vụn bị luồng khí phụt hất lên trúng {part}{unit}: động cơ yếu đi {pct} %."
+      },
+      "buckle": {
+        "en": "A panel of the {section} skin wrinkled at max-Q. The ship flew on, dragging more air.",
+        "vi": "Một tấm vỏ phần {section} bị nhăn ở Max-Q. Tàu vẫn bay tiếp nhưng cản gió nhiều hơn."
+      },
+      "overheat": {
+        "en": "The {section} skin overheated on the climb and shed pieces; one struck the heat shield, as foam struck Columbia's wing in 2003.",
+        "vi": "Vỏ phần {section} quá nóng khi bay lên và bong ra từng mảnh; một mảnh va vào tấm chắn nhiệt, giống mảnh bọt cách nhiệt đã va vào cánh tàu Columbia năm 2003."
+      },
+      "overheatBare": {
+        "en": "The {section} skin overheated on the climb and shed pieces.",
+        "vi": "Vỏ phần {section} quá nóng khi bay lên và bong ra từng mảnh."
+      },
+      "coldSeals": {
+        "en": "{tempC} °C at the pad: the cheap seals stiffened in the cold, as Challenger's O-rings did at 2 °C in 1986.",
+        "vi": "{tempC} °C tại bệ phóng: gioăng rẻ tiền cứng lại vì lạnh, như vòng đệm chữ O của tàu Challenger ở 2 °C năm 1986."
+      },
+      "coldSealsSurprise": {
+        "en": "The forecast said {forecastC} °C; it was {tempC} °C at the pad. The cheap seals stiffened in the cold, as Challenger's O-rings did in 1986.",
+        "vi": "Dự báo nói {forecastC} °C; thực tế tại bệ là {tempC} °C. Gioăng rẻ tiền cứng lại vì lạnh, như vòng đệm chữ O của Challenger năm 1986."
+      },
+      "lightning": {
+        "en": "Lightning struck the ship on the way up, as it struck Apollo 12 twice in 1969. The guidance and power electronics took the hit.",
+        "vi": "Sét đánh trúng tàu lúc bay lên, như từng đánh Apollo 12 hai lần năm 1969. Thiết bị dẫn đường và hệ thống điện bị ảnh hưởng."
+      }
+    }
+  },
+  "board": {
+    "title": {
+      "en": "Accident investigation board",
+      "vi": "Hội đồng điều tra tai nạn"
+    },
+    "flight": {
+      "en": "Flight {n} · {ship}",
+      "vi": "Chuyến bay {n} · {ship}"
+    },
+    "happened": {
+      "en": "What happened",
+      "vi": "Chuyện gì đã xảy ra"
+    },
+    "cost": {
+      "en": "The failure cost the agency {cost}.",
+      "vi": "Thất bại này làm cơ quan mất {cost}."
+    },
+    "numbers": {
+      "en": "On paper and as built",
+      "vi": "Trên giấy và thực tế"
+    },
+    "colPaper": {
+      "en": "On paper",
+      "vi": "Thiết kế"
+    },
+    "colBuilt": {
+      "en": "As built",
+      "vi": "Thực tế"
+    },
+    "rows": {
+      "deltaV": {
+        "en": "Δv (speed change in the tanks)",
+        "vi": "Δv (lượng thay đổi tốc độ có trong bồn)"
+      },
+      "twrEarth": {
+        "en": "Thrust ÷ weight at liftoff",
+        "vi": "Lực đẩy ÷ trọng lượng lúc cất cánh"
+      },
+      "thrust": {
+        "en": "Thrust in vacuum",
+        "vi": "Lực đẩy trong chân không"
+      },
+      "ispVac": {
+        "en": "Engine efficiency (Isp in vacuum)",
+        "vi": "Hiệu suất động cơ (Isp trong chân không)"
+      },
+      "fuelMass": {
+        "en": "Propellant aboard",
+        "vi": "Nhiên liệu mang theo"
+      },
+      "dryMass": {
+        "en": "Empty mass",
+        "vi": "Khối lượng rỗng"
+      }
+    },
+    "need": {
+      "en": "The trip needed about {oneWay} m/s to reach Mars ({roundTrip} m/s to come home on your own propellant). Your ship had {built} m/s as built.",
+      "vi": "Chuyến đi cần khoảng {oneWay} m/s để tới Sao Hỏa ({roundTrip} m/s nếu muốn tự bay về bằng nhiên liệu của mình). Tàu của bạn thực tế có {built} m/s."
+    },
+    "verdict": {
+      "paperShort": {
+        "en": "Even on paper the ship was about {short} m/s short of the trip.",
+        "vi": "Ngay trên giấy, tàu đã thiếu khoảng {short} m/s cho chuyến đi."
+      },
+      "builtShort": {
+        "en": "On paper the ship had enough. As built it was about {short} m/s short.",
+        "vi": "Trên giấy tàu đủ Δv. Nhưng tàu thực tế thiếu khoảng {short} m/s."
+      },
+      "enough": {
+        "en": "The ship had enough Δv, on paper and as built: the cause is somewhere else.",
+        "vi": "Tàu đủ Δv, cả trên giấy lẫn thực tế: nguyên nhân nằm ở chỗ khác."
+      }
+    },
+    "defects": {
+      "en": "What went wrong on this ship",
+      "vi": "Những gì trục trặc trên con tàu này"
+    },
+    "noDefects": {
+      "en": "The factory delivered every part close to its rating, and nothing broke on the way up.",
+      "vi": "Nhà máy giao mọi bộ phận sát với thông số, và không có gì hỏng lúc bay lên."
+    },
+    "spread": {
+      "en": "Straight from the factory: {list}.",
+      "vi": "Ngay từ nhà máy: {list}."
+    },
+    "weatherLine": {
+      "en": "Forecast {forecastC} °C, actual {actualC} °C at the pad.",
+      "vi": "Dự báo {forecastC} °C, thực tế {actualC} °C tại bệ phóng."
+    },
+    "overridden": {
+      "en": "Warnings you overrode",
+      "vi": "Những cảnh báo bạn đã bỏ qua"
+    },
+    "noneOverridden": {
+      "en": "None. Every console said GO.",
+      "vi": "Không có. Mọi bàn điều khiển đều báo GO."
+    },
+    "parts": {
+      "en": "Parts to look at (they glow on the stand)",
+      "vi": "Bộ phận cần xem lại (đang phát sáng trên bệ)"
+    },
+    "noParts": {
+      "en": "No single part stands out.",
+      "vi": "Không có bộ phận nào nổi bật."
+    },
+    "reflight": {
+      "en": "This ship had flown {flights} time(s) before; wear {wear} %.",
+      "vi": "Con tàu này đã bay {flights} lần trước đó; độ mòn {wear} %."
+    },
+    "next": {
+      "en": "Next time",
+      "vi": "Lần sau"
+    },
+    "close": {
+      "en": "CLOSE",
+      "vi": "ĐÓNG"
+    },
+    "endings": {
+      "adrift": {
+        "en": "Adrift",
+        "vi": "Trôi dạt",
+        "what": {
+          "en": "The ship ran out of propellant on a path that never comes back.",
+          "vi": "Tàu hết nhiên liệu trên một quỹ đạo không bao giờ quay lại."
+        }
+      },
+      "rud": {
+        "en": "Rapid unscheduled disassembly",
+        "vi": "Tàu vỡ tung",
+        "what": {
+          "en": "The ship broke apart.",
+          "vi": "Con tàu vỡ thành từng mảnh."
+        }
+      },
+      "burnup": {
+        "en": "Burn-up",
+        "vi": "Cháy rụi",
+        "what": {
+          "en": "The ship burned up entering the atmosphere.",
+          "vi": "Tàu bốc cháy khi lao vào khí quyển."
+        }
+      },
+      "outOfBreath": {
+        "en": "Out of breath",
+        "vi": "Hết dưỡng khí",
+        "what": {
+          "en": "The suit's oxygen ran out outside the ship.",
+          "vi": "Bộ đồ du hành hết oxy khi đang ở bên ngoài tàu."
+        }
+      },
+      "coldMorning": {
+        "en": "Cold morning",
+        "vi": "Buổi sáng giá lạnh",
+        "what": {
+          "en": "Cheap seals went stiff in the cold and hot gas burned through.",
+          "vi": "Gioăng rẻ tiền cứng lại vì lạnh và khí nóng xuyên qua."
+        }
+      },
+      "theFoam": {
+        "en": "The foam",
+        "vi": "Mảnh bọt cách nhiệt",
+        "what": {
+          "en": "Something damaged the heat shield on the way up; on entry the plasma found the damage.",
+          "vi": "Có thứ làm hỏng tấm chắn nhiệt lúc bay lên; khi vào khí quyển, plasma tìm đúng chỗ hỏng đó."
+        }
+      },
+      "pureOxygen": {
+        "en": "Pure oxygen",
+        "vi": "Oxy tinh khiết",
+        "what": {
+          "en": "A spark in pure oxygen became a fire.",
+          "vi": "Một tia lửa trong oxy tinh khiết đã thành đám cháy."
+        }
+      },
+      "successfulFailure": {
+        "en": "Successful failure",
+        "vi": "Thất bại thành công",
+        "what": {
+          "en": "Something broke on the way; the crew came home alive, but the mission failed.",
+          "vi": "Có thứ hỏng giữa đường; phi hành đoàn sống sót trở về, nhưng nhiệm vụ thất bại."
+        }
+      },
+      "silentReturn": {
+        "en": "Silent return",
+        "vi": "Trở về trong im lặng",
+        "what": {
+          "en": "The capsule lost its air on the way down.",
+          "vi": "Khoang lái mất không khí lúc hạ xuống."
+        }
+      },
+      "unitError": {
+        "en": "Unit error",
+        "vi": "Lỗi đơn vị",
+        "what": {
+          "en": "Two teams used different units, and the ship flew into the ground.",
+          "vi": "Hai nhóm dùng hai đơn vị khác nhau, và tàu lao thẳng xuống đất."
+        }
+      },
+      "falseTouchdown": {
+        "en": "False touchdown",
+        "vi": "Chạm đất giả",
+        "what": {
+          "en": "A sensor thought the ship had landed and shut the engine off too high.",
+          "vi": "Cảm biến tưởng tàu đã chạm đất nên tắt động cơ khi còn ở trên cao."
+        }
+      },
+      "spin": {
+        "en": "Spin",
+        "vi": "Xoay tròn",
+        "what": {
+          "en": "A thruster stuck open and the ship spun.",
+          "vi": "Một động cơ đẩy nhỏ bị kẹt mở và tàu xoay tít."
+        }
+      },
+      "beagle": {
+        "en": "Beagle",
+        "vi": "Beagle",
+        "what": {
+          "en": "The ship landed but never called home.",
+          "vi": "Tàu hạ cánh được nhưng không bao giờ liên lạc về Trái Đất."
+        }
+      },
+      "homecoming": {
+        "en": "Homecoming",
+        "vi": "Trở về nhà",
+        "what": {
+          "en": "The ship came home.",
+          "vi": "Con tàu đã về nhà."
+        }
+      },
+      "bankrupt": {
+        "en": "Bankrupt",
+        "vi": "Phá sản",
+        "what": {
+          "en": "The agency ran out of money.",
+          "vi": "Cơ quan hết tiền."
+        }
+      }
+    },
+    "causes": {
+      "engine_overheat": {
+        "en": "The engine ran too hot for too long and blew apart.",
+        "vi": "Động cơ chạy quá nóng quá lâu và nổ tung."
+      },
+      "max_q_exceeded": {
+        "en": "The rocket went too fast in thick air and the aerodynamic load tore it apart.",
+        "vi": "Tên lửa bay quá nhanh trong lớp khí dày và tải khí động học xé toạc nó."
+      },
+      "g_force_blackout": {
+        "en": "The g-force was so high that the pilot blacked out and lost the ship.",
+        "vi": "Gia tốc lớn đến mức phi công ngất đi và mất kiểm soát con tàu."
+      },
+      "no_heat_shield": {
+        "en": "With no heat shield, the ship burned up on atmospheric entry.",
+        "vi": "Không có tấm chắn nhiệt, con tàu bốc cháy khi vào khí quyển."
+      },
+      "heat_shield_damaged": {
+        "en": "The damaged heat shield let hot plasma in during entry.",
+        "vi": "Tấm chắn nhiệt bị hỏng nên plasma nóng lọt vào khi vào khí quyển."
+      },
+      "heat_overload": {
+        "en": "The entry was too fast and steep, and the heat shield could not take it.",
+        "vi": "Lúc vào khí quyển quá nhanh và quá dốc, tấm chắn nhiệt không chịu nổi."
+      },
+      "seal_failure_cold": {
+        "en": "The cheap seals went stiff in the cold, leaked hot gas, and the rocket broke up.",
+        "vi": "Gioăng rẻ tiền cứng lại vì lạnh, khí nóng rò ra và tên lửa vỡ tung."
+      },
+      "crash_landing": {
+        "en": "The ship hit the ground too fast.",
+        "vi": "Tàu chạm đất quá nhanh."
+      },
+      "tipped_over": {
+        "en": "The ship landed tilted and fell over.",
+        "vi": "Tàu đáp xuống bị nghiêng rồi đổ."
+      },
+      "debris_impact": {
+        "en": "A piece of space debris hit the ship.",
+        "vi": "Một mảnh rác vũ trụ đâm trúng tàu."
+      },
+      "out_of_fuel": {
+        "en": "Out of fuel on a path that never comes back: the ship drifts forever.",
+        "vi": "Hết nhiên liệu trên một quỹ đạo không quay lại: con tàu trôi mãi mãi."
+      },
+      "skipped_off": {
+        "en": "The entry was too shallow, so the ship skipped off the atmosphere into deep space.",
+        "vi": "Góc vào khí quyển quá nông nên tàu nảy khỏi khí quyển và văng ra không gian sâu."
+      },
+      "transfer_short": {
+        "en": "The transfer burn needed more Δv than the ship had left, so it drifts between the planets.",
+        "vi": "Lần đốt chuyển quỹ đạo cần nhiều Δv hơn lượng tàu còn lại, nên tàu trôi giữa hai hành tinh."
+      },
+      "suit_o2_depleted": {
+        "en": "The suit ran out of oxygen before you got back to the ship.",
+        "vi": "Bộ đồ du hành hết oxy trước khi bạn kịp quay lại tàu."
+      }
+    },
+    "warnings": {
+      "LOW_DV": {
+        "en": "Not enough Δv for the trip",
+        "vi": "Không đủ Δv cho chuyến đi"
+      },
+      "LOW_TWR": {
+        "en": "Too heavy for its engines at liftoff",
+        "vi": "Quá nặng so với lực đẩy lúc cất cánh"
+      },
+      "NO_HEAT_SHIELD": {
+        "en": "No heat shield",
+        "vi": "Không có tấm chắn nhiệt"
+      },
+      "NO_LEGS": {
+        "en": "No landing legs",
+        "vi": "Không có chân đáp"
+      },
+      "UNSTABLE": {
+        "en": "Unstable in thick air",
+        "vi": "Mất ổn định trong lớp khí dày"
+      },
+      "LOW_O2": {
+        "en": "No spare oxygen",
+        "vi": "Không có oxy dự phòng"
+      },
+      "NO_ANTENNA": {
+        "en": "No antenna",
+        "vi": "Không có ăng-ten"
+      },
+      "NO_SHELTER": {
+        "en": "No radiation shelter",
+        "vi": "Không có hầm trú bức xạ"
+      },
+      "COLD_SEALS": {
+        "en": "Cheap seals on a cold morning",
+        "vi": "Gioăng rẻ tiền trong buổi sáng lạnh"
+      },
+      "LOW_RELIABILITY": {
+        "en": "Too many parts nobody trusted",
+        "vi": "Quá nhiều bộ phận không đáng tin"
+      },
+      "lightning": {
+        "en": "Thunderstorms near the pad",
+        "vi": "Dông sét gần bệ phóng"
+      },
+      "wind": {
+        "en": "Ground winds over the limit",
+        "vi": "Gió mặt đất vượt giới hạn"
+      }
+    },
+    "questions": {
+      "fuel": {
+        "en": "Did the ship carry enough Δv for the whole trip, with some left over for the pilot?",
+        "vi": "Tàu có mang đủ Δv cho cả chuyến đi, còn dư một ít cho phi công không?"
+      },
+      "margin": {
+        "en": "On paper it was enough: how much spare Δv would cover a weak engine or a leaky tank?",
+        "vi": "Trên giấy thì đủ: cần dư bao nhiêu Δv để bù cho một động cơ yếu hay một bồn bị rò?"
+      },
+      "entry": {
+        "en": "Was the entry steep enough for the air to catch the ship?",
+        "vi": "Góc vào khí quyển có đủ dốc để không khí giữ được con tàu không?"
+      },
+      "loads": {
+        "en": "Could a stronger skin, or a gentler climb through the thick air, have kept the load down?",
+        "vi": "Một lớp vỏ chắc hơn, hay leo nhẹ nhàng hơn qua lớp khí dày, có giữ được tải ở mức thấp không?"
+      },
+      "engineHeat": {
+        "en": "How long can an engine run flat out before it cooks itself?",
+        "vi": "Một động cơ chạy hết ga được bao lâu trước khi tự làm mình quá nhiệt?"
+      },
+      "gforce": {
+        "en": "How hard can a body be pushed before the pilot blacks out?",
+        "vi": "Cơ thể người chịu được gia tốc mạnh đến đâu trước khi phi công ngất?"
+      },
+      "landing": {
+        "en": "Was there enough thrust and propellant left to slow down before the ground?",
+        "vi": "Còn đủ lực đẩy và nhiên liệu để giảm tốc trước khi chạm đất không?"
+      },
+      "tipped": {
+        "en": "Was the ship upright, on legs wide enough, when it touched down?",
+        "vi": "Lúc chạm đất, tàu có đứng thẳng và chân có đủ rộng không?"
+      },
+      "debris": {
+        "en": "What would stop a stray piece of debris from going through the ship?",
+        "vi": "Thứ gì có thể chặn một mảnh rác vũ trụ xuyên qua con tàu?"
+      },
+      "heat": {
+        "en": "What takes the heat when the ship hits the air at thousands of metres per second?",
+        "vi": "Thứ gì chịu nhiệt khi con tàu lao vào không khí với tốc độ hàng nghìn mét mỗi giây?"
+      },
+      "foam": {
+        "en": "What hit the heat shield on the way up, and would a tougher shield have shrugged it off?",
+        "vi": "Thứ gì đã va vào tấm chắn nhiệt lúc bay lên, và một tấm chắn bền hơn có chịu được không?"
+      },
+      "cold": {
+        "en": "How cold was it at the pad, and how cold were the seals rated for?",
+        "vi": "Tại bệ phóng lạnh đến mức nào, và gioăng được thiết kế chịu lạnh đến đâu?"
+      },
+      "oxygen": {
+        "en": "How much oxygen did each walk outside really need?",
+        "vi": "Mỗi lần ra ngoài thật sự cần bao nhiêu oxy?"
+      },
+      "other": {
+        "en": "Which warning would you listen to next time?",
+        "vi": "Lần sau, bạn sẽ nghe theo cảnh báo nào?"
+      }
+    },
+    "words": {
+      "thrust": {
+        "en": "thrust",
+        "vi": "lực đẩy"
+      },
+      "isp": {
+        "en": "Isp",
+        "vi": "Isp"
+      },
+      "propellant": {
+        "en": "propellant",
+        "vi": "nhiên liệu"
+      }
+    },
+    "launchDay": {
+      "en": "Launch day",
+      "vi": "Ngày phóng"
+    },
+    "scrubs": {
+      "en": "Before this flight the clamps stopped {n} launch attempt(s): {list}",
+      "vi": "Trước chuyến này, kẹp giữ đã chặn {n} lần phóng: {list}"
+    },
+    "windLine": {
+      "en": "Ground winds {windKts} kt.",
+      "vi": "Gió mặt đất {windKts} hải lý/giờ."
+    },
+    "stormLine": {
+      "en": "Thunderstorms about.",
+      "vi": "Có dông sét quanh bệ."
+    },
+    "overload": {
+      "en": "The ship pushed {excess} % more than the pad could take: the engines were held back for the first seconds, about {mps} m/s of Δv lost.",
+      "vi": "Tàu đẩy mạnh hơn sức chịu của bệ {excess} %: động cơ phải giảm ga trong mấy giây đầu, mất khoảng {mps} m/s Δv."
+    },
+    "repairs": {
+      "en": "The pad needs ${money} of repairs, paid with the next launch.",
+      "vi": "Bệ cần sửa hết ${money}, trả cùng lần phóng sau."
+    },
+    "debrisMissed": {
+      "en": "Flying concrete missed the engines this time.",
+      "vi": "Lần này bê tông văng ra không trúng động cơ."
+    },
+    "toAnalysis": {
+      "en": "HOW EACH PART DID →",
+      "vi": "TỪNG BỘ PHẬN →"
+    }
+  },
+  "analysis": {
+    "title": {
+      "en": "Flight analysis",
+      "vi": "Phân tích chuyến bay"
+    },
+    "flight": {
+      "en": "Flight {n} · {ship}",
+      "vi": "Chuyến bay {n} · {ship}"
+    },
+    "outcome": {
+      "home": {
+        "en": "Home safe",
+        "vi": "Về nhà an toàn"
+      },
+      "lost": {
+        "en": "Lost: {ending}",
+        "vi": "Mất tàu: {ending}"
+      },
+      "flying": {
+        "en": "Still flying",
+        "vi": "Vẫn đang bay"
+      }
+    },
+    "sections": {
+      "ship": {
+        "en": "The whole ship",
+        "vi": "Cả con tàu"
+      },
+      "nose": {
+        "en": "Nose",
+        "vi": "Mũi tàu"
+      },
+      "body": {
+        "en": "Body",
+        "vi": "Thân tàu"
+      },
+      "tail": {
+        "en": "Tail",
+        "vi": "Đuôi tàu"
+      },
+      "pad": {
+        "en": "Launch pad",
+        "vi": "Bệ phóng"
+      }
+    },
+    "cols": {
+      "part": {
+        "en": "Part",
+        "vi": "Bộ phận"
+      },
+      "did": {
+        "en": "This flight",
+        "vi": "Chuyến này"
+      },
+      "wear": {
+        "en": "Wear",
+        "vi": "Hao mòn"
+      }
+    },
+    "dvUsed": {
+      "en": "Δv: used {used} of the {had} m/s in the tanks ({pct} %).",
+      "vi": "Δv: dùng {used} trong số {had} m/s có trong bồn ({pct} %)."
+    },
+    "dvLeg": {
+      "en": "{leg} {mps}",
+      "vi": "{leg} {mps}"
+    },
+    "legs": {
+      "climb": {
+        "en": "climb",
+        "vi": "bay lên"
+      },
+      "orbit": {
+        "en": "orbit and transfer",
+        "vi": "quỹ đạo và chuyển quỹ đạo"
+      },
+      "entry": {
+        "en": "entry",
+        "vi": "vào khí quyển"
+      },
+      "landing": {
+        "en": "landing",
+        "vi": "hạ cánh"
+      }
+    },
+    "dvBuilt": {
+      "en": "As built, the tanks held {built} m/s ({diff} against the {paper} m/s on paper).",
+      "vi": "Thực tế bồn chứa {built} m/s ({diff} so với {paper} m/s trên giấy)."
+    },
+    "refly": {
+      "en": "To fly it again: {fee} of refurbishment (new: {cost}); reliability {now} (new: {fresh}).",
+      "vi": "Bay lại: tân trang {fee} (đóng mới: {cost}); độ tin cậy {now} (khi mới: {fresh})."
+    },
+    "nothing": {
+      "en": "Nothing to report.",
+      "vi": "Không có gì đáng kể."
+    },
+    "asBuilt": {
+      "en": "Out of the factory: {list}.",
+      "vi": "Lúc xuất xưởng: {list}."
+    },
+    "engineHot": {
+      "en": "Ran up to {pct} % of its heat limit.",
+      "vi": "Có lúc nóng tới {pct} % giới hạn nhiệt."
+    },
+    "starts": {
+      "en": "{n} engine starts.",
+      "vi": "{n} lần khởi động động cơ."
+    },
+    "skinQ": {
+      "en": "Max-Q {q} kPa; this skin takes about {limit} kPa.",
+      "vi": "Áp suất động lớn nhất (Max-Q) {q} kPa; lớp vỏ này chịu được khoảng {limit} kPa."
+    },
+    "skinQRated": {
+      "en": "Takes about {limit} kPa at Max-Q.",
+      "vi": "Chịu được khoảng {limit} kPa ở Max-Q."
+    },
+    "skinTemp": {
+      "en": "Hottest point on the climb {temp} °C; it is good to {limit} °C.",
+      "vi": "Chỗ nóng nhất khi bay lên {temp} °C; vật liệu chịu được {limit} °C."
+    },
+    "shieldUsed": {
+      "en": "Entry burned away {pct} % of the ablator. It is replaced before the next flight ({money}).",
+      "vi": "Lúc vào khí quyển, lớp vật liệu tự cháy mòn hết {pct} %. Phải thay trước chuyến sau ({money})."
+    },
+    "shieldNominal": {
+      "en": "An ablator burns away on entry, about {pct} % on a Mars entry, and is replaced before each reflight ({money}).",
+      "vi": "Lớp vật liệu tự cháy mòn khi vào khí quyển, khoảng {pct} % khi vào khí quyển Sao Hỏa, và phải thay trước mỗi chuyến bay lại ({money})."
+    },
+    "shieldUnused": {
+      "en": "Not used: the flight ended before any entry.",
+      "vi": "Chưa dùng tới: chuyến bay kết thúc trước khi vào khí quyển."
+    },
+    "tiles": {
+      "en": "Tiles stay on the ship and crack little by little.",
+      "vi": "Gạch chịu nhiệt ở lại trên tàu và nứt dần theo từng chuyến."
+    },
+    "heatSink": {
+      "en": "A heat sink soaks up the heat and stays: it hardly wears.",
+      "vi": "Khối hấp thụ nhiệt giữ nhiệt lại rồi vẫn ở nguyên: gần như không mòn."
+    },
+    "inflatable": {
+      "en": "An inflatable shield flies once: a new one each flight ({money}).",
+      "vi": "Tấm chắn bơm phồng chỉ bay một lần: mỗi chuyến cần một cái mới ({money})."
+    },
+    "touchdown": {
+      "en": "Touched down at {v} m/s; the legs take {limit} m/s.",
+      "vi": "Chạm đất ở {v} m/s; chân đáp chịu được {limit} m/s."
+    },
+    "noTouchdown": {
+      "en": "Never touched down: no wear on the legs.",
+      "vi": "Không chạm đất lần nào: chân đáp không mòn."
+    },
+    "pad": {
+      "held": {
+        "en": "The pad takes {limit} kN and the ship pushed {thrust} kN: the engines were held at {throttle} % for the first 7 s, so about {mps} m/s of Δv went on a slow climb off the pad.",
+        "vi": "Bệ chịu được {limit} kN mà tàu đẩy {thrust} kN: động cơ bị giữ ở {throttle} % lực đẩy trong 7 giây đầu, nên khoảng {mps} m/s Δv mất vào lúc rời bệ chậm."
+      },
+      "full": {
+        "en": "The pad takes {limit} kN and the ship pushed {thrust} kN: it left the pad at full thrust at once.",
+        "vi": "Bệ chịu được {limit} kN và tàu đẩy {thrust} kN: tàu rời bệ ngay với toàn bộ lực đẩy."
+      },
+      "repairs": {
+        "en": "Pad repairs before the next launch: {money}.",
+        "vi": "Tiền sửa bệ trước lần phóng sau: {money}."
+      },
+      "scrubs": {
+        "en": "{n} launch attempts were stopped on the pad first.",
+        "vi": "Trước đó có {n} lần phóng bị dừng trên bệ."
+      },
+      "scrubOne": {
+        "en": "A launch attempt was stopped on the pad first.",
+        "vi": "Trước đó có một lần phóng bị dừng trên bệ."
+      }
+    },
+    "wear": {
+      "delta": {
+        "en": "+{pct} %",
+        "vi": "+{pct} %"
+      },
+      "total": {
+        "en": "{pct} % in all",
+        "vi": "tổng {pct} %"
+      },
+      "consumed": {
+        "en": "{pct} % used",
+        "vi": "dùng {pct} %"
+      },
+      "replaced": {
+        "en": "replaced",
+        "vi": "thay mới"
+      },
+      "trendBar": {
+        "en": "Flight {n}: {pct} %",
+        "vi": "Chuyến {n}: {pct} %"
+      },
+      "trend": {
+        "en": "after each flight",
+        "vi": "sau mỗi chuyến"
+      },
+      "legend": {
+        "en": "Bars: wear after each flight of this ship.",
+        "vi": "Cột: mức mòn sau mỗi chuyến của con tàu này."
+      }
+    },
+    "whatIf": {
+      "wear": {
+        "en": "{alt} instead: wear {altWear} instead of {wear}{extra}.",
+        "vi": "Nếu dùng {alt}: mòn {altWear} thay vì {wear}{extra}."
+      },
+      "cheaper": {
+        "en": "{alt} would have saved {money}, but worn {altWear} instead of {wear}{extra}.",
+        "vi": "{alt} rẻ hơn {money}, nhưng mòn {altWear} thay vì {wear}{extra}."
+      },
+      "heat": {
+        "en": "{alt} is good to {limit} °C only: at {temp} °C on this climb it would have failed.",
+        "vi": "{alt} chỉ chịu được {limit} °C: với {temp} °C ở chuyến này nó đã hỏng."
+      },
+      "q": {
+        "en": "{alt} takes only about {limit} kPa: at this Max-Q ({q} kPa) it would have buckled.",
+        "vi": "{alt} chỉ chịu được khoảng {limit} kPa: với Max-Q của chuyến này ({q} kPa) nó đã bị móp gãy."
+      },
+      "shield": {
+        "en": "{alt} instead: about {altUse} % burned away instead of {use} %{extra}.",
+        "vi": "Nếu dùng {alt}: cháy mòn khoảng {altUse} % thay vì {use} %{extra}."
+      },
+      "padBetter": {
+        "en": "On {alt} (takes {limit} kN) it would have left at full thrust and kept those {mps} m/s{extra}.",
+        "vi": "Ở {alt} (chịu được {limit} kN) tàu đã rời bệ với toàn bộ lực đẩy và giữ được {mps} m/s đó{extra}."
+      },
+      "padWorse": {
+        "en": "On {alt} (takes only {limit} kN) the engines would have been held back: about {mps} m/s lost{extra}.",
+        "vi": "Ở {alt} (chỉ chịu được {limit} kN) động cơ đã bị giữ lại: mất khoảng {mps} m/s{extra}."
+      },
+      "fail": {
+        "en": "With {alt} instead of {mine}, this would have failed ({altLimit} against {value}).",
+        "vi": "Nếu dùng {alt} thay cho {mine}, chỗ này đã hỏng ({altLimit} so với {value})."
+      },
+      "pass": {
+        "en": "With {alt} instead of {mine}, it would have held ({altLimit} against {value}).",
+        "vi": "Nếu dùng {alt} thay cho {mine}, chỗ này đã trụ được ({altLimit} so với {value})."
+      },
+      "heavier": {
+        "en": ", {kg} kg heavier",
+        "vi": ", nặng hơn {kg} kg"
+      },
+      "lighter": {
+        "en": ", {kg} kg lighter",
+        "vi": ", nhẹ hơn {kg} kg"
+      },
+      "dearer": {
+        "en": ", {money} dearer",
+        "vi": ", đắt hơn {money}"
+      },
+      "cheaperBy": {
+        "en": ", {money} cheaper",
+        "vi": ", rẻ hơn {money}"
+      },
+      "dvMore": {
+        "en": ", Δv +{mps} m/s",
+        "vi": ", Δv +{mps} m/s"
+      },
+      "dvLess": {
+        "en": ", Δv −{mps} m/s",
+        "vi": ", Δv −{mps} m/s"
+      },
+      "feesMore": {
+        "en": ", pad fees +{money}",
+        "vi": ", phí bệ +{money}"
+      },
+      "feesLess": {
+        "en": ", pad fees −{money}",
+        "vi": ", phí bệ −{money}"
+      },
+      "repairs": {
+        "en": ", and about {money} of pad repairs",
+        "vi": ", và khoảng {money} tiền sửa bệ"
+      }
+    },
+    "back": {
+      "en": "← INVESTIGATION",
+      "vi": "← ĐIỀU TRA"
+    },
+    "close": {
+      "en": "CLOSE",
+      "vi": "ĐÓNG"
+    },
+    "hitOnce": {
+      "en": "Struck once by debris.",
+      "vi": "Bị mảnh vỡ va một lần."
+    },
+    "hits": {
+      "en": "Struck {n} times by debris.",
+      "vi": "Bị mảnh vỡ va {n} lần."
+    },
+    "groups": {
+      "propulsion": {
+        "en": "Engines and pad",
+        "vi": "Động cơ và bệ phóng"
+      },
+      "structure": {
+        "en": "Structure",
+        "vi": "Kết cấu"
+      },
+      "life": {
+        "en": "Crew and life support",
+        "vi": "Phi hành đoàn và hệ thống sống"
+      },
+      "landing": {
+        "en": "Landing, power and radio",
+        "vi": "Hạ cánh, điện và liên lạc"
+      }
+    },
+    "dvUsedLegs": {
+      "en": "Δv: used {used} of the {had} m/s in the tanks ({pct} %): {list}.",
+      "vi": "Δv: dùng {used} trong số {had} m/s có trong bồn ({pct} %): {list}."
+    },
+    "startOne": {
+      "en": "1 engine start.",
+      "vi": "1 lần khởi động động cơ."
+    },
+    "more": {
+      "en": "Click a part for the details and what the other choices would have done.",
+      "vi": "Bấm vào một bộ phận để xem chi tiết và các lựa chọn khác sẽ ra sao."
+    }
   }
 }

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { WalkController, WALK_TUNING } from '../WalkController.js';
 import { createOxygen, levelFor } from '../oxygen.js';
 import { createInteractables } from '../interactables.js';
-import { createShipInterior, CABIN, AIRLOCK_CYCLE_SECONDS } from '../shipInterior.js';
+import { createShipInterior, CABIN, CABIN_BOXES, LADDER_BOTTOM_FALLBACK, AIRLOCK_CYCLE_SECONDS } from '../shipInterior.js';
 import { PLANETS } from '../../core/planets.js';
 const gE = PLANETS.earth.g, gM = PLANETS.mars.g;
 
@@ -136,6 +136,15 @@ test('colliders: you cannot walk through the lander', () => {
   const w = new WalkController({ gravity: gM, colliders: [{ x: 0, z: -5, r: 3 }], start: { x: 0, z: 0 } });
   step(w, 10, { forward: 1 });
   assert.ok(w.pos.z > -5 + 3 + WALK_TUNING.radius - 1e-6 - 0.001 || Math.hypot(w.pos.x, w.pos.z + 5) >= 3.3 - 1e-6, `pos ${w.pos.x},${w.pos.z}`);
+});
+
+test('cabin ladder box: blocks walking into it, the foot of the ladder is free', () => {
+  const w = new WalkController({ gravity: gM, bounds: CABIN.bounds, boxes: CABIN_BOXES, mode: 'cabin', start: { x: -0.68, z: 1.0 }, yaw: Math.PI });
+  step(w, 4, { forward: 1 });
+  assert.ok(w.pos.z <= 2.3 - 0.1 - WALK_TUNING.radius + 1e-6, `z ${w.pos.z}`);
+  const f = new WalkController({ gravity: gM, bounds: CABIN.bounds, boxes: CABIN_BOXES, mode: 'cabin', start: LADDER_BOTTOM_FALLBACK, yaw: 0 });
+  step(f, 1, { forward: 1 });
+  assert.ok(f.pos.z < LADDER_BOTTOM_FALLBACK.z - 0.5, `walks away from the ladder: ${f.pos.z}`);
 });
 
 test('suit breach: a leak drains O₂ faster until the suit is serviced at the O₂ station', () => {

@@ -1,0 +1,526 @@
+{
+  "_about": "Real numbers for the propulsion flight traits (traits/propulsion.js): how low each engine throttles, how many times it lights, how it steers, how it may fail in flight, how the pad holds a strong ship back. Keyed by the tail section's kit option ids (sections/tail/internals.json) and part ids. Each number has an entry in sources; 'estimate' marks a defensible guess where no public figure exists. neutral: the traits with no data (the flight as before). Stop-gap: a Mars controller does not charge engine starts made above 3 km, until Role 2 fixes the entry phase flicker (SHARE_PROBLEMS: 'ascentGuide fires one-frame burns on a lofted Mars entry').",
+  "neutral": {
+    "minThrottle": 0,
+    "ignitions": null
+  },
+  "_throttle": "An engine's lowest throttle is set by its most limiting part: the turbomachinery and cycle (floor of the cycle) or the injector (fixed-area elements lose pressure drop as the square of the flow and start to chug). Ship floor = the share of full thrust the ship can go down to; a cluster on an engine-out structure can shut engines down and fly on one (Falcon 9 lands on its centre engine). pairs: a measured cycle + injector combination overrides the rule (the RL10A-5 of the DC-X throttled to 30 %).",
+  "cycle": {
+    "gg": {
+      "floor": 0.4,
+      "catastrophic": 0.2,
+      "src": "merlin40"
+    },
+    "sc": {
+      "floor": 0.4,
+      "catastrophic": 0.35,
+      "src": "rd170"
+    },
+    "sc_fuel": {
+      "floor": 0.67,
+      "catastrophic": 0.25,
+      "src": "rs25"
+    },
+    "ffsc": {
+      "floor": 0.4,
+      "catastrophic": 0.3,
+      "src": "raptor"
+    },
+    "expander": {
+      "floor": 0.08,
+      "catastrophic": 0.05,
+      "src": "cece"
+    },
+    "expander_bleed": {
+      "floor": 0.6,
+      "catastrophic": 0.08,
+      "src": "le9"
+    },
+    "electric": {
+      "floor": 0.3,
+      "catastrophic": 0.05,
+      "src": "rutherford"
+    },
+    "pressure": {
+      "floor": 0.1,
+      "catastrophic": 0.03,
+      "hypergolic": true,
+      "src": "lmde"
+    },
+    "tapoff": {
+      "floor": 0.18,
+      "catastrophic": 0.2,
+      "src": "be3"
+    }
+  },
+  "injector": {
+    "coaxial": {
+      "floor": 0.58,
+      "src": "rs68"
+    },
+    "pintle": {
+      "floor": 0.1,
+      "src": "lmde"
+    },
+    "impinging": {
+      "floor": 1,
+      "src": "f1"
+    },
+    "swirl": {
+      "floor": 0.3,
+      "src": "rd191"
+    }
+  },
+  "_ignition": "starts: engine starts the igniter allows in one flight (null = as many as wanted); the first start of a TEA-TEB engine on the pad comes from the pad's own supply, as on Falcon 9 (6 = the pad start + 5 carried, an estimate). restartFail: share of the engine's failure chance (1 − reliability) that one in-flight restart fails to light. A restart in free fall with nothing to settle the propellant (no RCS, no ullage module) fails spaceUnsettled times as often.",
+  "igniter": {
+    "spark": {
+      "starts": null,
+      "restartFail": 0.3,
+      "src": "spark"
+    },
+    "pyro": {
+      "starts": 1,
+      "restartFail": 0.25,
+      "src": "pyro"
+    },
+    "tea_teb": {
+      "starts": 6,
+      "restartFail": 0.2,
+      "src": "teateb"
+    },
+    "ampoule": {
+      "starts": 1,
+      "restartFail": 0.1,
+      "src": "ampoule"
+    }
+  },
+  "hypergolicRestartFail": 0.05,
+  "spaceUnsettled": 3,
+  "_failure": "Of a part's failure chance (1 − reliability) over the mission, asBuilt.js rolls LUCK.factoryShare = 0.6 at the factory; the rest happens in flight, spread over the burn time. catastrophic: the share of in-flight engine failures that are uncontained (the engine bursts). An engine-out structure contains a failure by its base heat shield, and prevalves cut the burning engine's feed; without engine-out the failed engine and the one opposite are shut down (the push must stay balanced), a single engine is lost.",
+  "inFlightShare": 0.4,
+  "containment": {
+    "baseShield": {
+      "rigid": 0.3,
+      "curtains": 0.5,
+      "none": 1
+    },
+    "prevalves": 0.7,
+    "src": "engineout"
+  },
+  "solid": {
+    "catastrophic": 0.9,
+    "liquidCatastrophic": 0.25,
+    "src": "solids"
+  },
+  "deadDriftS": 5,
+  "_steering": "side: the share of the engine's thrust that can push sideways (sin of the gimbal range, or the verniers' and vanes' side force); rateDegS: how fast it moves. Authority = side × rateFactor, rateFactor = 2 · rate / (rate + 10 °/s). Relative to the hydraulic gimbal at a lift-off thrust of 1.4 g, which flies with the game's tuned 0.8 rad/s² (FlightController TUNING.turnAccel.rcs): game scaling, stated. Gimbals and jet vanes act in proportion to the thrust now; verniers run at their own thrust. RCS turns the ship in proportion to its dry mass over its mass now (a full ship is heavy to turn).",
+  "steering": {
+    "gimbal_ring": {
+      "side": 0.122,
+      "rateDegS": 12,
+      "rangeDeg": 7,
+      "src": "gimbalHyd"
+    },
+    "gimbal_emech": {
+      "side": 0.259,
+      "rateDegS": 6,
+      "rangeDeg": 15,
+      "src": "gimbalEmech"
+    },
+    "verniers": {
+      "side": 0.054,
+      "rateDegS": 45,
+      "independent": true,
+      "src": "verniers"
+    },
+    "jet_vanes": {
+      "side": 0.08,
+      "rateDegS": 30,
+      "thrustLoss": 0.02,
+      "lifeS": 120,
+      "src": "vanes"
+    },
+    "ringThrottle": {
+      "side": 0.04,
+      "rateDegS": 5,
+      "src": "n1"
+    },
+    "solidNozzle": {
+      "tvc": {
+        "side": 0.122,
+        "rateDegS": 8
+      },
+      "flex": {
+        "side": 0.139,
+        "rateDegS": 8
+      },
+      "lit": {
+        "side": 0.07,
+        "rateDegS": 40
+      },
+      "fixed": {
+        "side": 0,
+        "rateDegS": 0
+      },
+      "src": "srbTvc"
+    },
+    "refSide": 0.122,
+    "refRateDegS": 12,
+    "refTwr": 1.4,
+    "min": 0.15,
+    "max": 1.6,
+    "base": 0.8
+  },
+  "rcs": {
+    "parts": {
+      "rcs_pack": "kit",
+      "nitrogen_sphere": "cold_gas",
+      "aps_module": 1.2
+    },
+    "propellant": {
+      "hypergolic": 1,
+      "hydrazine": 0.7,
+      "peroxide": 0.6,
+      "cold_gas": 0.15
+    },
+    "serviceModule": 1,
+    "cap": 1.5,
+    "massFloor": 0.25,
+    "src": "rcs"
+  },
+  "_pad": "A ship pushing more on the pad than it takes is held at the pad's throttle (sections/pad/effects.js liftoffOn) until it clears the tower, then throttles up. The tower stands clearFactor × the stack height (the pad art's real proportion, 1.1–1.3 × the rocket). If held below 1.02 × its weight the computer does not hold it at all; maxHoldS: the throttle comes up anyway this long after lift-off.",
+  "pad": {
+    "clearFactor": 1.2,
+    "maxHoldS": 20,
+    "minHeldTwr": 1.02,
+    "debrisAfterS": 1
+  },
+  "notes": {
+    "liftoff": {
+      "en": "Lift-off: the ship rose off the pad at {value} m/s² ({gs} g, thrust {twr} times its weight).",
+      "vi": "Rời bệ: tàu tăng tốc lên {value} m/s² ({gs} g, lực đẩy gấp {twr} lần trọng lượng).",
+      "section": "pad",
+      "tone": "info",
+      "digits": 1
+    },
+    "padHeld": {
+      "en": "The pad takes {limit} kN; the engines push {value} kN, so they were held at {held} % until the ship cleared the tower.",
+      "vi": "Bệ chịu được {limit} kN; động cơ đẩy {value} kN, nên bị giữ ở {held} % lực đẩy cho tới khi tàu vượt khỏi tháp.",
+      "section": "pad",
+      "tone": "bad",
+      "digits": 0,
+      "whatIfFail": {
+        "en": "With {alt} instead of {mine}, the pad would take only {altLimit} kN: the climb off it would have been slow too.",
+        "vi": "Nếu dùng {alt} thay cho {mine}, bệ chỉ chịu {altLimit} kN: tàu cũng sẽ rời bệ chậm."
+      },
+      "whatIfPass": {
+        "en": "With {alt} instead of {mine}, the pad would take {altLimit} kN and the engines could run at full thrust from the start.",
+        "vi": "Nếu dùng {alt} thay cho {mine}, bệ chịu được {altLimit} kN và động cơ được chạy hết lực ngay từ đầu."
+      }
+    },
+    "towerClear": {
+      "en": "Cleared the tower {value} s after lift-off ({towerM} m).",
+      "vi": "Vượt khỏi tháp {value} giây sau khi rời bệ ({towerM} m).",
+      "section": "pad",
+      "tone": "info",
+      "digits": 1
+    },
+    "engineOut": {
+      "en": "{part}: one engine shut down in flight at T+{t} s and the others flew on ({pct} % of the thrust lost), as on Apollo 13 and Falcon 9 CRS-1.",
+      "vi": "{part}: một động cơ tắt giữa chuyến bay ở T+{t} giây, các động cơ còn lại vẫn bay tiếp (mất {pct} % lực đẩy), như Apollo 13 và Falcon 9 CRS-1.",
+      "section": "tail",
+      "tone": "bad",
+      "digits": 0
+    },
+    "enginePair": {
+      "en": "{part}: an engine failed at T+{t} s; without an engine-out structure the one opposite was shut down too ({pct} % of the thrust lost).",
+      "vi": "{part}: một động cơ hỏng ở T+{t} giây; không có khung chịu mất động cơ nên động cơ đối diện cũng phải tắt (mất {pct} % lực đẩy).",
+      "section": "tail",
+      "tone": "bad",
+      "digits": 0
+    },
+    "engineShutdown": {
+      "en": "{part}: the engine shut down in flight at T+{t} s and could not be restarted.",
+      "vi": "{part}: động cơ tắt giữa chuyến bay ở T+{t} giây và không khởi động lại được.",
+      "section": "tail",
+      "tone": "bad",
+      "digits": 0
+    },
+    "engineBurst": {
+      "en": "{part}: an engine failed and burst at T+{t} s; nothing contained it.",
+      "vi": "{part}: một động cơ hỏng và nổ tung ở T+{t} giây; không có gì ngăn được.",
+      "section": "tail",
+      "tone": "bad",
+      "digits": 0
+    },
+    "boosterBurst": {
+      "en": "{part}: the solid booster burst at T+{t} s (a solid motor cannot be shut down).",
+      "vi": "{part}: tên lửa đẩy nhiên liệu rắn nổ ở T+{t} giây (động cơ rắn không thể tắt).",
+      "section": "tail",
+      "tone": "bad",
+      "digits": 0
+    },
+    "debrisHit": {
+      "en": "{part}: concrete thrown up by the exhaust hit an engine at lift-off: {pct} % of its thrust lost.",
+      "vi": "{part}: bê tông bị luồng lửa hất lên đập vào một động cơ lúc rời bệ: mất {pct} % lực đẩy của nó.",
+      "section": "pad",
+      "tone": "bad",
+      "digits": 0
+    },
+    "ignitionFailed": {
+      "en": "{part}: start {value} failed to light at T+{t} s.",
+      "vi": "{part}: lần khởi động thứ {value} không cháy được ở T+{t} giây.",
+      "section": "tail",
+      "tone": "bad",
+      "digits": 0
+    },
+    "noIgnition": {
+      "en": "{part}: the engine would not light at T+{t} s: no starts left in the igniter.",
+      "vi": "{part}: động cơ không cháy được ở T+{t} giây: bộ đánh lửa đã hết lượt.",
+      "section": "tail",
+      "tone": "bad",
+      "digits": 0
+    },
+    "ignitions": {
+      "en": "{part}: {value} engine starts this flight ({failed} failed to light); the igniter allows {limit}.",
+      "vi": "{part}: {value} lần khởi động động cơ trong chuyến bay ({failed} lần không cháy); bộ đánh lửa cho phép {limit} lần.",
+      "section": "tail",
+      "tone": "info",
+      "digits": 0,
+      "whatIfFail": {
+        "en": "With {alt} instead of {mine}, the engine would have only {altLimit} starts: it would have run out.",
+        "vi": "Nếu dùng {alt} thay cho {mine}, động cơ chỉ có {altLimit} lần khởi động: sẽ hết lượt giữa chừng."
+      },
+      "whatIfPass": {
+        "en": "With {alt} instead of {mine}, the engine would have {altLimit} starts: enough for this flight.",
+        "vi": "Nếu dùng {alt} thay cho {mine}, động cơ có {altLimit} lần khởi động: đủ cho chuyến bay này."
+      }
+    },
+    "throttleFloor": {
+      "en": "{part}: the lowest throttle used was {pct} %; these engines go no lower than {floor} %.",
+      "vi": "{part}: mức ga thấp nhất đã dùng là {pct} %; cụm động cơ này không giảm được dưới {floor} %.",
+      "section": "tail",
+      "tone": "info",
+      "digits": 0,
+      "scale": 100
+    },
+    "hover": {
+      "en": "{part}: to hover over Mars the engines had to go down to {need} % of full thrust, but they go no lower than {floor} %, so the computer landed on one late burn.",
+      "vi": "{part}: để lơ lửng trên Sao Hỏa, động cơ phải giảm xuống {need} % lực đẩy, nhưng không giảm được dưới {floor} %, nên máy tính hạ cánh bằng một lần đốt muộn.",
+      "section": "tail",
+      "tone": "bad",
+      "digits": 0,
+      "whatIfFail": {
+        "en": "With {alt} instead of {mine}, the engines could not throttle deep enough to hover either.",
+        "vi": "Nếu dùng {alt} thay cho {mine}, động cơ cũng không giảm ga đủ sâu để lơ lửng."
+      },
+      "whatIfPass": {
+        "en": "With {alt} instead of {mine}, the engines would throttle deep enough to hover down gently.",
+        "vi": "Nếu dùng {alt} thay cho {mine}, động cơ giảm ga đủ sâu để hạ xuống nhẹ nhàng."
+      }
+    },
+    "hoverOk": {
+      "en": "{part}: the engines throttled down to {need} % of full thrust and hovered down gently (their floor is {floor} %).",
+      "vi": "{part}: động cơ giảm xuống {need} % lực đẩy và hạ xuống nhẹ nhàng (mức thấp nhất của chúng là {floor} %).",
+      "section": "tail",
+      "tone": "good",
+      "digits": 0,
+      "whatIfFail": {
+        "en": "With {alt} instead of {mine}, the engines could not throttle deep enough to hover: the computer would have had to land on one late burn.",
+        "vi": "Nếu dùng {alt} thay cho {mine}, động cơ không giảm ga đủ sâu để lơ lửng: máy tính sẽ phải hạ cánh bằng một lần đốt muộn."
+      }
+    },
+    "steering": {
+      "en": "{part}: steering authority {value} times that of a standard hydraulic gimbal at lift-off.",
+      "vi": "{part}: khả năng xoay tàu gấp {value} lần một gimbal thủy lực tiêu chuẩn lúc rời bệ.",
+      "section": "tail",
+      "tone": "info",
+      "digits": 2
+    },
+    "vanesGone": {
+      "en": "{part}: the graphite jet vanes burned away after {value} s in the exhaust; from then on the ship steered without them.",
+      "vi": "{part}: cánh lái graphite trong luồng lửa bị cháy mòn sau {value} giây; từ đó tàu phải điều hướng mà không có chúng.",
+      "section": "tail",
+      "tone": "info",
+      "digits": 0
+    },
+    "drift": {
+      "en": "With no working engine left, the ship could not change its path and drifted.",
+      "vi": "Không còn động cơ nào chạy được, tàu không thể đổi quỹ đạo và trôi dạt.",
+      "section": "tail",
+      "tone": "bad"
+    },
+    "ignitionsFree": {
+      "en": "{part}: {value} engine starts this flight ({failed} failed to light); this igniter has no limit.",
+      "vi": "{part}: {value} lần khởi động động cơ trong chuyến bay ({failed} lần không cháy); bộ đánh lửa này không giới hạn số lần.",
+      "section": "tail",
+      "tone": "info",
+      "digits": 0
+    },
+    "steeringRcs": {
+      "en": "{part}: no gimbal, verniers or vanes, so only the RCS turned the ship ({value} times a standard gimbal at lift-off).",
+      "vi": "{part}: không có gimbal, động cơ phụ hay cánh lái, nên chỉ RCS xoay tàu (gấp {value} lần một gimbal tiêu chuẩn lúc rời bệ).",
+      "section": "tail",
+      "tone": "bad",
+      "digits": 2
+    }
+  },
+  "sources": [
+    {
+      "id": "merlin40",
+      "what": "Merlin 1D (gas generator, pintle injector) throttles from 100 % to about 40 % of full thrust; first designed for 70 %, refined to about 40 % by 2016.",
+      "source": "SpaceX Falcon 9 vehicle page and E. Musk (2016), via Wikipedia 'SpaceX Merlin'"
+    },
+    {
+      "id": "rs25",
+      "what": "RS-25 (fuel-rich staged combustion) runs from 67 % to 109 % of rated power on SLS (65–104.5 % on the Shuttle).",
+      "source": "NASA RS-25 fact sheet; NASA Space Shuttle News Reference Manual (1988)"
+    },
+    {
+      "id": "rd170",
+      "what": "RD-170 (oxygen-rich staged combustion) throttles 40–100 %; BE-4 40–100 %; RD-180 47–100 %; NK-33 50–105 %. Floor 0.4 for the cycle. Catastrophic share 0.35 is an estimate: hot oxygen-rich gas burns turbomachinery metal, so an ox-rich failure tends to be violent (Antares Orb-3, 2014: AJ26/NK-33 turbopump; Zenit failures).",
+      "source": "NPO Energomash data; engines.json references; NASA Antares Orb-3 Accident Investigation summary (2015); catastrophic share: estimate"
+    },
+    {
+      "id": "raptor",
+      "what": "Raptor 2 (full-flow staged combustion) throttles 40–100 %.",
+      "source": "SpaceX; engines.json reference"
+    },
+    {
+      "id": "cece",
+      "what": "Common Extensible Cryogenic Engine (a modified RL10 expander): throttled 13:1, from 104 % down to 8 %, without chugging after injector and feed changes. Later runs were reported deeper (17.6:1, 5.9 %), but the cited report gives 13:1, so the expander cycle floor here is 0.08. The production RL10 does not throttle on Centaur (see dcx for the coaxial pair). Expander failures are mostly benign (low turbine temperature, no gas generator): catastrophic 0.05 is an estimate.",
+      "source": "NASA NTRS 20100032962 (CECE deep-throttling demonstrator, 13:1 to 8 %); NASA news release 2009"
+    },
+    {
+      "id": "dcx",
+      "what": "RL10A-5 (expander, coaxial injector) on the DC-X / Delta Clipper Experimental (1993–96) throttled to 30 % to hover and land vertically: the measured floor of the expander + coaxial pair, which overrides the general coaxial floor of 58 %.",
+      "source": "Pratt & Whitney RL10A-5 data; NASA/McDonnell Douglas DC-X flight test reports (1993–96)"
+    },
+    {
+      "id": "le9",
+      "what": "LE-9 (expander bleed, H3) throttles to about 60–63 % of rated thrust.",
+      "source": "JAXA H3 / LE-9 papers; estimate where the exact floor is not published"
+    },
+    {
+      "id": "rutherford",
+      "what": "Rutherford's battery-driven electric pumps set their speed directly; the exact floor is not published. 0.3 and catastrophic 0.05 are estimates (a failed motor just stops its pump).",
+      "source": "Rocket Lab Electron payload user's guide; floor and catastrophic share: estimate"
+    },
+    {
+      "id": "lmde",
+      "what": "Apollo Lunar Module Descent Engine (pressure-fed, hypergolic, pintle injector): throttled from 100 % down to about 10 %. Pressure-fed hypergolic engines light on contact and restart without limit (AJ10 / Apollo SPS). Catastrophic 0.03: no turbomachinery (estimate).",
+      "source": "NASA, Apollo Experience Report: Descent Propulsion System, TN D-7143 (1973)"
+    },
+    {
+      "id": "be3",
+      "what": "BE-3PM (combustion tap-off) throttles to 18 % (89 kN minimum) to land New Shepard.",
+      "source": "Blue Origin; engines.json reference"
+    },
+    {
+      "id": "rs68",
+      "what": "RS-68A (gas generator, fixed coaxial elements) throttles to 58 %. A fixed-area injector's pressure drop falls with the square of the flow; below about half flow the combustion starts to chug (low-frequency instability), so the coaxial floor is 0.58.",
+      "source": "Aerojet Rocketdyne RS-68A data; NASA SP-194 Liquid Propellant Rocket Combustion Instability (1972)"
+    },
+    {
+      "id": "rd191",
+      "what": "RD-191 (swirl injector elements) throttles to 27 %; swirl elements keep atomising at low pressure drop. Floor 0.3.",
+      "source": "NPO Energomash RD-191 data"
+    },
+    {
+      "id": "f1",
+      "what": "F-1 (impinging doublets, baffled injector): stable only at its rated thrust after years of bomb tests (Project First); it never throttled.",
+      "source": "NASA SP-4206 Stages to Saturn (1980), ch. 4"
+    },
+    {
+      "id": "spark",
+      "what": "Augmented spark igniters (RS-25, J-2, RL10, Raptor) relight as long as there is power and propellant: the J-2 restarted in orbit for the Apollo translunar burn; Centaur's RL10s have flown missions with seven burns. Restart failure 0.3 × (1 − reliability) per restart: estimate.",
+      "source": "NASA SP-4206 Stages to Saturn; ULA Atlas V user's guide; restart share: estimate"
+    },
+    {
+      "id": "pyro",
+      "what": "A pyrotechnic igniter is a one-shot cartridge: Vulcain 2 and the F-1's main chamber are lit once.",
+      "source": "ArianeGroup Vulcain 2 data; NASA SP-4206"
+    },
+    {
+      "id": "teateb",
+      "what": "TEA-TEB (triethylaluminium-triethylborane) lights on contact with oxygen; each start uses a slug, so restarts are limited by the load carried. Falcon 9 lights its first-stage engines from a ground supply and carries its own for the boost-back, entry and landing relights (three); the count is a design choice, about 4 is reported for Merlin Vacuum (unconfirmed). Here: the pad start from the ground plus 5 carried = 6, an estimate (lead decision, wave 5): enough that one failed relight does not cost a Mars ship its landing. A cold restart can fail: on the 2013 CASSIOPE flight the second stage Merlin did not relight because its igniter lines froze.",
+      "source": "Spaceflight Now (2013, Falcon 9 CASSIOPE second-burn failure); SpaceX Falcon 9 user's guide; count: estimate"
+    },
+    {
+      "id": "ampoule",
+      "what": "A sealed start ampoule of pyrophoric fluid lights the RD-170 / RD-180 / RD-191 preburner and chamber once: these booster engines start once per flight. Very certain chemistry, so a low failure share (estimate).",
+      "source": "NPO Energomash; engines.json references"
+    },
+    {
+      "id": "settle",
+      "what": "In free fall propellant floats away from the tank outlets; a restart needs a small push first (ullage): the S-IVB fired its APS ullage motors before relighting the J-2, Centaur uses settling thrusters. Without RCS or a settling module a restart fails 3 times as often (estimate).",
+      "source": "NASA Saturn V Flight Manual SA-503 (1968); ULA Centaur data; factor: estimate"
+    },
+    {
+      "id": "engineout",
+      "what": "Engine-out: Apollo 6 (1968) lost two J-2s on the S-II and flew on; Apollo 13 (1970) lost the S-II centre engine to pogo; Falcon 9 CRS-1 (2012) lost one Merlin and reached orbit; STS-51-F (1985) lost an SSME and aborted to orbit. A base heat shield and prevalves contain the failure: the N1's KORD shut engines down but fires spread through its unshielded tail (1969). Containment factors (rigid 0.3, curtains 0.5, none 1; prevalves × 0.7) are estimates.",
+      "source": "NASA SP-4206; NASA Apollo 13 Mission Report (1970); SpaceX CRS-1 statement (2012); NASA STS-51-F report; Siddiqi, Challenge to Apollo (NASA SP-2000-4408)"
+    },
+    {
+      "id": "solids",
+      "what": "A solid motor cannot be shut down: a case burst or burn-through destroys the vehicle (Titan 34D-9, 1986; Delta II flight 241, 1997, a GEM-40 case rupture). Catastrophic 0.9 (estimate). A liquid strap-on (the Soyuz RD-107 blocks, Falcon Heavy side cores) fails more like an engine: catastrophic 0.25 (estimate), otherwise its thrust is lost.",
+      "source": "USAF Titan 34D-9 investigation; NASA/USAF Delta 241 investigation (1997); share: estimate"
+    },
+    {
+      "id": "inflight",
+      "what": "Share of the failure chance that is left for the flight: 1 − LUCK.factoryShare (0.6) of asBuilt.js = 0.4. Spread over the rated burn time (the ship's propellant at full thrust), so a longer burn means more risk.",
+      "source": "src/builder/asBuilt.js (the luck model); the same 1 − reliability the cards show"
+    },
+    {
+      "id": "gimbalHyd",
+      "what": "Hydraulic gimbals: F-1 ±6°, RS-25 ±10.5° pitch and ±8.5° yaw; here ±7° (sin 7° = 0.122 of the thrust sideways) at 12 °/s (estimate: hydraulic thrust-vector actuators run about 5–20 °/s).",
+      "source": "NASA SP-4206; NASA Space Shuttle News Reference Manual (1988); rate: estimate"
+    },
+    {
+      "id": "gimbalEmech",
+      "what": "Electric gimbal actuators: Raptor swivels about ±15°; Vega's P80 uses electromechanical actuators. More range (sin 15° = 0.259), slower slew (6 °/s, estimate).",
+      "source": "SpaceX; ESA Vega P80 data; rate: estimate"
+    },
+    {
+      "id": "verniers",
+      "what": "Verniers: the Soyuz core's RD-108 has four swivelling vernier chambers of about 3.5 % of its thrust each; two firing sideways at up to 45° give about 5.4 % of the thrust as side force, and they move fast (45 °/s, estimate). They run at their own thrust, so they steer as well at low main throttle.",
+      "source": "NPO Energomash RD-107/108 data; rate: estimate"
+    },
+    {
+      "id": "vanes",
+      "what": "Graphite jet vanes in the exhaust (V-2, Redstone): about 8 % of the thrust as side force, quick (30 °/s), but they cost about 2 % of the thrust and erode: the Redstone's burned about 120 s. Estimates from the V-2 and Redstone records.",
+      "source": "Redstone and V-2 technical histories (NASA MSFC); numbers: estimate"
+    },
+    {
+      "id": "n1",
+      "what": "N1: no gimbals; KORD steered by throttling opposite engines of the outer ring and shut a failed engine down with its opposite partner. Slow and weak (side 0.04, 5 °/s equivalent: estimate).",
+      "source": "Siddiqi, Challenge to Apollo (NASA SP-2000-4408)"
+    },
+    {
+      "id": "srbTvc",
+      "what": "Shuttle and SLS boosters swing their flexible-bearing nozzles ±8° (0.139); Titan III boosters bent the jet by injecting N₂O₄ (liquid injection, about 4°, fast); a fixed nozzle does not steer.",
+      "source": "NASA Space Shuttle News Reference Manual (1988); Titan III UA1205 data"
+    },
+    {
+      "id": "rcs",
+      "what": "RCS thrust classes relative to a Draco-class hypergolic pack (400 N): hydrazine monopropellant thrusters about 0.7, hydrogen peroxide (Mercury) 0.6, cold nitrogen (Vostok) 0.15; the S-IVB APS 1.2. RCS turning authority falls with mass (torque over inertia), so a full ship turns slowly on RCS (floor 0.25 of the dry-mass authority).",
+      "source": "Apollo Experience Reports on the RCS (NASA TN D-6737, 1972); SpaceX Draco data; Vostok data; factors: estimate"
+    },
+    {
+      "id": "game",
+      "what": "Game scaling, stated: the turn authority is anchored on the game's tuned 0.8 rad/s² for a standard hydraulic gimbal at a 1.4 g lift-off; the relative authority of each device is real. Solid motors are merged into the one stage the flight flies, so the ship's throttle floor is set by the liquid engines only. Pad heat limits are about a tenth of the real ones (sections/pad/NOTES.md).",
+      "source": "src/flight/FlightController.js TUNING; src/builder/stats.js"
+    },
+    {
+      "id": "stopgap",
+      "what": "Stop-gap until Role 2 fixes the entry phase flicker (SHARE_PROBLEMS: 'ascentGuide fires one-frame burns on a lofted Mars entry'): a Mars controller does not charge engine starts made above 3 km, so a TEA-TEB ship keeps its landing relights.",
+      "source": "lead decision, wave 5 (2026-11-08)"
+    }
+  ],
+  "pairs": {
+    "expander+coaxial": {
+      "floor": 0.3,
+      "src": "dcx"
+    }
+  }
+}

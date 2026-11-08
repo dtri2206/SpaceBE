@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { pbr, interiorEnvironment } from './interiors.js';
 import { sharedUniforms } from './shared.js';
+import { addZeroGDressing } from './cabinZeroG.js';
 import {
   box, glow, seeded, makeCanvas, canvasTexture, screen, cyl, sphere, torus, rod, tube, place, quad, bake,
   panelTextures, hullTexture, gratingTextures, hazardTexture, occlusionTexture, fabricTexture, rackAtlas, moduleFace,
@@ -12,7 +13,70 @@ import {
 } from './cabinParts.js';
 
 const W = 4, L = 8, H = 2.6, WALL_H = 2.15;
+// Window openings in the walls (the same list builds the wall holes and the windows): wall, centre, yaw and shape.
+const WIN_ROUND = (r, n = 28) => Array.from({ length: n }, (_, i) => [Math.cos(i / n * Math.PI * 2) * r, Math.sin(i / n * Math.PI * 2) * r]);
+const WIN_TRAP = (size) => [[-size * 0.5, -size * 0.45], [size * 0.5, -size * 0.45], [size * 0.32, size * 0.45], [-size * 0.32, size * 0.45]];
+const WINDOWS = [
+  { wall: 'front', x: -0.62, y: 1.9, z: -L / 2, ry: 0, kind: 'trap', size: 0.27 },
+  { wall: 'front', x: 0.62, y: 1.9, z: -L / 2, ry: 0, kind: 'trap', size: 0.27 },
+  { wall: 'left', x: -W / 2, y: 1.55, z: 1.46, ry: Math.PI / 2, kind: 'round', size: 0.33 },
+  { wall: 'right', x: W / 2, y: 1.55, z: 1.55, ry: -Math.PI / 2, kind: 'round', size: 0.33 },
+];
+const HATCH_WIN = { wall: 'right', x: W / 2, y: 1.42, z: -3.62, size: 0.23 };   // the window in the side hatch door
+// Wall plane coordinates: s along the wall, v up. at(s, v) -> world, sv(world) -> [s, v]; the texture u runs with s.
+const WALLS = {
+  left: { len: L, at: (s, v) => [-W / 2, v, L / 2 - s], sv: (p) => [L / 2 - p.z, p.y], mat: 'left' },
+  right: { len: L, at: (s, v) => [W / 2, v, s - L / 2], sv: (p) => [p.z + L / 2, p.y], mat: 'right' },
+  front: { len: W, at: (s, v) => [s - W / 2, v, -L / 2], sv: (p) => [p.x + W / 2, p.y], mat: 'front' },
+  back: { len: W, at: (s, v) => [W / 2 - s, v, L / 2], sv: (p) => [W / 2 - p.x, p.y], mat: 'back' },
+};
+/** One wall panel with the window openings cut out (textured exactly like the old single quad). */
+function wallPanel(name) {
+  const wall = WALLS[name];
+  const shape = new THREE.Shape([new THREE.Vector2(0, 0), new THREE.Vector2(wall.len, 0), new THREE.Vector2(wall.len, WALL_H), new THREE.Vector2(0, WALL_H)]);
+  const rot = new THREE.Object3D();
+  for (const w of [...WINDOWS, HATCH_WIN].filter((q) => q.wall === name)) {
+    const pts = w.kind === 'trap' ? WIN_TRAP(w.size) : WIN_ROUND(w.size / 2);
+    rot.rotation.y = w.ry ?? 0;
+    rot.updateMatrixWorld(true);
+    const hole = new THREE.Path(pts.map(([px, py]) => {
+      const p = new THREE.Vector3(px, py, 0).applyMatrix4(rot.matrixWorld);   // wall-plane offset of this point
+      return new THREE.Vector2(...wall.sv(new THREE.Vector3(w.x + p.x, w.y + p.y, w.z + p.z)));
+    }));
+    shape.holes.push(hole);
+  }
+  const g = new THREE.ShapeGeometry(shape);
+  const pos = g.attributes.position, n = pos.count;
+  const out = new Float32Array(n * 3), uv = new Float32Array(n * 2);
+  for (let i = 0; i < n; i++) {
+    const [x, y, z] = wall.at(pos.getX(i), pos.getY(i));
+    out.set([x, y, z], i * 3);
+    uv.set([pos.getX(i) / wall.len, pos.getY(i) / WALL_H], i * 2);
+  }
+  g.setAttribute('position', new THREE.BufferAttribute(out, 3));
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  // face the room
+  const a = new THREE.Vector3().fromArray(out, g.index.getX(0) * 3), b2 = new THREE.Vector3().fromArray(out, g.index.getX(1) * 3), c = new THREE.Vector3().fromArray(out, g.index.getX(2) * 3);
+  const normal = b2.sub(a).cross(c.sub(a)).normalize();
+  if (normal.dot(new THREE.Vector3(0, 1.3, 0).sub(a)) < 0) {
+    const idx = g.index.array;
+    for (let i = 0; i < idx.length; i += 3) { const t = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = t; }
+    normal.negate();
+  }
+  g.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(Array.from({ length: n }, () => normal.toArray()).flat()), 3));
+  return g;
+}
 const hw = W / 2, hl = L / 2, cx = hw - 0.45;
+
+// Ceiling hatch to the flight deck and the ladder below it. The hatch is 0.64 m square, centred at (HX, HZ), left of the
+// aisle, 1.5 m in front of the airlock and over 1 m from every other station's approach. The climber faces +Z on the ladder.
+const HX = -0.68, HZ = 2.3, HH = 0.32, SHAFT = 0.72;
+/** The flat ceiling as four quads around the hatch opening (same UV mapping as one big quad). */
+function ceilingPieces() {
+  const x0 = HX - HH, x1 = HX + HH, z0 = HZ - HH, z1 = HZ + HH;
+  const q = (a, b2, c, d) => [[a, H, c], [b2, H, c], [b2, H, d], [a, H, d]];
+  return [q(-cx, x0, -hl, hl), q(x1, cx, -hl, hl), q(x0, x1, -hl, z0), q(x0, x1, z1, hl)];
+}
 
 // ---- Materials, built once -------------------------------------------------------------------------------------
 let M = null;
@@ -27,10 +91,10 @@ function materials() {
   M = {
     dark: pbr(0x1d2126, 0.5, 0.5),
     rubber: pbr(0x15171a, 0.92, 0),
-    paint: pbr(0xdde1e4, 0.5, 0.25),
-    paintGrey: pbr(0x8e98a2, 0.5, 0.35),
+    paint: pbr(0xe4dcc6, 0.62, 0.08),
+    paintGrey: pbr(0x80868b, 0.55, 0.3),
     blueGrey: pbr(0x586a80, 0.5, 0.35),
-    rib: pbr(0x7b848d, 0.45, 0.6),
+    rib: pbr(0x9a9382, 0.55, 0.35),
     metal: pbr(0xb0b8c0, 0.28, 0.95),
     brass: pbr(0xc9a24a, 0.3, 0.9),
     anodBlue: pbr(0x2f5d9a, 0.35, 0.8),
@@ -39,18 +103,19 @@ function materials() {
     green: pbr(0x2f7d55, 0.4, 0.5),
     hose: pbr(0xd9c24a, 0.6, 0.1),
     cream: pbr(0xd8cdb6, 0.85, 0),
-    blanket: fabric(0x93463a, 0.95),
+    blanket: fabric(0x5d6672, 0.95),
     sleepBag: fabric(0x3d5a7a, 0.9),
-    curtain: pbr(0x6d5f7e, 0.95, 0, { side: THREE.DoubleSide }),
+    curtain: pbr(0xb4ab99, 0.95, 0, { side: THREE.DoubleSide }),
     wood: pbr(0x7b5a3e, 0.7, 0.05),
     copper: pbr(0xb4713f, 0.35, 0.9),
     suit: pbr(0xe8e6e0, 0.65, 0.05),
     gold: pbr(0xd9a521, 0.15, 1),
-    cabinet: pbr(0x5e6c78, 0.5, 0.45),
+    cabinet: pbr(0x6c7176, 0.55, 0.4),
     leaf: pbr(0x4f9a4a, 0.7, 0),
     soil: pbr(0x3a2a20, 0.95, 0),
-    bagSand: fabric(0xb9ab8c), bagGrey: fabric(0x7e8791), bagBlue: fabric(0x4c6a8c), bagOlive: fabric(0x6f7a52),
-    seat: fabric(0x44566a), strap: fabric(0xd96a1f, 0.8), webbing: fabric(0xe9e6dc, 0.8),
+    bagSand: fabric(0xeeeadf), bagGrey: fabric(0xe3e0d6), bagBlue: fabric(0xdad8cf), bagOlive: fabric(0xe9e4d2),
+    seat: fabric(0xe9e4d4, 0.95), strap: fabric(0x3c3f42, 0.85), webbing: fabric(0xe9e6dc, 0.8),
+    blob: new THREE.MeshBasicMaterial({ color: 0x000000, alphaMap: blobTexture(), transparent: true, depthWrite: false, opacity: 0.55 }),
     velcro: pbr(0x2a2e33, 1, 0),
     glass: new THREE.MeshStandardMaterial({ color: 0xbcd6e8, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.16, envMap: interiorEnvironment(), envMapIntensity: 0.12, depthWrite: false }),
     modules: pbr(0xffffff, 0.5, 0.15, { map: rackAtlas() }),
@@ -107,7 +172,7 @@ function rackBlock(s, m, x, y, z, w, h, seed = 0, depth = 0.1) {
   for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
     const px = x - w / 2 + mw * (i + 0.5), py = y - h / 2 + mh * (j + 0.5);
     const out = 0.02 + ((i * 3 + j * 5 + seed) % 3) * 0.015; // modules sit at slightly different depths
-    s.add(box(mw - 0.014, mh - 0.014, depth + out, m.paint, px, py, z + (depth + out) / 2 + 0.01, 0.008));
+    s.add(box(mw - 0.014, mh - 0.014, depth + out, m.paintGrey, px, py, z + (depth + out) / 2 + 0.01, 0.008));
     const face = new THREE.Mesh(moduleFace(mw - 0.04, mh - 0.04, (i * 5 + j * 3 + seed) % 16), m.modules);
     face.position.set(px, py, z + depth + out + 0.012);
     s.add(face);
@@ -156,13 +221,128 @@ const cableBundle = (s, points, colors, radius = 0.01) => {
   });
 };
 
+
+/** Ceiling hatch (framed opening, open lid with seal and latch, lit shaft) and a free-standing ladder down to the floor. */
+function hatchAndLadder(group, m) {   // returns the two meshes that cap the shaft
+  const b = (w, h, d, mat, x, y, z, r = 0.01) => box(w, h, d, mat, x, y, z, r);
+  const x0 = HX - HH, x1 = HX + HH, z0 = HZ - HH, z1 = HZ + HH;
+  // Frame on the ceiling underside: four bars, a hazard-yellow border and corner bolts.
+  const fw = 0.07;
+  group.add(b(2 * HH + 2 * fw, 0.07, fw, m.rib, HX, H - 0.035, z0 - fw / 2), b(2 * HH + 2 * fw, 0.07, fw, m.rib, HX, H - 0.035, z1 + fw / 2));
+  group.add(b(fw, 0.07, 2 * HH, m.rib, x0 - fw / 2, H - 0.035, HZ), b(fw, 0.07, 2 * HH, m.rib, x1 + fw / 2, H - 0.035, HZ));
+  group.add(b(2 * HH + 2 * fw, 0.012, 0.025, m.paintLine, HX, H - 0.074, z0 - fw - 0.0125, 0), b(2 * HH + 2 * fw, 0.012, 0.025, m.paintLine, HX, H - 0.074, z1 + fw + 0.0125, 0));
+  group.add(b(0.025, 0.012, 2 * HH + 2 * fw + 0.05, m.paintLine, x0 - fw - 0.0125, H - 0.074, HZ, 0), b(0.025, 0.012, 2 * HH + 2 * fw + 0.05, m.paintLine, x1 + fw + 0.0125, H - 0.074, HZ, 0));
+  [x0 - fw / 2, x1 + fw / 2].forEach((x) => [z0 - fw / 2, z1 + fw / 2].forEach((z) => group.add(cyl(0.014, 0.014, m.metal, x, H - 0.077, z, 'y', 8))));
+  // Shaft above the opening: four walls, a lit cap (the flight deck's light) and a lit strip.
+  const sh = SHAFT, wy = H + sh / 2;
+  group.add(b(2 * HH, sh, 0.03, m.paintGrey, HX, wy, z0 - 0.015, 0), b(2 * HH, sh, 0.03, m.paintGrey, HX, wy, z1 + 0.015, 0));
+  group.add(b(0.03, sh, 2 * HH + 0.06, m.paintGrey, x0 - 0.015, wy, HZ, 0), b(0.03, sh, 2 * HH + 0.06, m.paintGrey, x1 + 0.015, wy, HZ, 0));
+  // The cap closes the shaft when the cabin stands alone (Mars interior). They stay separate meshes: attached to the cockpit they are hidden.
+  const caps = [b(2 * HH + 0.06, 0.03, 2 * HH + 0.06, m.dark, HX, H + sh + 0.015, HZ, 0), b(0.5, 0.012, 0.5, lit('#cfe0ff', 1.6), HX, H + sh - 0.004, HZ, 0)];
+  caps.forEach((c) => { c.userData.dynamic = true; group.add(c); });
+  group.add(b(0.025, 0.012, 2 * HH, lit('#ffcf70', 1.8), x0 + 0.02, H + 0.25, HZ, 0));
+  // Lid: hinged on the +X edge and swung open (about 98 degrees), seal and latch on its underside.
+  const lid = new THREE.Group();
+  lid.name = 'ceilingHatchLid';
+  lid.position.set(x1, H + 0.05, HZ);
+  lid.rotation.z = -(Math.PI / 2 + 0.17);
+  const lw = 2 * HH - 0.02;
+  lid.add(b(lw, 0.05, lw, m.paint, -lw / 2, 0, 0, 0.01));
+  lid.add(b(lw - 0.12, 0.008, lw - 0.12, m.paintGrey, -lw / 2, -0.028, 0, 0.004));
+  lid.add(b(lw - 0.03, 0.02, 0.03, m.rubber, -lw / 2, -0.03, lw / 2 - 0.03, 0.006), b(lw - 0.03, 0.02, 0.03, m.rubber, -lw / 2, -0.03, -lw / 2 + 0.03, 0.006));
+  lid.add(b(0.03, 0.02, lw - 0.09, m.rubber, -lw + 0.03, -0.03, 0, 0.006), b(0.03, 0.02, lw - 0.09, m.rubber, -0.03, -0.03, 0, 0.006));
+  lid.add(b(0.2, 0.012, 0.1, m.dark, -lw + 0.2, -0.04, 0, 0.004));
+  lid.add(cyl(0.012, 0.05, m.metal, -lw + 0.27, -0.065, 0, 'y', 8), cyl(0.012, 0.05, m.metal, -lw + 0.13, -0.065, 0, 'y', 8));
+  lid.add(cyl(0.016, 0.18, m.orange, -lw + 0.2, -0.09, 0, 'x', 10));
+  lid.add(b(0.04, 0.012, 0.03, lit('#ffb347', 1.8), -lw + 0.2, -0.04, 0.06, 0));
+  group.add(lid);
+  [z0 + 0.06, z1 - 0.06].forEach((z) => group.add(cyl(0.02, 0.1, m.metal, x1 + 0.015, H + 0.05, z, 'z', 10)));
+  // Floor marking under the hatch (a yellow outline).
+  const sq = (x, z, w, d) => group.add(new THREE.Mesh(quad([[x - w / 2, 0.007, z - d / 2], [x + w / 2, 0.007, z - d / 2], [x + w / 2, 0.007, z + d / 2], [x - w / 2, 0.007, z + d / 2]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.paintLine));
+  const fz0 = HZ - 0.95, fz1 = HZ + 0.1, fx0 = HX - 0.5, fx1 = HX + 0.5;
+  sq(HX, fz0, fx1 - fx0, 0.04); sq(HX, fz1, fx1 - fx0, 0.04); sq(fx0, (fz0 + fz1) / 2, 0.04, fz1 - fz0); sq(fx1, (fz0 + fz1) / 2, 0.04, fz1 - fz0);
+
+  // Ladder: two yellow rails in the plane z = HZ, rungs every 0.28 m, floor feet and ceiling braces (free-standing).
+  const rx = 0.2, top = H + 0.45;
+  const rail = (x) => {
+    group.add(b(0.045, top, 0.045, m.paintLine, x, top / 2, HZ, 0.012));
+    group.add(b(0.16, 0.02, 0.16, m.dark, x, 0.01, HZ, 0.005), b(0.12, 0.012, 0.12, m.metal, x, 0.026, HZ, 0.004));
+    group.add(rod([x, H - 0.1, HZ], [x, H - 0.03, z1 + 0.03], 0.014, m.metal, 8));
+  };
+  rail(HX - rx); rail(HX + rx);
+  for (let y = 0.3; y < H + 0.4; y += 0.28) {
+    group.add(cyl(0.017, 2 * rx, m.metal, HX, y, HZ, 'x', 10));
+    group.add(cyl(0.021, 0.012, m.dark, HX - rx + 0.06, y, HZ, 'x', 8), cyl(0.021, 0.012, m.dark, HX + rx - 0.06, y, HZ, 'x', 8));
+  }
+  group.add(cyl(0.014, 2 * rx, m.orange, HX, H + 0.1, HZ - 0.12, 'x', 8));
+  return caps;
+}
+
+
+// ---- Windows, hatches and the docking tunnel -------------------------------------------------------------------
+const blobTexture = () => {
+  const cv = makeCanvas(64, 64), c = cv.getContext('2d');
+  const g = c.createRadialGradient(32, 32, 2, 32, 32, 32);
+  g.addColorStop(0, '#fff'); g.addColorStop(1, '#000');
+  c.fillStyle = g; c.fillRect(0, 0, 64, 64);
+  return canvasTexture(cv, { srgb: false });
+};
+const polyShape = (pts) => { const sh = new THREE.Shape(); pts.forEach(([x, y], i) => (i ? sh.lineTo(x, y) : sh.moveTo(x, y))); sh.closePath(); return sh; };
+const circlePts = (r, n = 28) => Array.from({ length: n }, (_, i) => [Math.cos(i / n * 6.2832) * r, Math.sin(i / n * 6.2832) * r]);
+const grow = (pts, d) => pts.map(([x, y]) => { const l = Math.hypot(x, y) || 1; return [x + x / l * d, y + y / l * d]; });
+/** A flat ring (outline with a hole) extruded +z by depth. */
+const slab = (outer, inner, depth, mat) => {
+  const sh = polyShape(outer);
+  sh.holes.push(polyShape(inner));
+  return new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: false }), mat);
+};
+const shapeFace = (pts, mat) => {
+  const g = new THREE.ShapeGeometry(polyShape(pts));
+  g.computeBoundingBox();
+  const bb = g.boundingBox, p = g.attributes.position, uv = g.attributes.uv;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, (p.getX(i) - bb.min.x) / (bb.max.x - bb.min.x), (p.getY(i) - bb.min.y) / (bb.max.y - bb.min.y));
+  return new THREE.Mesh(g, mat);
+};
+/** A deep-set window: dark bezel 65 mm deep, the outside view at the back, a thin glass pane, a silver retaining lip and bolts.
+ *  The group sits on the wall with local +z pointing into the room. */
+function addWindow(parent, m, D, { x, y, z, ry = 0, kind = 'round', size = 0.33 }) {
+  const w = new THREE.Group();
+  w.position.set(x, y, z);
+  w.rotation.y = ry;
+  const inner = kind === 'round' ? circlePts(size / 2) : [[-size * 0.5, -size * 0.45], [size * 0.5, -size * 0.45], [size * 0.32, size * 0.45], [-size * 0.32, size * 0.45]];
+  const depth = 0.065;
+  w.add(slab(grow(inner, 0.045), inner, depth, m.dark));
+  w.add(slab(grow(inner, 0.024), grow(inner, -0.004), 0.008, m.metal).translateZ(depth));
+  const view = shapeFace(inner, D.marsRound);
+  view.position.z = 0.004;
+  view.userData.dynamic = true;     // painted Mars: hidden when the cabin hangs in a live scene (the wall has a real opening)
+  view.userData.windowView = true;
+  const glass = shapeFace(inner, m.glass);
+  glass.position.z = depth - 0.012;
+  w.add(view, glass);
+  const step = Math.max(1, Math.round(inner.length / 8));
+  grow(inner, 0.034).forEach(([bx, by], i) => { if (i % step === 0) w.add(cyl(0.006, 0.014, m.metal, bx, by, depth + 0.004, 'z', 6)); });
+  parent.add(w);
+  return w;
+}
+
 // A cabin-wide cache of box geometry hands every build the same shells, so only meshes are created per call.
 let buildCount = 0;
 
 /**
  * Builds the cabin. Stations and props are in group.userData.stations / .props (same shape as before).
  */
+let pooled = null;
+/** Builds a cabin ahead of time (warm-up, while the player is on the PRELAUNCH screen) so createCabin() in ORBIT is free of the ~300 ms build. */
+export function prebuildCabin() {
+  pooled ??= buildCabin();
+  return pooled;
+}
 export function createCabin() {
+  if (pooled) { const cabin = pooled; pooled = null; return cabin; }
+  return buildCabin();
+}
+function buildCabin() {
   const m = materials();
   const D = decals();
   const group = new THREE.Group();
@@ -173,11 +353,11 @@ export function createCabin() {
   // ---- Shell ----
   const shell = [
     [quad([[-hw, 0, -hl], [hw, 0, -hl], [hw, 0, hl], [-hw, 0, hl]], [[0, 0], [W, 0], [W, L], [0, L]]), m.floor],
-    [quad([[-cx, H, -hl], [cx, H, -hl], [cx, H, hl], [-cx, H, hl]], [[0, 0], [cx, 0], [cx, L / 2], [0, L / 2]]), m.hull],
-    [quad([[-hw, 0, hl], [-hw, 0, -hl], [-hw, WALL_H, -hl], [-hw, WALL_H, hl]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.walls.left],
-    [quad([[hw, 0, -hl], [hw, 0, hl], [hw, WALL_H, hl], [hw, WALL_H, -hl]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.walls.right],
-    [quad([[-hw, 0, -hl], [hw, 0, -hl], [hw, WALL_H, -hl], [-hw, WALL_H, -hl]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.walls.front],
-    [quad([[hw, 0, hl], [-hw, 0, hl], [-hw, WALL_H, hl], [hw, WALL_H, hl]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.walls.back],
+    ...ceilingPieces().map((c) => [quad(c, c.map(([x, , z]) => [(x + cx) * 0.5, (z + hl) * 0.5])), m.hull]),
+    [wallPanel('left'), m.walls.left],
+    [wallPanel('right'), m.walls.right],
+    [wallPanel('front'), m.walls.front],
+    [wallPanel('back'), m.walls.back],
     [quad([[-hw, WALL_H, -hl], [-hw, WALL_H, hl], [-cx, H, hl], [-cx, H, -hl]], [[0, 0], [L / 2, 0], [L / 2, 0.32], [0, 0.32]]), m.hull],
     [quad([[hw, WALL_H, hl], [hw, WALL_H, -hl], [cx, H, -hl], [cx, H, hl]], [[0, 0], [L / 2, 0], [L / 2, 0.32], [0, 0.32]]), m.hull],
     [quad([[-hw, WALL_H, -hl], [hw, WALL_H, -hl], [cx, H, -hl], [-cx, H, -hl]], [[0, 0], [2, 0], [1.8, 0.32], [0.2, 0.32]]), m.hull],
@@ -224,17 +404,17 @@ export function createCabin() {
     group.add(place(b(0.2, 0.02, L - 0.2, m.paintGrey, tx, ty, 0, 0.004), 0, 0, s * -Math.PI / 4 * 0.9));
     for (let z = -3.6; z <= 3.6; z += 0.9) group.add(place(b(0.22, 0.012, 0.05, m.dark, tx, ty, z, 0.002), 0, 0, s * -Math.PI / 4 * 0.9));
   });
-  [0xe5484d, 0x3b82f6, 0xf5c542, 0x34d399, 0x111418].forEach((color, i) => {
+  [0x2b2d30, 0x55585c, 0x1e2022, 0x7a7466, 0x111418].forEach((color, i) => {
     group.add(cyl(0.02, L - 0.1, pbr(color, 0.6, 0.1), -1.72 + (i - 2) * 0.026 + 0.03, 2.43 + (i - 2) * 0.02, 0, 'z', 8));
     group.add(cyl(0.018, L - 0.1, pbr(color, 0.6, 0.1), 1.72 - (i - 2) * 0.026 - 0.03, 2.43 + (i - 2) * 0.02, 0, 'z', 8));
   });
   // Ceiling vent grilles between the lights.
-  [[-0.55, -1.6], [0.55, 1.6], [-0.55, 1.6], [0.55, -1.6], [0, -3.4], [0, 3.4]].forEach(([x, z]) => {
+  [[-0.55, -1.6], [0.55, 1.6], [-0.55, 1.6], [0.55, -1.6], [0, 3.4]].forEach(([x, z]) => {
     group.add(b(0.46, 0.02, 0.3, m.dark, x, H - 0.012, z, 0));
     for (let i = 0; i < 5; i++) group.add(b(0.42, 0.01, 0.022, m.paintGrey, x, H - 0.026, z - 0.11 + i * 0.055, 0));
   });
   // Handrails along both walls between the stations, standing off on brackets.
-  [[-1, -0.6, -0.1], [-1, 3.0, 3.7], [1, -0.55, -0.15], [1, 3.0, 3.7], [-1, -3.6, -3.0], [1, -3.6, -3.45]].forEach(([s, z0, z1]) => {
+  [[-1, -0.6, -0.1], [-1, 3.0, 3.7], [1, -0.55, -0.15], [1, 3.0, 3.7], [-1, -3.6, -3.0]].forEach(([s, z0, z1]) => {
     handrail(group, m, [s * 1.92, 1.1, z0], [s * 1.92, 1.1, z1]);
   });
   // Vertical grab bars beside the hatch.
@@ -246,14 +426,14 @@ export function createCabin() {
   const stripMat = glow('#fff1dc', 2.2);
   [-2.4, -0.8, 0.8, 2.4].forEach((z) => {
     const strip = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.018, 1.2), stripMat);
-    strip.position.set(0, H - 0.012, z);
+    strip.position.set(0, H - 0.05, z);   // below the frame's face, or the dark frame hides the emissive strip
     group.add(strip);
     group.add(b(0.46, 0.03, 1.32, m.dark, 0, H - 0.03, z, 0.005));
     group.add(b(0.02, 0.012, 1.2, m.metal, 0, H - 0.014, z, 0));
   });
   const warm = [];
   [-2.4, 0, 2.4].forEach((z) => {
-    const light = new THREE.PointLight(0xffd9b0, 8, 8, 2);
+    const light = new THREE.PointLight(0xffd0a0, 8, 8, 2);
     light.position.set(0, H - 0.3, z);
     warm.push(light);
     group.add(light);
@@ -262,39 +442,56 @@ export function createCabin() {
   alarmLight.position.set(0, H - 0.4, 0);
   group.add(alarmLight);
 
-  // ---- Windows: a wide one over the console and portholes on both end walls ----
-  const porthole = (x, y, z, face) => { // face = +1 looks toward +z (back wall), -1 toward -z (front wall)
-    const inward = -face; // the viewer stands inside, so the frame protrudes toward the room
-    group.add(place(cyl(0.2, 0.06, m.metal, x, y, z + inward * 0.03, 'z', 32)));
-    const view = new THREE.Mesh(new THREE.CircleGeometry(0.155, 32), D.marsRound);
-    view.position.set(x, y, z + inward * 0.062);
-    view.rotation.y = inward > 0 ? 0 : Math.PI;
-    group.add(view);
-    group.add(torus(0.17, 0.018, m.dark, x, y, z + inward * 0.066));
-    group.add(torus(0.2, 0.012, m.orange, x, y, z + inward * 0.06));
-    for (let i = 0; i < 8; i++) {
-      const a = i * Math.PI / 4;
-      group.add(cyl(0.012, 0.02, m.dark, x + Math.cos(a) * 0.19, y + Math.sin(a) * 0.19, z + inward * 0.064, 'z', 6));
-    }
-    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.155, 32), m.glass);
-    lens.position.set(x, y, z + inward * 0.07);
-    lens.rotation.y = inward > 0 ? 0 : Math.PI;
-    group.add(lens);
-  };
-  porthole(-1.5, 1.62, -hl, -1); porthole(1.45, 1.62, -hl, -1);
-  porthole(-1.45, 1.62, hl, 1); porthole(1.45, 1.62, hl, 1);
-  // Front window above the console.
+  const shaftCaps = hatchAndLadder(group, m);
+
+  // ---- Windows (five): 2 small trapezoids forward, 2 round on the side walls, 1 round in the side hatch ----
+  WINDOWS.forEach(({ wall, ...w }) => addWindow(group, m, D, w));
+  // Docking tunnel in the ceiling over the couches: dark collar ring, recessed hatch, latches and a ratchet handle.
   {
-    const wy = 1.78, ww = 1.7, wh = 0.5, wz = -hl;
-    group.add(b(ww + 0.16, wh + 0.16, 0.06, m.paintGrey, 0, wy, wz + 0.03, 0.02));
-    const view = new THREE.Mesh(new THREE.PlaneGeometry(ww, wh), D.mars);
-    view.position.set(0, wy, wz + 0.064);
-    group.add(view);
-    const glass = new THREE.Mesh(new THREE.PlaneGeometry(ww, wh), m.glass);
-    glass.position.set(0, wy, wz + 0.068);
-    group.add(glass);
-    group.add(b(0.04, wh + 0.04, 0.03, m.metal, -0.28, wy, wz + 0.075, 0), b(0.04, wh + 0.04, 0.03, m.metal, 0.28, wy, wz + 0.075, 0));
-    [-1, 1].forEach((sx) => [-1, 1].forEach((sy) => group.add(cyl(0.014, 0.016, m.dark, sx * (ww / 2 + 0.05), wy + sy * (wh / 2 + 0.05), wz + 0.065, 'z', 6))));
+    const tz = -3.55, ty = H;
+    group.add(place(slab(circlePts(0.47, 36), circlePts(0.4, 36), 0.1, m.dark), Math.PI / 2).translateX(0).translateY(0));
+    group.children[group.children.length - 1].position.set(0, ty, tz);
+    group.add(place(torus(0.405, 0.016, m.metal, 0, ty - 0.1, tz), Math.PI / 2));
+    group.add(cyl(0.385, 0.05, m.paint, 0, ty - 0.055, tz, 'y', 36), place(torus(0.37, 0.012, m.dark, 0, ty - 0.082, tz), Math.PI / 2));
+    group.add(cyl(0.07, 0.03, m.paintGrey, 0, ty - 0.09, tz, 'y', 20), cyl(0.035, 0.03, m.metal, 0, ty - 0.11, tz, 'y', 12));
+    for (let i = 0; i < 6; i++) {
+      const a = i / 6 * Math.PI * 2;
+      group.add(place(b(0.09, 0.025, 0.04, m.metal, Math.cos(a) * 0.3, ty - 0.088, tz + Math.sin(a) * 0.3, 0.006), 0, -a, 0));
+    }
+    group.add(rod([0.035, ty - 0.11, tz], [0.24, ty - 0.115, tz + 0.1], 0.011, m.metal, 8), cyl(0.016, 0.07, m.rubber, 0.26, ty - 0.116, tz + 0.105, 'z', 8));
+    group.add(place(b(0.09, 0.02, 0.1, m.paintGrey, 0, ty - 0.085, tz - 0.2, 0.004)));
+  }
+  // Side hatch on the right wall behind the bike: ring frame, hinged door with a deep-set round window, six latches, ratchet handle.
+  {
+    const sh = new THREE.Group(), hy = 1.42;
+    sh.position.set(hw, 0, -3.62);
+    sh.rotation.y = -Math.PI / 2;
+    group.add(sh);
+    { const ring = slab(circlePts(0.4, 36), circlePts(0.13, 36), 0.05, m.rib); ring.position.set(0, hy, 0); sh.add(ring, place(torus(0.375, 0.016, m.dark, 0, hy, 0.062))); }
+    const door = slab(circlePts(0.35, 36), grow(circlePts(0.115), 0.045), 0.065, m.paint);
+    door.position.set(0, hy, 0.045);
+    sh.add(door, place(torus(0.35, 0.01, m.paintGrey, 0, hy, 0.11)));
+    addWindow(sh, m, D, { x: 0, y: hy, z: 0.045, size: 0.23 });
+    for (let i = 0; i < 6; i++) {
+      const a = i / 6 * Math.PI * 2 + 0.5;
+      sh.add(place(b(0.1, 0.04, 0.03, m.metal, Math.cos(a) * 0.29, hy + Math.sin(a) * 0.29, 0.125, 0.008), 0, 0, a));
+    }
+    sh.add(cyl(0.04, 0.05, m.metal, 0, hy - 0.2, 0.135, 'z', 14), cyl(0.05, 0.015, m.dark, 0, hy - 0.2, 0.108, 'z', 14));
+    sh.add(rod([0, hy - 0.2, 0.15], [0.2, hy - 0.26, 0.15], 0.011, m.metal, 8), cyl(0.017, 0.09, m.rubber, 0.22, hy - 0.265, 0.15, 'y', 8), b(0.05, 0.03, 0.02, m.dark, 0, hy - 0.2, 0.16, 0.004));
+    [-0.12, 0.12].forEach((dy) => sh.add(b(0.05, 0.1, 0.05, m.dark, -0.4, hy + dy * 1.5, 0.06, 0.01)));
+  }
+  // Velcro strips (25 x 75 mm) in rows on the closeouts, webbing loops, and clamps on the cable bundles.
+  {
+    const sideRow = (sx, y) => { for (let z = -3.7; z <= 3.7; z += 0.2) group.add(new THREE.Mesh(quad([[sx, y, z - 0.0375], [sx, y, z + 0.0375], [sx, y + 0.025, z + 0.0375], [sx, y + 0.025, z - 0.0375]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.velcro)); };
+    [0.3, 1.98].forEach((y) => { sideRow(-hw + 0.011, y); sideRow(hw - 0.011, y); });
+    for (let x = -1.8; x <= 1.81; x += 0.2) {
+      for (const y of [2.04]) {
+        group.add(new THREE.Mesh(quad([[x - 0.0375, y, -hl + 0.004], [x + 0.0375, y, -hl + 0.004], [x + 0.0375, y + 0.025, -hl + 0.004], [x - 0.0375, y + 0.025, -hl + 0.004]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.velcro));
+      }
+    }
+    [-1, 1].forEach((sd) => {
+      for (let z = -3.4; z <= 3.4; z += 0.85) group.add(place(b(0.16, 0.05, 0.045, m.paintGrey, sd * 1.72, 2.43, z, 0), 0, 0, sd * -Math.PI / 4 * 0.9));
+    });
   }
   // Mission patch, note board, first aid, extinguisher.
   {
@@ -336,31 +533,44 @@ export function createCabin() {
     s.add(lamp);
   };
 
-  // PILOT SEAT: an acceleration couch facing the front console.
+  // PILOT SEAT: three Apollo-style couches abreast (tube frames, slung off-white fabric), the commander's in the middle.
   addAt(stations, 'pilotSeat', 0, -3.3, Math.PI, (s) => {
-    // Seat: rails, pedestal, cushion with side bolsters, head cushion, harness and hand controllers.
-    s.add(b(0.8, 0.04, 0.8, m.dark, 0, 0.02, 0, 0.01));
-    [-1, 1].forEach((x) => s.add(b(0.05, 0.03, 0.74, m.metal, x * 0.32, 0.055, 0, 0.005)));
-    s.add(cyl(0.09, 0.28, m.metal, 0, 0.18, 0, 'y', 20), cyl(0.13, 0.04, m.dark, 0, 0.07, 0, 'y', 20));
-    s.add(b(0.58, 0.11, 0.54, m.seat, 0, 0.42, 0.02, 0.05));
-    [-1, 1].forEach((x) => s.add(b(0.07, 0.1, 0.5, m.seat, x * 0.3, 0.5, 0.02, 0.03)));
-    s.add(place(b(0.54, 0.74, 0.13, m.seat, 0, 0.88, -0.26, 0.05), -0.12));
-    s.add(place(b(0.18, 0.55, 0.012, m.orange, 0, 0.88, -0.195), -0.12));
-    s.add(place(b(0.32, 0.22, 0.11, m.seat, 0, 1.34, -0.32, 0.05), -0.12));
-    // 5-point harness: webbing over the shoulders, lap belts, buckle.
-    [-1, 1].forEach((x) => {
-      s.add(place(b(0.05, 0.7, 0.012, m.webbing, x * 0.14, 1.0, -0.185, 0.003), -0.12));
-      s.add(place(b(0.28, 0.05, 0.012, m.webbing, x * 0.2, 0.55, 0.12, 0.003)));
-      s.add(b(0.07, 0.05, 0.03, m.metal, x * 0.1, 0.5, 0.27, 0.005));
-    });
-    s.add(b(0.1, 0.07, 0.035, m.orange, 0, 0.5, 0.29, 0.01), b(0.04, 0.04, 0.02, m.metal, 0, 0.5, 0.31, 0));
-    // Armrests with a hand controller (right) and a throttle (left).
-    [-1, 1].forEach((x) => {
-      s.add(b(0.08, 0.05, 0.42, m.dark, x * 0.34, 0.66, -0.02, 0.02));
-      s.add(b(0.04, 0.22, 0.04, m.dark, x * 0.34, 0.52, -0.1, 0));
-    });
-    s.add(cyl(0.014, 0.17, m.metal, 0.34, 0.76, 0.12, 'y', 8), sphere(0.032, m.dark, 0.34, 0.86, 0.12), b(0.02, 0.02, 0.012, lit('#f87171', 2.4), 0.34, 0.9, 0.14, 0));
-    s.add(b(0.06, 0.05, 0.14, m.dark, -0.34, 0.7, 0.1, 0.012), place(b(0.025, 0.06, 0.1, m.orange, -0.34, 0.74, 0.1, 0.01), 0.3));
+    const rail = (p0, p1, r = 0.013) => s.add(rod(p0, p1, r, m.metal, 8));
+    const couch = (cxp, commander) => {
+      [-1, 1].forEach((sd) => {
+        const x = cxp + sd * 0.27;
+        rail([x, 0.34, -0.3], [x, 0.4, 0.24]); rail([x, 0.34, -0.3], [x, 1.12, -0.55]); rail([x, 0.4, 0.24], [x, 0.14, 0.36]);
+        rail([x, 0.34, -0.3], [x, 0.03, -0.22]); rail([x, 0.4, 0.2], [x, 0.03, 0.2]);
+        s.add(b(0.07, 0.02, 0.1, m.rubber, x, 0.01, -0.22, 0), b(0.07, 0.02, 0.1, m.rubber, x, 0.01, 0.2, 0));
+        // Arm: a tube on two struts with a pad.
+        const ax = cxp + sd * 0.285;
+        rail([ax, 0.62, -0.2], [ax, 0.6, 0.16], 0.011); rail([ax, 0.62, -0.18], [x, 0.4, -0.18], 0.009); rail([ax, 0.6, 0.14], [x, 0.4, 0.14], 0.009);
+        s.add(b(0.06, 0.035, 0.26, m.seat, ax, 0.66, -0.02, 0.016));
+        // Slung fabric stretched to the rails, with an edge band where it wraps the tube.
+        s.add(b(0.03, 0.02, 0.6, m.webbing, cxp + sd * 0.245, 0.405, -0.03, 0));
+        s.add(place(b(0.03, 0.84, 0.02, m.webbing, cxp + sd * 0.245, 0.74, -0.43, 0), -0.31));
+      });
+      rail([cxp - 0.27, 0.4, 0.24], [cxp + 0.27, 0.4, 0.24]); rail([cxp - 0.27, 1.12, -0.55], [cxp + 0.27, 1.12, -0.55]);
+      rail([cxp - 0.27, 0.34, -0.3], [cxp + 0.27, 0.34, -0.3]); rail([cxp - 0.27, 0.14, 0.36], [cxp + 0.27, 0.14, 0.36]);
+      s.add(b(0.5, 0.025, 0.56, m.seat, cxp, 0.395, -0.03, 0));
+      s.add(place(b(0.5, 0.84, 0.025, m.seat, cxp, 0.74, -0.43, 0), -0.31));
+      s.add(place(b(0.5, 0.02, 0.3, m.seat, cxp, 0.27, 0.3, 0), 1.14));
+      s.add(place(b(0.3, 0.2, 0.09, m.seat, cxp, 1.17, -0.57, 0.04), -0.31));
+      [-1, 1].forEach((sd) => { rail([cxp + sd * 0.1, 1.0, -0.5], [cxp + sd * 0.1, 1.12, -0.55], 0.008); });
+      // Harness: shoulder straps, lap belts and a buckle.
+      [-1, 1].forEach((sd) => {
+        s.add(place(b(0.045, 0.56, 0.008, m.webbing, cxp + sd * 0.12, 0.76, -0.425, 0), -0.31));
+        s.add(b(0.2, 0.008, 0.045, m.webbing, cxp + sd * 0.17, 0.415, 0.02, 0));
+      });
+      s.add(b(0.07, 0.012, 0.06, m.metal, cxp, 0.42, 0.06, 0));
+      s.add(b(0.4, 0.008, 0.02, m.velcro, cxp, 0.41, 0.28, 0));
+      s.add(new THREE.Mesh(quad([[cxp - 0.5, 0.006, -0.65], [cxp + 0.5, 0.006, -0.65], [cxp + 0.5, 0.006, 0.45], [cxp - 0.5, 0.006, 0.45]], [[0, 0], [1, 0], [1, 1], [0, 1]]), m.blob));
+      if (commander) {
+        s.add(cyl(0.014, 0.17, m.metal, cxp + 0.285, 0.77, 0.1, 'y', 8), sphere(0.03, m.dark, cxp + 0.285, 0.87, 0.1), b(0.02, 0.02, 0.012, lit('#f87171', 2.4), cxp + 0.285, 0.9, 0.12, 0));
+        s.add(b(0.06, 0.05, 0.14, m.dark, cxp - 0.285, 0.7, 0.08, 0.012), place(b(0.025, 0.06, 0.1, m.orange, cxp - 0.285, 0.74, 0.08, 0.01), 0.3));
+      }
+    };
+    couch(0, true); couch(-0.7, false); couch(0.7, false);
     // Console: lower housing, sloped panel, three screens, switch banks, lamp row, glare shield.
     s.add(b(1.6, 0.74, 0.34, m.dark, 0, 0.37, 0.58, 0.02));
     [-1, 1].forEach((x) => s.add(b(0.08, 0.9, 0.34, m.paintGrey, x * 0.82, 0.45, 0.58, 0.02)));
@@ -486,7 +696,7 @@ export function createCabin() {
     s.add(place(b(0.1, 0.1, 0.004, m.paintLine, 0.1, 1.28 - 0.1, -0.245, 0), 0, 0, 0.1));
     // Antenna feed on the wall above, with a cable trunk down to the rack.
     s.add(cyl(0.012, 0.5, m.metal, 0.5, 1.95, -0.22, 'y', 8), sphere(0.03, m.red, 0.5, 2.2, -0.22));
-    cableBundle(s, [[-0.45, 1.8, -0.22], [-0.45, 1.3, -0.22], [-0.5, 0.9, -0.2]], [0x3b82f6, 0xf5c542, 0xe5484d], 0.007);
+    cableBundle(s, [[-0.45, 1.8, -0.22], [-0.45, 1.3, -0.22], [-0.5, 0.9, -0.2]], [0x2b2d30, 0x55585c, 0x7a7466], 0.007);
   });
 
   // SAMPLE STORAGE: lower drawers, an upper glovebox with a rack of labelled tubes and containers.
@@ -680,7 +890,7 @@ export function createCabin() {
     s.add(b(0.76, 0.2, 0.48, m.dark, 0, 0.1, 0, 0.01));
     vent(s, m, 0.5, 0.14, 0, 0.2, 0.245);
     handrail(s, m, [-0.3, 1.98, 0.28], [0.3, 1.98, 0.28]);
-    cableBundle(s, [[0.34, 0.1, -0.2], [0.36, 0.8, -0.22], [0.3, 2.0, -0.24]], [0xe5484d, 0x3b82f6, 0xf5c542, 0x34d399], 0.009);
+    cableBundle(s, [[0.34, 0.1, -0.2], [0.36, 0.8, -0.22], [0.3, 2.0, -0.24]], [0x2b2d30, 0x55585c, 0x7a7466, 0x1e2022], 0.009);
   });
   // Left wall, rear: stowage lockers with cargo bags and nets, then a vent panel.
   rackAnchor('stowL', -1.72, 3.2, left, (s) => {
@@ -702,7 +912,7 @@ export function createCabin() {
     s.add(b(0.76, 0.2, 0.48, m.dark, 0, 0.1, 0, 0.01));
     vent(s, m, 0.5, 0.14, 0, 0.2, 0.245);
     handrail(s, m, [-0.3, 1.98, 0.28], [0.3, 1.98, 0.28]);
-    cableBundle(s, [[-0.34, 0.1, -0.2], [-0.36, 0.8, -0.22], [-0.3, 2.0, -0.24]], [0x3b82f6, 0xe5484d, 0x34d399], 0.009);
+    cableBundle(s, [[-0.34, 0.1, -0.2], [-0.36, 0.8, -0.22], [-0.3, 2.0, -0.24]], [0x55585c, 0x2b2d30, 0x7a7466], 0.009);
   });
   rackAnchor('rackR2', 1.72, -2.35, right, (s) => {
     s.add(b(0.9, 1.95, 0.02, m.dark, 0, 0.98, -0.26, 0));
@@ -722,18 +932,51 @@ export function createCabin() {
     for (let i = 0; i < 4; i++) s.add(b(0.01, 1.2, 0.01, m.rubber, -0.3 + i * 0.2, 0.7, 0.215, 0));
   });
   // Between the suit locker and the water recycler, and between the sample cabinet and the food rack: vent panels.
-  rackAnchor('ventL', -1.72, 1.5, left, (s) => { vent(s, m, 0.4, 0.5, 0, 1.5, -0.25); vent(s, m, 0.4, 0.2, 0, 0.5, -0.25); label(s, m, 0.2, 0.05, 6, 0, 1.15, -0.245); });
-  rackAnchor('ventR', 1.72, 1.65, right, (s) => { vent(s, m, 0.3, 0.5, 0, 1.5, -0.25); vent(s, m, 0.3, 0.2, 0, 0.5, -0.25); });
+  rackAnchor('ventL', -1.72, 1.5, left, (s) => { vent(s, m, 0.4, 0.2, 0, 0.5, -0.25); label(s, m, 0.2, 0.05, 6, 0, 1.15, -0.245); });
+  rackAnchor('ventR', 1.72, 1.65, right, (s) => { vent(s, m, 0.3, 0.2, 0, 0.5, -0.25); });
+
+  // Eye positions for Role 2's climb (cabin-local, empty Object3Ds, +Y up). ladderBottom: standing at the foot of the ladder,
+  // facing into the cabin (-Z). ladderTopCabin: on the top rungs inside the hatch, facing the ladder (+Z).
+  group.updateMatrixWorld(true);
+  const anchors = group.children.filter((o) => /^(station|prop|deco):/.test(o.name)).map((o) => ({ name: o.name, box: new THREE.Box3().setFromObject(o) }));
+  const zg = addZeroGDressing(group, { m, bag, label, anchors, dims: { hw, hl, H, HX, HZ, HH, SHAFT, WALL_H } });
+  const ladderBottom = new THREE.Object3D();
+  ladderBottom.name = 'ladderBottom';
+  ladderBottom.position.set(HX, 1.65, HZ - 0.62);
+  const ladderTopCabin = new THREE.Object3D();
+  ladderTopCabin.name = 'ladderTopCabin';
+  ladderTopCabin.position.set(HX, H - 0.12, HZ - 0.26);
+  ladderTopCabin.rotation.y = Math.PI;
+  group.add(ladderBottom, ladderTopCabin);
 
   const triangles = bake(group);
 
   // Fixed meshes are merged, so only the dimmable lights and blinking lamps stay live.
   let alarm = false;
+  // Zero-g route (Role 2/4): the cabin can hang under the Apollo cockpit's aft passage. Attached, it adds no THREE.Light (shaders bake the light
+  // count), the shaft is open and the windows show the live scene: cockpit.userData.attachCabin() calls these.
+  const ownLights = [...warm, alarmLight];
+  const windowViews = [];
+  group.traverse((o) => { if (o.userData.windowView) windowViews.push(o); });
+  group.userData.ceilingHatch = { x: HX, z: HZ, yCeiling: H, yTop: H + SHAFT, half: HH };
+  group.userData.handrails = zg.handrails;           // [{ a, b }] cabin-local segment ends of every grab rail
+  group.userData.floatColliders = zg.floatColliders; // [{ min, max }] cabin-local boxes: shell, ceiling around the hatch, shaft and passage, furniture
+  group.userData.looseItems = zg.loose;
+  group.userData.zeroG = (on = true) => zg.zeroG(on);  // loose items drift (true) or fall back to their places (false)
+  group.userData.setLights = (on) => ownLights.forEach((l) => (on ? group.add(l) : l.removeFromParent()));
+  group.userData.setShaft = (closed) => shaftCaps.forEach((c) => { c.visible = closed; });
+  group.userData.setWindowViews = (on) => windowViews.forEach((v) => { v.visible = on; });
+  group.userData.ladderBottom = ladderBottom;
+  group.userData.ladderTopCabin = ladderTopCabin;
   group.userData.stations = stations;
   group.userData.props = props;
   group.userData.triangles = triangles;
   group.userData.setAlarm = (on) => { alarm = on; };
+  let lastFrame = performance.now();
   group.userData.onFrame = () => {
+    const now = performance.now(), dtFrame = (now - lastFrame) / 1000;
+    lastFrame = now;
+    zg.update(dtFrame);
     const t = sharedUniforms.uTime.value;
     blinkers.forEach((lamp, i) => { lamp.visible = Math.sin(t * (1.1 + i * 0.43) + i * 2) > -0.35; });
     const pulse = 0.5 + 0.5 * Math.sign(Math.sin(t * 5));

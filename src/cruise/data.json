@@ -16,6 +16,9 @@
     "doseShelter": 4,
     "doseImprovised": 40,
     "doseIgnored": 150,
+    "_shielding": "With the ship's life traits (Role 1, wave 5): doseIgnored behind doseRefGcm2 g/cm² of aluminium-equivalent wall, falling e-fold every attenuationGcm2 g/cm². 8 is an estimate inside the 7–10 g/cm² e-fold range of the blood-forming-organ dose curves in Townsend, Nealy & Wilson, NASA TM-100620 (1988). Result: 150 mSv behind the 5 g/cm² wall, about 78 mSv behind the food and water at hand (10.2 g/cm²), about 44 mSv in the 600 kg water shelter (14.75 g/cm²). Without traits the three fixed doses above are used.",
+    "doseRefGcm2": 5,
+    "attenuationGcm2": 8,
     "resultShelter": "You wait it out in the shelter, behind the water and food stores. Dose from the storm: {dose} mSv.",
     "resultImprovised": "There is no shelter on this ship. You huddle behind the water tanks. Dose from the storm: {dose} mSv.",
     "resultIgnored": "You stayed where you were. The storm passes straight through the hull. Dose from the storm: {dose} mSv.",
@@ -32,5 +35,14 @@
       { "label": "Restart the flight computer", "correct": false, "result": "The computer comes back. The leak doesn't care. Look at the readings again." }
     ],
     "entry": "history-apollo13"
+  },
+  "life": {
+    "_about": "Crew life in the cruise (life.js; only when the ship has traits.life). A slow cabin leak, up to leakSlowMm2 of hole, is found and sealed after leakPatchDays (Soyuz MS-09, 2018: a 2 mm hole, 3.1 mm², found and sealed within about a day). A bigger hole hisses and the pressure visibly drops: the time to seal falls as a power law to leakAudibleMinutes for a hole of leakAudibleMm2, never under leakFloorMinutes (audible point and floor: estimates). malfunctionBleedShare: each wrong answer in the oxygen-tank emergency lets the damaged line vent this share of the tank on it (estimate).",
+    "leakPatchDays": 1,
+    "leakSlowMm2": 3.14,
+    "leakAudibleMm2": 10,
+    "leakAudibleMinutes": 30,
+    "leakFloorMinutes": 15,
+    "malfunctionBleedShare": 0.25
   }
 }

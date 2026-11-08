@@ -1,6 +1,6 @@
 // Node tests for the manual-control windows and the ascent rating rules. Run: node src/flight/tests/manualControl.test.mjs
 import assert from 'node:assert/strict';
-import { createManualWindow, frameFor, dirFromOffsets, offsetsFromDir, offsetAngleDeg, MANUAL } from '../manualControl.js';
+import { createStickState, createManualWindow, frameFor, dirFromOffsets, offsetsFromDir, offsetAngleDeg, MANUAL } from '../manualControl.js';
 import { rateAscent, getPhaseRatings, clearPhaseRatings, createPhaseTracker } from '../rating.js';
 import { FlightController } from '../FlightController.js';
 import { MOCK_SHIPS } from '../presets.js';
@@ -132,6 +132,52 @@ test('ascent rating rules via the tracker: computer flew = 1 star, manual accura
   assert.equal(rateAscent({ fuelLeftPct: 30, peakG: 3, manualFlown: true, manualAccuracyPct: 60 }).stars, 2);
   assert.equal(rateAscent({ fuelLeftPct: 30, peakG: 3, manualFlown: true, manualAccuracyPct: 59 }).stars, 1);
   clearPhaseRatings();
+});
+
+const stickFixture = () => { const w = createManualWindow('ascent', cfg); return { w, st: createStickState(w) }; };
+
+test('stick: F toggles auto <-> free; mouse moves the aim, target stays at 0,0, not scored', () => {
+  const { st } = stickFixture();
+  assert.equal(st.mode, 'auto');
+  assert.equal(st.toggle({ planetId: 'earth' }), 'free'); assert.equal(st.mode, 'free');
+  const r = st.update(0.1, { mouse: { x: 10, y: -10 }, noseOffset: { yawDeg: 0, pitchDeg: 0 } });
+  assert.ok(r.aim.yawDeg > 0 && r.aim.pitchDeg > 0); assert.deepEqual(r.target, { yawDeg: 0, pitchDeg: 0 });
+  assert.equal(r.timeLeft, null); assert.equal(r.lockReady, false); assert.equal(r.label, 'MANUAL');
+  assert.equal(st.toggle(), 'giveBack'); assert.equal(st.mode, 'auto');
+  assert.equal(st.giveBack(), false);
+});
+
+test('stick: free accuracy is the on-target fraction of roughly the last 2 s', () => {
+  const { st } = stickFixture(); st.toggle();
+  let r; for (let i = 0; i < 40; i++) r = st.update(0.1, { noseOffset: { yawDeg: 0, pitchDeg: 0 } });
+  assert.ok(r.accuracy > 0.8);
+  for (let i = 0; i < 40; i++) r = st.update(0.1, { noseOffset: { yawDeg: 20, pitchDeg: 0 } });
+  assert.ok(r.accuracy < 0.2);
+});
+
+test('stick: a free pilot is converted into the window when the offer starts', () => {
+  const { w, st } = stickFixture(); st.toggle();
+  assert.equal(st.offer(), 'converted'); assert.equal(w.state, 'active'); assert.equal(st.mode, 'window'); assert.equal(st.free, false);
+  const { w: w2, st: s2 } = stickFixture();
+  assert.equal(s2.offer(), 'offered'); assert.equal(w2.state, 'offered'); assert.equal(s2.mode, 'auto');
+  assert.equal(s2.toggle(), 'window'); assert.equal(w2.state, 'active');
+});
+
+test('stick: F in the window is a lock when lockReady, a cancel otherwise; free works again afterwards', () => {
+  let { w, st } = stickFixture(); st.offer(); st.toggle();
+  run(w, 3, 0.1, followTarget);
+  assert.equal(st.toggle(), 'cancel'); assert.equal(w.state, 'cancelled'); assert.equal(w.result().flown, false);
+  assert.equal(st.mode, 'auto'); assert.equal(st.toggle(), 'free');
+  ({ w, st } = stickFixture()); st.offer(); st.toggle();
+  run(w, 7, 0.1, followTarget); assert.equal(w.readout().lockReady, true);
+  assert.equal(st.toggle(), 'lock'); assert.equal(w.state, 'locked'); assert.equal(w.result().flown, true);
+  assert.equal(st.toggle(), 'free');
+});
+
+test('stick: forced give-back (retro burn / landing / planet change) leaves auto', () => {
+  const { st } = stickFixture(); st.toggle({ planetId: 'earth' });
+  assert.equal(st.changedPlanet('earth'), false); assert.equal(st.changedPlanet('mars'), true);
+  assert.equal(st.giveBack(), true); assert.equal(st.mode, 'auto'); assert.equal(st.changedPlanet('mars'), false);
 });
 
 console.log(failed ? `${failed} FAILED` : 'all manual-control tests passed');

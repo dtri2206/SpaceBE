@@ -1,0 +1,211 @@
+{
+  "_about": "Real numbers for the landing, power and comms flight traits (traits/landing.js, wave 5). Keyed by part id and kit option id; each number names its source in `sources` (by id). 'estimate' marks a number nobody publishes for this exact case: it is a defensible choice, said so. Game scaling is written out under `gameScale`. neutral: the traits with no data (the flight as before).",
+  "neutral": {},
+
+  "mars": {
+    "soundSpeedMps": 232,
+    "solLengthS": 88775,
+    "sunShare": 0.431,
+    "surfaceSolFactor": 0.174,
+    "dustPerSol": 0.0028,
+    "_src": ["marsFacts", "merPower", "pathfinderDust", "marsSound"]
+  },
+
+  "gameScale": {
+    "legsDesignMass": "The game's ships land at 8 to 35 t, so each leg set's design mass is set for that class (estimate); the design speed and stroke are the real hardware's.",
+    "surfaceTime": 87,
+    "surfaceTimeWhy": "A Mars EVA runs about 87 times faster than real time: the suit's 7.3 hours of walking on one fill last 300 s (src/surface/oxygen.js, traits/life.json). Stored energy on the surface (the rover batteries, the ship's batteries and fuel-cell reactants) is divided by 87, so it runs out and refills on the same clock as the oxygen; powers (W) and the driving energy per metre stay real, so a rover's range is 87 times shorter than the real machine's.",
+    "upload": "A real upload takes from an hour (relay smallsat: its next pass, then a minute of data) through about three hours (dish: Earth must be up) to weeks (omni antenna). The wait in the game grows with the logarithm of the real time: 3 s for anything under a minute, plus 6 s for every ten times longer, at most 60 s. The relay counts the hop the crew waits for (surface to orbiter); its own slow link home (about 8 kbit/s, MarCO-class) forwards the data over the following hours.",
+    "chuteLoad": "Real Mars chutes open at about 10 km where the dynamic pressure is 0.6 to 0.9 kPa. On this 1/10-size Mars the chutes open lower, at up to 2.5 kPa, which a real disk-gap-band is not rated for. The game counts only the Mach limit of each canopy type; the opening load is not modelled."
+  },
+
+  "legs": {
+    "legs_m": { "kind": "legs", "count": 4, "designMps": 3.05, "designMassKg": 24000, "strokeM": 0.81, "spanM": 9.4, "deploys": false, "_src": ["lmGear", "estimate"] },
+    "legs_l": { "kind": "legs", "count": 4, "designMps": 3.05, "designMassKg": 40000, "strokeM": 1.0, "spanM": 15.0, "deploys": false, "_src": ["lmGear", "estimate"] },
+    "legs_falcon_m": { "kind": "legs", "count": 4, "designMps": 3.0, "designMassKg": 26000, "strokeM": 0.6, "spanM": 12.0, "deploys": true, "_src": ["f9Legs", "jason3", "estimate"] },
+    "legs_glenn_l": { "kind": "legs", "count": 6, "designMps": 3.0, "designMassKg": 45000, "strokeM": 1.0, "spanM": 12.0, "deploys": true, "_src": ["newGlenn", "estimate"] },
+    "legs_shepard_m": { "kind": "legs", "count": 4, "designMps": 2.7, "designMassKg": 20000, "strokeM": 0.5, "spanM": 6.0, "deploys": true, "_src": ["newShepard", "estimate"] },
+    "airbags": { "kind": "airbags", "count": 8, "energyJPerKg": 690, "strokeM": 1.5, "bagThicknessM": 1.0, "_src": ["pathfinderBags", "estimate"] }
+  },
+  "legOptions": {
+    "shock": {
+      "honeycomb": { "energyF": 1.0, "_src": ["lmGear"] },
+      "hydraulic": { "energyF": 1.1, "_src": ["estimate"] },
+      "telescope": { "energyF": 1.05, "_src": ["f9Legs", "estimate"] }
+    },
+    "pads": {
+      "small": { "slideF": 1.0, "_src": ["estimate"] },
+      "large": { "slideF": 1.15, "_src": ["lmGear", "estimate"] },
+      "dish": { "slideF": 1.4, "_src": ["vikingPads", "estimate"] }
+    }
+  },
+  "legDefects": { "weakCore": 0.75, "bagTear": 0.5, "_src": ["jason3", "estimate"] },
+  "maxOverDesign": 2.0,
+
+  "canopyTypes": {
+    "dgb": { "maxMach": 2.2, "_src": ["cruzLingard", "knacke"] },
+    "ribbon": { "maxMach": 2.5, "_src": ["knacke"] },
+    "ringsail": { "maxMach": 0.7, "_src": ["knacke", "apolloChutes"] },
+    "parafoil": { "maxMach": 0.35, "_src": ["knacke", "x38"] }
+  },
+  "chutes": {
+    "parachute": { "count": 1, "reserve": 0, "_src": ["m2020Chute"] },
+    "drogue_chute": { "count": 1, "reserve": 0, "_src": ["apolloChutes"] },
+    "chute_cluster_3": { "count": 3, "reserve": 0, "_src": ["apolloChutes"] },
+    "chute_single_main": { "count": 1, "reserve": 0.57, "_src": ["soyuzChutes"] },
+    "chute_cluster_4": { "count": 4, "reserve": 0, "_src": ["dragonChutes"] },
+    "nose_gemini_rr": { "count": 1, "reserve": 0, "_src": ["geminiChute"] }
+  },
+  "chuteFloorM": 300,
+  "_chuteFloorSrc": ["soyuzChutes", "estimate"],
+
+  "power": {
+    "kinds": { "solar_panel": "solar", "solar_wing_l": "solar", "rtg": "rtg", "fuel_cell": "fuelCell", "battery": "battery", "crew_trunk_m": "solar", "shenzhou_orbital_module": "solar" },
+    "serviceModule": { "solar_wings": "solar", "body_cells": "solar", "fuel_cells": "fuelCell", "batteries": "spentBattery" },
+    "rtgMarsW": 107,
+    "fuelCellReactantHours": 44,
+    "batteryWhPerKg": 150,
+    "batteryMaxC": 0.5,
+    "plumeDust": 0.05,
+    "cruiseSelfDischarge": 0.16,
+    "cableReachM": 15,
+    "_src": ["mmrtg", "fuelCellChem", "liIon", "plume", "estimate"]
+  },
+  "rovers": {
+    "LRV": { "chargeW": 870, "_src": ["lrv", "lrvCharge", "estimate"] },
+    "MR-01": { "chargeW": 10000, "_src": ["estimate"] }
+  },
+
+  "antennas": {
+    "antenna_low": { "kind": "low", "rateBps": 20, "_src": ["curiosityComms", "estimate"] },
+    "antenna_medium": { "kind": "medium", "rateBps": 1000, "_src": ["curiosityComms", "estimate"] },
+    "antenna_high": { "kind": "high", "rateBps": 500000, "_src": ["mroComms", "estimate"] },
+    "relay_sat": { "kind": "relay", "rateBps": 1000000, "_src": ["electra", "marco", "estimate"] }
+  },
+  "linkWindow": { "directS": 11100, "relayS": 3600, "_src": ["earthWindow", "relayPass", "estimate"] },
+  "upload": { "logMB": 5, "minS": 3, "baseS": 60, "perDecadeS": 6, "maxS": 60, "_src": ["estimate"] },
+
+  "notes": {
+    "touchdown": {
+      "en": "Touched down at {value} m/s ({vVert} m/s down, {vHoriz} m/s sideways); at {massT} t these legs take {limit} m/s.",
+      "vi": "Chạm đất ở {value} m/s ({vVert} m/s thẳng đứng, {vHoriz} m/s ngang); với {massT} tấn, bộ chân này chịu được {limit} m/s.",
+      "section": "tail", "digits": 1,
+      "whatIfFail": { "en": "With {alt} instead of {mine}, the legs would take only {altLimit} m/s: this touchdown would have broken them.", "vi": "Nếu dùng {alt} thay cho {mine}, chân chỉ chịu {altLimit} m/s: cú chạm đất này đã làm gãy chân." },
+      "whatIfPass": { "en": "With {alt} instead of {mine}, the legs would take {altLimit} m/s and this {value} m/s touchdown would have held.", "vi": "Nếu dùng {alt} thay cho {mine}, chân chịu được {altLimit} m/s và cú chạm đất {value} m/s này đã an toàn." }
+    },
+    "tipOver": {
+      "en": "Sideways at {value} m/s on a {spanM} m stance: a ship this tall tips over above {limit} m/s.",
+      "vi": "Trôi ngang {value} m/s trên thế đứng rộng {spanM} m: tàu cao thế này sẽ đổ khi vượt {limit} m/s.",
+      "section": "tail", "digits": 1, "tone": "bad",
+      "whatIfFail": { "en": "With {alt} instead of {mine}, it would tip above {altLimit} m/s and would have fallen.", "vi": "Nếu dùng {alt} thay cho {mine}, tàu sẽ đổ khi vượt {altLimit} m/s, và đã đổ." },
+      "whatIfPass": { "en": "With {alt} instead of {mine}, it would stand up to {altLimit} m/s sideways and would have stayed up.", "vi": "Nếu dùng {alt} thay cho {mine}, tàu đứng vững tới {altLimit} m/s ngang và đã không đổ." }
+    },
+    "tipTilt": {
+      "en": "Touched down leaning {value}°: past {limit}°, the most this stance (or the flight computer's 20° rule) allows. The ship fell over.",
+      "vi": "Chạm đất nghiêng {value}°: quá {limit}°, mức tối đa thế đứng này (hoặc giới hạn 20° của máy tính bay) cho phép. Tàu đổ.",
+      "section": "tail", "digits": 0, "tone": "bad"
+    },
+    "legLock": {
+      "en": "One of the {legs} legs did not lock open before touchdown.",
+      "vi": "Một trong {legs} chân không khoá mở trước khi chạm đất.",
+      "section": "tail", "tone": "bad"
+    },
+    "legWeak": {
+      "en": "One leg's shock absorber was weak: the set took {pct} % of its rated energy.",
+      "vi": "Bộ giảm chấn của một chân bị yếu: cả bộ chỉ hấp thụ được {pct} % năng lượng định mức.",
+      "section": "tail", "tone": "bad"
+    },
+    "chuteOpen": {
+      "en": "Opened at Mach {value}, {altitudeM} m up (rated to Mach {limit}).",
+      "vi": "Mở ở Mach {value}, độ cao {altitudeM} m (chịu tới Mach {limit}).",
+      "section": "nose", "digits": 2, "tone": "good",
+      "whatIfFail": { "en": "With {alt} instead of {mine} (rated to Mach {altLimit}), it would have torn opening at Mach {value}.", "vi": "Nếu dùng {alt} thay cho {mine} (chịu tới Mach {altLimit}), dù đã rách khi mở ở Mach {value}." }
+    },
+    "chuteTorn": {
+      "en": "Fired at Mach {value} {altitudeM} m up, beyond its Mach {limit} limit: the canopy tore.",
+      "vi": "Bung ở Mach {value}, độ cao {altitudeM} m, vượt giới hạn Mach {limit}: tán dù bị rách.",
+      "section": "nose", "digits": 2, "tone": "bad",
+      "whatIfPass": { "en": "With {alt} instead of {mine} (rated to Mach {altLimit}), it would have held.", "vi": "Nếu dùng {alt} thay cho {mine} (chịu tới Mach {altLimit}), dù đã không rách." }
+    },
+    "chuteLostOne": {
+      "en": "One canopy of {canopies} failed to open; the others carried the ship.",
+      "vi": "Một trong {canopies} tán dù không mở; các tán còn lại vẫn đỡ được tàu.",
+      "section": "nose", "tone": "info"
+    },
+    "chuteReserve": {
+      "en": "The main canopy failed; the reserve opened with {pct} % of its drag.",
+      "vi": "Tán dù chính hỏng; dù dự phòng mở ra với {pct} % lực cản.",
+      "section": "nose", "tone": "bad"
+    },
+    "chuteLost": {
+      "en": "The canopy failed to open.",
+      "vi": "Tán dù không mở được.",
+      "section": "nose", "tone": "bad"
+    },
+    "power": {
+      "en": "On Mars the power parts gave {value} W averaged over a sol (solar {solarW} W after distance, dust and night; RTG {rtgW} W), with {storeKWh} kWh stored.",
+      "vi": "Trên Sao Hỏa các bộ phận điện cho trung bình {value} W mỗi sol (pin mặt trời {solarW} W sau khoảng cách, bụi và đêm; RTG {rtgW} W), cùng {storeKWh} kWh dự trữ.",
+      "section": "body", "digits": 0, "tone": "info"
+    },
+    "roverEnergy": {
+      "en": "The rovers drove {km} km on {value} Wh of battery; the ship charged {chargedWh} Wh back into them (an LRV holds 100 Wh on the surface clock).",
+      "vi": "Xe tự hành chạy {km} km, dùng {value} Wh pin; tàu sạc lại cho chúng {chargedWh} Wh (pin LRV chứa 100 Wh theo đồng hồ trên bề mặt).",
+      "section": "body", "digits": 0, "tone": "info"
+    },
+    "upload": {
+      "en": "The logs left the ship at {value} bit/s: {waitS} s here, about {realHours} hours in reality (with the wait for the link).",
+      "vi": "Nhật ký rời tàu ở {value} bit/giây: {waitS} giây trong game, khoảng {realHours} giờ ngoài đời thật (tính cả lúc chờ đường truyền).",
+      "section": "nose", "digits": 0, "tone": "info"
+    },
+    "uploadMinutes": {
+      "en": "The logs left the ship at {value} bit/s: {waitS} s here, about {realMinutes} minutes in reality (with the wait for the link).",
+      "vi": "Nhật ký rời tàu ở {value} bit/giây: {waitS} giây trong game, khoảng {realMinutes} phút ngoài đời thật (tính cả lúc chờ đường truyền).",
+      "section": "nose", "digits": 0, "tone": "info"
+    },
+    "uploadDays": {
+      "en": "The logs left the ship at {value} bit/s: {waitS} s here, about {realDays} days in reality.",
+      "vi": "Nhật ký rời tàu ở {value} bit/giây: {waitS} giây trong game, khoảng {realDays} ngày ngoài đời thật.",
+      "section": "nose", "digits": 0, "tone": "info"
+    },
+    "antennaDead": {
+      "en": "The antenna failed on Mars: nothing could be sent home.",
+      "vi": "Ăng-ten hỏng trên Sao Hỏa: không gửi được gì về Trái Đất.",
+      "section": "nose", "tone": "bad"
+    }
+  },
+
+  "sources": [
+    { "id": "lmGear", "what": "Apollo LM landing gear: designed for 10 ft/s (3.05 m/s) vertical and 4 ft/s (1.2 m/s) lateral touchdown, primary struts with crushable aluminium honeycomb and 32 in (0.81 m) of stroke, 37 in (0.94 m) footpads, about 9.4 m between opposite footpads.", "source": "W. F. Rogers, Apollo Experience Report: Lunar Module Landing Gear Subsystem, NASA TN D-6850 (1972)" },
+    { "id": "f9Legs", "what": "Falcon 9 landing legs: carbon fibre with an aluminium honeycomb core, helium-piston deployment, about 18 m across when open (≈ 5 core diameters; here 12 m for the 2.5 m game ship).", "source": "SpaceX Falcon 9 user's guide and vehicle page" },
+    { "id": "jason3", "what": "Falcon 9 / Jason-3 landing (17 January 2016): a leg's lock-out collet did not latch, the stage tipped over on the drone ship and exploded.", "source": "E. Musk / SpaceX statement, January 2016" },
+    { "id": "newGlenn", "what": "New Glenn GS1: six landing legs, folded flush on the climb; first landing on the ship Jacklyn on 13 November 2025.", "source": "Blue Origin (part data in sections/tail/parts.json)" },
+    { "id": "newShepard", "what": "New Shepard booster: four short legs deployed just before a powered touchdown at a few m/s.", "source": "Blue Origin New Shepard flights (2015 onward)" },
+    { "id": "pathfinderBags", "what": "Mars Pathfinder airbags: the lander struck Mars at about 18 m/s and bounced some 15 m high; energy per kg of bag here (690 J/kg) is an estimate from that landing.", "source": "NASA JPL Mars Pathfinder EDL; Cadogan, Sandy & Grahne, Acta Astronautica 50 (2002)" },
+    { "id": "vikingPads", "what": "Viking lander footpads: wide shallow dishes with crushable rims for loose soil.", "source": "NASA SP-4212, On Mars: Exploration of the Red Planet (1984)" },
+    { "id": "knacke", "what": "Canopy types: disk-gap-band, ribbon and hemisflo canopies are the supersonic designs; ringsails and flat circular canopies are subsonic mains; ram-air parafoils open only slow.", "source": "T. W. Knacke, Parachute Recovery Systems Design Manual, NWC TP 6575 (1991)" },
+    { "id": "cruzLingard", "what": "Every Mars lander from Viking to Phoenix opened a disk-gap-band between about Mach 1.1 and 2.1; MSL and Mars 2020 opened theirs at about Mach 1.7.", "source": "J. R. Cruz & J. S. Lingard, Aerodynamic Decelerators for Planetary Exploration, AIAA 2006-6792" },
+    { "id": "m2020Chute", "what": "Mars 2020 (Perseverance): one 21.5 m disk-gap-band, opened at about Mach 1.75.", "source": "NASA JPL Mars 2020 EDL" },
+    { "id": "apolloChutes", "what": "Apollo: two conical-ribbon drogues at about 7 km, then three 25.5 m ringsail mains; Apollo 15 landed safely on two when one collapsed (1971).", "source": "NASA Apollo 15 Mission Report (MSC-05161)" },
+    { "id": "soyuzChutes", "what": "Soyuz: one main of about 1,000 m² and a reserve of about 574 m², fired by a backup system if the main fails.", "source": "Soyuz descent module recovery system (RSC Energia)" },
+    { "id": "dragonChutes", "what": "Crew Dragon: two drogues at about 5.5 km, then four mains at about 1.8 km; it lands within limits on three.", "source": "NASA Demo-2 mission overview (2020)" },
+    { "id": "geminiChute", "what": "Gemini: one 84 ft (25.6 m) ringsail main, with drogue and pilot chutes, no reserve.", "source": "NASA Project Gemini familiarization manual" },
+    { "id": "x38", "what": "X-38: the largest parafoil flown (about 690 m²), deployed slowly after a drogue in drop tests (1999–2001).", "source": "NASA Dryden X-38 fact sheet" },
+    { "id": "marsSound", "what": "Speed of sound near the Martian surface: about 230–240 m/s (CO₂ at 210–240 K).", "source": "Mars atmosphere data (NASA Mars Fact Sheet; Petculescu & Lueptow, Icarus 186, 2007)" },
+    { "id": "marsFacts", "what": "Sunlight at Mars' mean distance: 586.2 W/m², 43.1 % of Earth's 1,361 W/m².", "source": "NASA GSFC Mars Fact Sheet" },
+    { "id": "merPower", "what": "Spirit and Opportunity: about 900 Wh per sol at the start from 1.3 m² of triple-junction cells (rated about 490 W in Earth sunlight), so a sol gives about 4.3 hours at full Mars sunlight: 17.4 % of the day.", "source": "NASA JPL Mars Exploration Rover power subsystem" },
+    { "id": "pathfinderDust", "what": "Dust settling on solar cells at Ares Vallis: 0.28 % of the power lost per sol.", "source": "G. A. Landis & P. P. Jenkins, J. Geophys. Res. 105 (E1), 1855 (2000)" },
+    { "id": "plume", "what": "A rocket landing blows dust onto nearby surfaces (Apollo 12 sand-blasted Surveyor 3 from 155 m); airbag landers fire their rockets high above the ground. The 5 % loss on the ship's own panels is an estimate.", "source": "Immer et al., Icarus 211 (2011); estimate" },
+    { "id": "mmrtg", "what": "MMRTG (Curiosity, Perseverance): about 110 W of electricity at launch from 2 kW of heat, 45 kg, losing a few per cent a year (107 W assumed after the 8.5-month trip).", "source": "NASA Radioisotope Power Systems, MMRTG fact sheet" },
+    { "id": "fuelCellChem", "what": "Hydrogen + oxygen → water releases 237 kJ/mol of free energy (3.7 kWh per kg of water); a fuel cell turns about 65 % of it into electricity. Reactants left on Mars (44 hours at full power) are an estimate: cryogenic hydrogen boils off on a long trip.", "source": "Standard Gibbs energy of formation of water; NASA Shuttle fuel cell powerplant" },
+    { "id": "liIon", "what": "Space lithium-ion packs: about 150 Wh/kg (the battery card); they lose about 2 % a month unless kept charged (16 % in 8.5 months).", "source": "Battery card (sections/body/parts.json); typical Li-ion data, estimate" },
+    { "id": "lrv", "what": "Apollo LRV: two 36 V, 121 Ah silver-zinc batteries (≈ 8.7 kWh). They were primary batteries: activated once and never recharged on the Moon.", "source": "NASA LRV Operations Handbook (1971)" },
+    { "id": "lrvCharge", "what": "The game's LRV takes a charge from the ship (a rechargeable silver-zinc pack would take about a tenth of its capacity per hour: 870 W). The charge rate is an estimate.", "source": "estimate (silver-zinc cells charge at about C/10)" },
+    { "id": "curiosityComms", "what": "Curiosity's high-gain antenna sends about 160 bit/s straight to a 34 m Deep Space Network dish and 800 bit/s to a 70 m one; omni antennas manage tens of bit/s from Mars.", "source": "NASA JPL Mars Science Laboratory, communications with Earth" },
+    { "id": "mroComms", "what": "Mars Reconnaissance Orbiter: a 3 m dish and a 100 W radio send 0.5–6 Mbit/s home depending on the distance.", "source": "NASA JPL MRO spacecraft telecommunications" },
+    { "id": "electra", "what": "Electra UHF relay radios: up to 2 Mbit/s from the surface to an orbiter overhead, which stores the data and sends it home. The smallsat's relay radio: 1 Mbit/s (estimate). This is the hop the game times.", "source": "NASA JPL Electra proximity link payload (MRO, MAVEN)" },
+    { "id": "marco", "what": "MarCO (2018): the cubesats relayed InSight's landing home at about 8 kbit/s. A smallsat's own link home is that slow, so it forwards the logs over the next hours, after they have left the ship.", "source": "NASA JPL MarCO mission" },
+    { "id": "earthWindow", "what": "From Mars, Earth is above the horizon for about half of each sol (24.66 h). A direct link waits for it: starting at a random moment, on average an eighth of a sol (about 3.1 h). Expected value, an estimate.", "source": "estimate from the sol length (NASA Mars Fact Sheet)" },
+    { "id": "relayPass", "what": "A low relay orbiter (about a 2-hour orbit) passes over a site every orbit or two; the expected wait for the next pass is about an hour. Estimate (MRO and Odyssey pass about twice a sol; a dedicated low orbiter more often).", "source": "estimate; NASA JPL Mars relay network" },
+    { "id": "estimate", "what": "No published number fits this exact case: a defensible choice, stated as an estimate.", "source": "estimate" }
+  ]
+}

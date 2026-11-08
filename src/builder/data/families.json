@@ -1,0 +1,100 @@
+{
+  "families": [
+    {
+      "id": "command",
+      "name": "Crew capsule",
+      "order": 1,
+      "stage": "Payload & crew"
+    },
+    {
+      "id": "fairing",
+      "name": "Nose & fairing",
+      "order": 2,
+      "stage": "Fairing"
+    },
+    {
+      "id": "stages",
+      "name": "Stage structure",
+      "order": 3,
+      "stage": "Upper structure"
+    },
+    {
+      "id": "tanks",
+      "name": "Propellant tanks",
+      "order": 4,
+      "stage": "Propellant"
+    },
+    {
+      "id": "engines",
+      "name": "Engines",
+      "order": 5,
+      "stage": "Engine"
+    },
+    {
+      "id": "boosters",
+      "name": "Solid motors",
+      "order": 6,
+      "stage": "Boosters"
+    },
+    {
+      "id": "structure",
+      "name": "Fins & fittings",
+      "order": 7,
+      "stage": "Equipment"
+    },
+    {
+      "id": "control",
+      "name": "Control",
+      "order": 8,
+      "stage": "Equipment"
+    },
+    {
+      "id": "thermal",
+      "name": "Thermal",
+      "order": 9,
+      "stage": "Equipment"
+    },
+    {
+      "id": "recovery",
+      "name": "Recovery",
+      "order": 10,
+      "stage": "Equipment"
+    },
+    {
+      "id": "life",
+      "name": "Life support",
+      "order": 11,
+      "stage": "Equipment"
+    },
+    {
+      "id": "power",
+      "name": "Power",
+      "order": 12,
+      "stage": "Equipment"
+    },
+    {
+      "id": "comms",
+      "name": "Comms",
+      "order": 13,
+      "stage": "Equipment"
+    },
+    {
+      "id": "protection",
+      "name": "Protection",
+      "order": 14,
+      "stage": "Equipment"
+    },
+    {
+      "id": "science",
+      "name": "Science",
+      "order": 15,
+      "stage": "Equipment"
+    },
+    {
+      "id": "seals",
+      "name": "Seals",
+      "order": 16,
+      "stage": "Equipment"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 // Cockpit keys (TEAM_PROMPT §4 "Cockpit"), read through core's input (the only keyboard listener).
 //
 // The flight computer flies by default (autopilot.js). The player only has these keys:
-//   F = take manual control (while a window is offered) · Space / left mouse = lock guidance (while flying manually)
+//   F = toggle manual control any time (take / give back the stick) · Space / left mouse = lock (ascent window) or give back (free manual)
 //   E (landed) = stand up. Esc (give the stick back) is registered by index.js with input.onEscape.
 // No pitch / yaw / throttle / brake / cut-off keys any more: the stick values below are for the cockpit's
 // animation only (cockpit.userData.setControls) and never feed the physics.

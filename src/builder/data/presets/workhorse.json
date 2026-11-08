@@ -1,0 +1,42 @@
+{
+  "name": "Workhorse",
+  "symmetry": 2,
+  "launch": { "site": "slc40", "day": 0 },
+  "parts": [
+    { "id": "p2", "type": "capsule_m", "parent": null, "node": null, "angle": 0, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p3", "type": "heat_shield_m", "parent": "p2", "node": "bottom", "angle": 0, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p4", "type": "avionics_ring_m", "parent": "p3", "node": "bottom", "angle": 0, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p5", "type": "tank_l_kerolox_stretch", "parent": "p4", "node": "bottom", "angle": 0, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p6", "type": "centerbody_m", "parent": "p5", "node": "bottom", "angle": 0, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p7", "type": "tank_l_kerolox", "parent": "p6", "node": "bottom", "angle": 0, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p8", "type": "engine_l", "parent": "p7", "node": "bottom", "angle": 0, "yFrac": 0.5, "variant": null, "group": null, "engine": {
+        "fuel": "kerolox",
+        "nozzle": "sl",
+        "pump": "L"
+      }, "options": {
+        "injector": "pintle",
+        "igniter": "tea_teb"
+      } },
+    { "id": "p9", "type": "legs_l", "parent": "p8", "node": "radial", "angle": 45, "yFrac": 0.3, "variant": null, "group": null },
+    { "id": "p10", "type": "srb_s", "parent": "p7", "node": "radial", "angle": 0, "yFrac": 0.1, "variant": null, "group": "g1" },
+    { "id": "p11", "type": "srb_s", "parent": "p7", "node": "radial", "angle": 180, "yFrac": 0.1, "variant": null, "group": "g1" },
+    { "id": "p12", "type": "fin_l", "parent": "p7", "node": "radial", "angle": 45, "yFrac": 0.1, "variant": null, "group": "g2", "origin": "tail" },
+    { "id": "p13", "type": "fin_l", "parent": "p7", "node": "radial", "angle": 225, "yFrac": 0.1, "variant": null, "group": "g2", "origin": "tail" },
+    { "id": "p14", "type": "parachute", "parent": "p2", "node": "radial", "angle": 180, "yFrac": 0.55, "variant": null, "group": null },
+    { "id": "p15", "type": "drogue_chute", "parent": "p2", "node": "radial", "angle": 220, "yFrac": 0.62, "variant": null, "group": null },
+    { "id": "p16", "type": "antenna_medium", "parent": "p2", "node": "radial", "angle": 90, "yFrac": 0.55, "variant": null, "group": null },
+    { "id": "p17", "type": "star_tracker", "parent": "p4", "node": "radial", "angle": 40, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p18", "type": "rcs_pack", "parent": "p2", "node": "radial", "angle": 0, "yFrac": 0.3, "variant": null, "group": null },
+    { "id": "p19", "type": "o2_tank_l", "parent": "p5", "node": "radial", "angle": 30, "yFrac": 0.75, "variant": null, "group": null },
+    { "id": "p20", "type": "radiation_shelter", "parent": "p5", "node": "radial", "angle": 270, "yFrac": 0.8, "variant": null, "group": null },
+    { "id": "p21", "type": "solar_wing_l", "parent": "p5", "node": "radial", "angle": 60, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p22", "type": "battery", "parent": "p5", "node": "radial", "angle": 240, "yFrac": 0.45, "variant": null, "group": null },
+    { "id": "p23", "type": "spectrometer", "parent": "p5", "node": "radial", "angle": 120, "yFrac": 0.6, "variant": null, "group": null },
+    { "id": "p24", "type": "ground_radar", "parent": "p5", "node": "radial", "angle": 200, "yFrac": 0.6, "variant": null, "group": null },
+    { "id": "p25", "type": "drill", "parent": "p5", "node": "radial", "angle": 330, "yFrac": 0.35, "variant": null, "group": null },
+    { "id": "p26", "type": "wiring_tunnel", "parent": "p5", "node": "radial", "angle": 100, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p27", "type": "helium_copv", "parent": "p6", "node": "radial", "angle": 140, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p31", "type": "fin_l", "parent": "p7", "node": "radial", "angle": 135, "yFrac": 0.1, "variant": null, "group": "g2", "origin": "tail" },
+    { "id": "p32", "type": "fin_l", "parent": "p7", "node": "radial", "angle": 315, "yFrac": 0.1, "variant": null, "group": "g2", "origin": "tail" }
+  ]
+}

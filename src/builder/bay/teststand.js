@@ -1,5 +1,7 @@
 // Static fire and hold-down liftoff test on the integration stand. Uses Role 3's engine VFX and sounds.
 // Phases: countdown → ignition → hold → release (the vehicle rises if TWR > 1) → cutoff → done.
+// The spec is the ship as built (asBuilt.js, stage 'stand'): the stand measures what the factory really delivered, so a
+// weak engine shows a smaller flame (thrustFactor = as-built ÷ rated thrust) and an engine that will not light shows none.
 import * as THREE from 'three';
 import { assets, graphics } from '/src/graphics/index.js';
 import { audio } from '/src/audio/index.js';
@@ -30,10 +32,11 @@ export function createTestStand({ scene, rocket, standTop, planets, g0 }) {
     return { group, flame, exhaust, engineY: engine?.y ?? 0, fuel: engine?.engine?.fuel ?? 'methalox' };
   }
 
-  function start({ spec, breakdown, layout, onPhase, onDone }) {
+  function start({ spec, breakdown, layout, onPhase, onDone, thrustFactor = 1 }) {
     cancel();
     const vfx = attachVfx(layout);
-    run = { spec, breakdown, phaseIndex: 0, t: 0, throttle: 0, lift: 0, onPhase, onDone, ...vfx, rocketBaseY: rocket.position.y, trembling: 0 };
+    const power = Math.max(0, Math.min(1.2, Number.isFinite(thrustFactor) ? thrustFactor : 1));
+    run = { spec, breakdown, phaseIndex: 0, t: 0, throttle: 0, lift: 0, onPhase, onDone, ...vfx, rocketBaseY: rocket.position.y, trembling: 0, power, dead: power <= 0.001 };
     vfx.flame.userData.set?.({ throttle: 0, airDensity: 1, fuel: vfx.fuel });
     vfx.exhaust.userData.set?.({ throttle: 0, airDensity: 1 });
     onPhase?.('countdown', 0);
@@ -63,7 +66,7 @@ export function createTestStand({ scene, rocket, standTop, planets, g0 }) {
         break;
       case 'ignition':
         run.throttle = Math.min(1, run.t / length);
-        if (run.t - dt <= 0) audio.play('engine.rumble', { loop: true });
+        if (run.t - dt <= 0 && !run.dead) audio.play('engine.rumble', { loop: true });
         break;
       case 'hold':
         run.throttle = 1;
@@ -71,7 +74,7 @@ export function createTestStand({ scene, rocket, standTop, planets, g0 }) {
       case 'release':
         run.throttle = 1;
         if (twr > 1) run.lift = Math.min(3.2, 0.5 * Math.max(0.3, a) * run.t * run.t);
-        else run.trembling = 1;
+        else if (!run.dead) run.trembling = 1;
         break;
       case 'cutoff':
         run.throttle = Math.max(0, 1 - run.t / length);
@@ -85,10 +88,11 @@ export function createTestStand({ scene, rocket, standTop, planets, g0 }) {
         break;
     }
     const air = 1;
-    run.flame.userData.set?.({ throttle: run.throttle, airDensity: air, fuel: run.fuel });
-    run.exhaust.userData.set?.({ throttle: run.throttle, airDensity: air });
+    const shown = run.dead ? 0 : run.throttle * run.power; // the flame of the engines as built
+    run.flame.userData.set?.({ throttle: shown, airDensity: air, fuel: run.fuel });
+    run.exhaust.userData.set?.({ throttle: shown, airDensity: air });
     audio.setAir?.(1);
-    const shake = Math.min(1, run.throttle * 0.55 + run.trembling * 0.35);
+    const shake = Math.min(1, shown * 0.55 + (run.dead ? 0 : run.trembling * 0.35));
     graphics.setEffects({ shake });
     const wobble = run.trembling ? Math.sin(run.t * 40) * 0.015 : 0;
     rocket.position.y = run.rocketBaseY + run.lift;
@@ -118,9 +122,7 @@ export function createTestStand({ scene, rocket, standTop, planets, g0 }) {
       lifted: twr > 1,
       twr, netAccel: a, thrustSL, weight: s.wetMass * planets.earth.g, mdot,
       burnTime,
-      deltaV: s.deltaV, oneWay: breakdown.oneWay, roundTrip: breakdown.roundTrip,
-      reachesMars: s.deltaV >= breakdown.oneWay,
-      comesHome: s.deltaV >= breakdown.roundTrip,
+      deltaV: s.deltaV, fuelMass: s.fuelMass, // the trip's need stays hidden here: the investigation board reveals it after a failure
       stable: breakdown.copY < breakdown.comY,
     };
   }

@@ -1,0 +1,156 @@
+{
+  "_about": "Plain-language explanations of the outer-skin materials (hull agent), one entry per material in data/hull.json: hull:<materialId> with what, why, without and one everyday comparison (analogy), in English and Vietnamese. The vi block also carries name, pros, cons and real, which the big card shows in Vietnamese mode (in English it uses the material’s own fields in data/hull.json). Keys and fields: see src/builder/explain.js. Facts and sources: data/hull.json (materials[].sources).",
+  "entries": {
+    "hull:al2219": {
+      "en": {
+        "what": "The outer skin covers every gap between the parts, so the air slides over one smooth body. This one is aluminium 2219: thin sheets welded and riveted onto stiffening ribs, the same metal as the Saturn V's first stage.",
+        "why": "A rocket climbs through thick air faster than sound. Without a smooth cover, the wind would slam into every step and every box. This aluminium stays strong when it warms up to about 200 °C, it is easy to weld, and its price is fair.",
+        "without": "A bare stack full of steps and open frames catches the wind like a sail: more drag, and a push to the side. A weaker skin could wrinkle at Max-Q, the moment the air presses hardest.",
+        "analogy": "Like the body of a car over its engine and pipes: the machinery stays inside, and the wind only meets smooth panels."
+      },
+      "vi": {
+        "what": "Lớp vỏ ngoài phủ kín mọi khe hở giữa các bộ phận, để không khí lướt qua một thân tàu trơn liền khối. Loại này là nhôm 2219: những tấm mỏng được hàn và tán đinh lên các thanh gân gia cường, cùng loại kim loại với tầng một của tên lửa Saturn V.",
+        "why": "Tên lửa lao lên qua lớp không khí dày đặc nhanh hơn cả tốc độ âm thanh. Không có lớp vỏ trơn, gió sẽ đập vào từng bậc, từng chiếc hộp lồi ra. Nhôm này vẫn chắc khi nóng tới khoảng 200 °C, dễ hàn và giá vừa phải.",
+        "without": "Một chồng bộ phận lởm chởm, đầy bậc và khung hở sẽ hứng gió như cánh buồm: lực cản lớn hơn, lại bị đẩy lệch sang một bên. Vỏ yếu hơn có thể bị nhăn, móp ở Max-Q, lúc không khí ép mạnh nhất.",
+        "analogy": "Giống vỏ xe ô tô che máy và đường ống bên trong: máy móc nằm trong, gió chỉ chạm vào những tấm vỏ trơn.",
+        "name": "Vỏ nhôm 2219",
+        "pros": [
+          "Chắc chắn và được hiểu rất rõ",
+          "Vẫn chắc khi nóng lên",
+          "Giá phải chăng"
+        ],
+        "cons": [
+          "Nặng hơn nhôm-liti hay sợi carbon",
+          "Đầu đinh tán làm tăng lực cản một chút"
+        ],
+        "real": "Bồn nhiên liệu tầng một S-IC của tên lửa Saturn V và bồn ngoài loại tiêu chuẩn (Standard Weight Tank) của tàu con thoi"
+      }
+    },
+    "hull:al2195": {
+      "en": {
+        "what": "An aluminium skin with a little lithium mixed in, the lightest of all metals. The mix is a little lighter and stiffer, and about 30 % stronger, than plain rocket aluminium. The Space Shuttle’s later fuel tanks and Falcon 9 use it.",
+        "why": "Every kilogram saved is a kilogram less to push to Mars. On a pressurised fuel tank, where strength matters most, it saves a lot; on a skin, which must above all not buckle, it saves about 6 %.",
+        "without": "It costs much more for that small saving, and thin metal warms up fast: near the nose, where the air rubs hardest, it can pass 150 °C, the point where it starts to lose its strength.",
+        "analogy": "Like a bike frame made of a lighter, stronger alloy: the same shape, a little less weight, a much higher price."
+      },
+      "vi": {
+        "what": "Vỏ nhôm có pha thêm một chút liti (lithium), kim loại nhẹ nhất trong các kim loại. Hợp kim này nhẹ hơn và cứng hơn một chút, lại chắc hơn khoảng 30 % so với nhôm tên lửa thường. Bồn nhiên liệu đời sau của tàu con thoi và tên lửa Falcon 9 dùng loại này.",
+        "why": "Mỗi ki-lô-gam bớt được là một ki-lô-gam không phải đẩy tới Sao Hỏa. Với bồn nhiên liệu được bơm áp suất, nơi độ chắc quan trọng nhất, nó bớt được nhiều; với lớp vỏ, thứ trước hết không được móp, nó chỉ bớt được khoảng 6 %.",
+        "without": "Nó đắt hơn nhiều mà chỉ nhẹ hơn chút ít, và kim loại mỏng thì nóng lên rất nhanh: gần mũi tàu, nơi không khí cọ xát mạnh nhất, nó có thể nóng quá 150 °C, mức bắt đầu yếu đi.",
+        "analogy": "Giống khung xe đạp làm bằng hợp kim nhẹ và chắc hơn: cùng hình dáng, nhẹ hơn một chút, nhưng giá cao hơn nhiều.",
+        "name": "Vỏ nhôm-liti 2195",
+        "pros": [
+          "Nhẹ hơn nhôm 2219 khoảng 6 % mà cứng như nhau",
+          "Kim loại chắc hơn, các tấm hàn trơn láng"
+        ],
+        "cons": [
+          "Đắt hơn khoảng 70 %",
+          "Yếu đi khi nóng quá khoảng 150 °C: gần mũi tàu có thể bị quá nóng"
+        ],
+        "real": "Bồn ngoài siêu nhẹ (Super Lightweight Tank, 1998) của tàu con thoi; vách và nắp bồn nhiên liệu của Falcon 9"
+      }
+    },
+    "hull:carbon": {
+      "en": {
+        "what": "Two thin sheets of carbon fibre glued on both sides of an aluminium honeycomb. It is the lightest and stiffest skin here: Falcon 9's black interstage and its nose fairing are built this way.",
+        "why": "Light and stiff: it weighs about a third less than aluminium and hardly bends when the air presses hardest.",
+        "without": "It is the most expensive skin, and the glue that holds the fibres softens above about 170 °C. Right behind the nose the air can heat it past that, which is why real rockets put a layer of cork on their hottest spots.",
+        "analogy": "Like a tennis racket or a racing bike: carbon fibre is very light and very stiff, but it costs a lot."
+      },
+      "vi": {
+        "what": "Hai tấm sợi carbon mỏng dán hai bên một lõi tổ ong bằng nhôm. Đây là lớp vỏ nhẹ và cứng nhất trong danh sách: phần nối tầng màu đen và chóp mũi của Falcon 9 được làm theo cách này.",
+        "why": "Nhẹ mà cứng: nhẹ hơn nhôm khoảng một phần ba, và gần như không cong khi gió ép mạnh nhất.",
+        "without": "Đây là lớp vỏ đắt nhất, và keo giữ các sợi carbon bắt đầu mềm khi nóng quá khoảng 170 °C. Ngay sau mũi tàu, không khí có thể nung nó nóng hơn mức đó, nên tên lửa thật phải dán thêm một lớp bần (cork) ở những chỗ nóng nhất.",
+        "analogy": "Giống cây vợt tennis hay chiếc xe đạp đua: sợi carbon rất nhẹ và rất cứng, nhưng đắt.",
+        "name": "Vỏ sandwich sợi carbon",
+        "pros": [
+          "Nhẹ hơn nhôm 2219 một phần ba",
+          "Rất cứng, nên không ngại Max-Q",
+          "Bề mặt đúc trơn láng, lực cản ít hơn một chút"
+        ],
+        "cons": [
+          "Đắt gần gấp ba nhôm 2219",
+          "Nhựa mềm ra khi nóng quá khoảng 170 °C: gần mũi tàu có thể bị quá nóng"
+        ],
+        "real": "Phần nối tầng và chóp mũi của Falcon 9, tên lửa Electron của Rocket Lab, phần nối tầng và chóp mũi của Delta IV"
+      }
+    },
+    "hull:steel": {
+      "en": {
+        "what": "Rings of thin stainless steel welded together: the material of SpaceX's Starship and of the old Atlas rockets. It is the cheapest skin per square metre and does not mind heat up to about 650 °C.",
+        "why": "Steel shrugs off heat and wears very slowly, so a ship you want to fly again and again lasts longest with it. And it is cheap.",
+        "without": "It is the heaviest skin here, and for its weight a thin steel wall bends more easily than the others: a small chance it wrinkles at Max-Q. Atlas tanks had to stay pumped up with gas, or they folded under their own weight.",
+        "analogy": "Like a stainless steel cooking pot: cheap, tough and fine on a hot stove, but heavy to carry."
+      },
+      "vi": {
+        "what": "Những vòng thép không gỉ mỏng hàn nối với nhau: vật liệu của tàu Starship của SpaceX và của tên lửa Atlas thời xưa. Đây là lớp vỏ rẻ nhất tính theo mỗi mét vuông, và chịu được nóng tới khoảng 650 °C.",
+        "why": "Thép không sợ nóng và mòn rất chậm, nên một con tàu muốn bay đi bay lại nhiều lần sẽ bền nhất với nó. Lại còn rẻ.",
+        "without": "Đây là lớp vỏ nặng nhất, và nếu tính cùng khối lượng thì vách thép mỏng dễ cong hơn các loại khác: có một chút khả năng bị nhăn, móp ở Max-Q. Bồn của tên lửa Atlas phải luôn được bơm căng khí, nếu không sẽ tự sụp xuống vì sức nặng của chính nó.",
+        "analogy": "Giống cái nồi inox trong bếp: rẻ, bền, đặt lên lửa thoải mái, nhưng xách thì nặng.",
+        "name": "Vỏ thép không gỉ",
+        "pros": [
+          "Rẻ nhất tính theo mỗi mét vuông",
+          "Chịu nóng tới khoảng 650 °C",
+          "Mòn chậm: tốt nhất nếu muốn dùng lại tàu"
+        ],
+        "cons": [
+          "Lớp vỏ nặng nhất",
+          "Kém cứng nhất so với khối lượng: có một chút khả năng bị móp ở Max-Q"
+        ],
+        "real": "Tàu Starship của SpaceX (thép 304L, sau đó là 30X); bồn kiểu bong bóng của tên lửa Atlas và tầng Centaur"
+      }
+    },
+    "hull:honeycomb": {
+      "en": {
+        "what": "Two thin aluminium sheets glued to a honeycomb core: very stiff for how little it weighs. The Saturn V's ring of guidance computers, the Instrument Unit, was built from it.",
+        "why": "Nearly as light as carbon fibre for less than half the price, and smooth, so the air slides past easily.",
+        "without": "The glue softens near 150 °C and the thin outer sheet warms up quickly, so it can run too hot. The glued joints also tire a little after every flight, so it wears out fastest if you fly the ship again.",
+        "analogy": "Like corrugated cardboard: two thin sheets with a light wavy core in between make a box much stiffer than one thick sheet."
+      },
+      "vi": {
+        "what": "Hai tấm nhôm mỏng dán lên một lõi hình tổ ong: rất cứng so với độ nhẹ của nó. Vòng máy tính dẫn đường của tên lửa Saturn V (Instrument Unit) được làm bằng loại này.",
+        "why": "Nhẹ gần bằng sợi carbon mà giá chưa tới một nửa, lại trơn láng nên không khí lướt qua dễ dàng.",
+        "without": "Keo dán mềm ra khi gần 150 °C, mà tấm ngoài lại mỏng nên nóng lên nhanh, vì vậy có thể bị quá nóng. Các mối dán cũng yếu đi một chút sau mỗi chuyến bay, nên nếu dùng lại tàu thì loại này mòn nhanh nhất.",
+        "analogy": "Giống tấm bìa các-tông có lớp sóng: hai tấm mỏng kẹp một lõi nhẹ ở giữa làm thành chiếc hộp cứng hơn nhiều so với một tấm dày.",
+        "name": "Vỏ nhôm tổ ong (kiểu bánh kẹp)",
+        "pros": [
+          "Nhẹ: chỉ nặng hơn sợi carbon một chút",
+          "Kiểu bánh kẹp rất cứng: khó bị móp",
+          "Rẻ hơn sợi carbon nhiều"
+        ],
+        "cons": [
+          "Tấm ngoài mỏng nên nóng nhanh, keo dán mềm ra gần 150 °C",
+          "Mối dán mau yếu: không hợp để dùng lại tàu",
+          "Mối nối hơi yếu hơn kim loại đặc"
+        ],
+        "real": "Vòng máy tính dẫn đường (Instrument Unit) của Saturn IB và Saturn V; khung tàu Apollo"
+      }
+    },
+    "hull:titanium": {
+      "en": {
+        "what": "Thin sheets of titanium alloy with stiffening ribs, the metal of the SR-71 Blackbird spy plane's skin. It keeps its strength up to about 400 °C, far hotter than any aluminium.",
+        "why": "Titanium shrugs off the heat of a fast climb, wears very slowly flight after flight, and a debris hit has a harder time punching through it than through aluminium of the same thickness.",
+        "without": "It is the most expensive skin: titanium is hard to bend and must be welded in a shield of inert gas. And it is not lighter here: titanium is no stiffer for its weight than aluminium, so a skin that must not buckle needs about a quarter more mass. Against debris it helps less than you might think: the skin covers only the dry bays and cones, while the tanks and the cabin are their own walls.",
+        "analogy": "Like a titanium camping pot: it laughs at the fire and lasts for years, but it costs several times a plain aluminium one and is not much lighter."
+      },
+      "vi": {
+        "what": "Những tấm hợp kim titan mỏng có gân gia cường: chính là kim loại làm vỏ máy bay do thám SR-71 Blackbird. Nó giữ được độ bền tới khoảng 400 °C, nóng hơn nhiều so với bất kỳ loại nhôm nào.",
+        "why": "Titan không sợ cái nóng khi bay lên nhanh, mòn rất chậm sau mỗi chuyến bay, và mảnh rác vũ trụ khó xuyên thủng nó hơn so với tấm nhôm dày bằng.",
+        "without": "Đây là lớp vỏ đắt nhất: titan khó uốn và phải hàn trong lớp khí trơ bao quanh. Ở đây nó cũng không nhẹ hơn: tính cùng khối lượng thì titan không cứng hơn nhôm, nên một lớp vỏ không được móp cần nặng hơn khoảng một phần tư. Trước rác vũ trụ nó cũng giúp ít hơn ta nghĩ: lớp vỏ chỉ bọc các khoang khô và chóp nón, còn các bình và khoang lái có thành vỏ riêng.",
+        "analogy": "Giống cái nồi cắm trại bằng titan: đặt lên lửa thoải mái, dùng được nhiều năm, nhưng đắt gấp mấy lần nồi nhôm thường mà cũng không nhẹ hơn bao nhiêu.",
+        "name": "Vỏ titan Ti-6Al-4V",
+        "pros": [
+          "Giữ được độ bền tới khoảng 400 °C",
+          "Mòn rất chậm: tốt nếu muốn dùng lại tàu",
+          "Chịu va đập của rác vũ trụ tốt hơn nhôm"
+        ],
+        "cons": [
+          "Nặng hơn nhôm 2219 khoảng 25 % để cứng bằng",
+          "Lớp vỏ đắt nhất: khó tạo hình và khó hàn",
+          "Trước rác vũ trụ, kim loại của chính các bình mới quan trọng hơn: lớp vỏ chỉ che một phần nhỏ của chúng"
+        ],
+        "real": "Vỏ máy bay Lockheed A-12 và SR-71 Blackbird (titan chiếm khoảng 85-93 % khung máy bay); vỏ chịu áp suất bên trong của khoang Mercury và Gemini làm bằng titan (lớp ngói bên ngoài là hợp kim niken René 41)"
+      }
+    }
+  }
+}
