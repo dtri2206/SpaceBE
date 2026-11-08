@@ -212,6 +212,7 @@ function installAft(group, model, ctrl, { screenLight }) {
   };
   group.userData.harness = (t = 1) => { released = Math.min(1, Math.max(0, t)); setStraps(released, performance.now() / 1000); return seats.length > 0; };
   ctrl.addFrame((dt, now) => { if (released >= 0.999) setStraps(1, now / 1000); });
+  ctrl.addFrame(() => { warmStep?.(); });
 
   // --- float path: waypoints are Object3Ds in the cockpit frame (couch eye, over the head rest, in front of the hatch, hatch mouth, collar end)
   const named = (n) => model.getObjectByName(n);
@@ -221,6 +222,7 @@ function installAft(group, model, ctrl, { screenLight }) {
 
   // --- the cabin: stands upright behind the aft bulkhead, in the cockpit's frame (identity rotation); its -Z bulkhead hatch meets the collar end (passageEnd)
   let attached = null;
+  let warmStep = null; // prepareCabin's per-frame GPU upload, run from the frame hook below
   const viewer = new THREE.Vector3();
   const lightTarget = new THREE.Vector3();
   const _cabinLocal = new THREE.Vector3();
@@ -269,6 +271,10 @@ function installAft(group, model, ctrl, { screenLight }) {
         renderer.setRenderTarget(previous);
         await done;
       } finally { renderer.setRenderTarget(previous); }
+      await new Promise((resolve) => {
+        const step = makeCabinUploader(renderer, root, cabin, graphics);
+        warmStep = () => { let done = true; try { done = step(); } catch { /* the warm-up is only an optimisation */ } if (done) { warmStep = null; resolve(); } };
+      });
     }
     cabin.visible = false;
     group.userData.preparedCabin = cabin;
@@ -319,6 +325,40 @@ function installAft(group, model, ctrl, { screenLight }) {
   });
 }
 const _q2 = new THREE.Quaternion(), _e2 = new THREE.Euler();
+
+// First draw of the cabin uploads ~115k triangles and its textures and builds the GPU pipelines of its materials (a stall of 100 to 250 ms in one frame). Do it ahead of time,
+// a few meshes per frame (graphics calls the cockpit's frame hooks before it renders, so the extra draw never nests in a frame), into the composer's own input buffer
+// (same attachments as the real frame, so the pipelines built now are the ones the real frame uses), scissored to a 16 px corner, with the real camera (the cockpit's
+// viewer hook reads that camera). Returns a per-frame step: step() -> true when everything has been drawn once.
+function makeCabinUploader(renderer, root, cabin, graphics) {
+  const camera = graphics.camera;
+  const meshes = [];
+  cabin.traverse((o) => { if (o.isMesh && o.visible) meshes.push(o); });
+  const target = graphics.composer?.inputBuffer ?? null;
+  const box = new THREE.Vector4();
+  let i = 0, n = 3; // meshes per frame, adapted to the measured CPU cost of the draw (uploads happen inside it)
+  return () => {
+    if (!camera || !cabin.parent || i >= meshes.length) { meshes.forEach((m) => { m.visible = true; }); cabin.visible = false; return true; }
+    const slice = new Set(meshes.slice(i, i + n));
+    i += slice.size;
+    meshes.forEach((m) => { m.visible = slice.has(m); });
+    const previous = renderer.getRenderTarget(), scissorWas = renderer.getScissorTest();
+    renderer.getScissor(box);
+    cabin.visible = true;
+    renderer.setRenderTarget(target);
+    renderer.setScissorTest(true); renderer.setScissor(0, 0, 16, 16);
+    const t0 = performance.now();
+    try { renderer.render(root, camera); } finally {
+      const ms = performance.now() - t0;
+      renderer.setScissorTest(scissorWas); renderer.setScissor(box); renderer.setRenderTarget(previous);
+      cabin.visible = false;
+      n = ms > 8 ? Math.max(1, n >> 1) : ms < 3 ? Math.min(30, n * 2) : n;
+    }
+    if (i >= meshes.length) { meshes.forEach((m) => { m.visible = true; }); return true; }
+    return false;
+  };
+}
+
 
 /** Flight-deck cockpit first (it is the fallback while the GLB loads and when it fails); hot-swap the capsule cabin in when ready. */
 export function createCapsuleCockpit(id, createFallback) {
