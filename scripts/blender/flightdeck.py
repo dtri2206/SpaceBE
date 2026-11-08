@@ -1288,6 +1288,7 @@ WING_LEN = (HINGE[0] - XL) / math.cos(WING_ANG)
 WING_DROP = WING_LEN * math.sin(WING_ANG)
 
 # ------------------------------------------------------------------ build: window wall
+WIN_PLUGS = []   # world-space corner quads of the open forward window holes (used by the leak scan only)
 def build_windows():
     b = O('windows')
     for i, (p0, p1, t) in enumerate(FACETS):
@@ -1299,8 +1300,9 @@ def build_windows():
         a_lo = max(poly[0][0], poly[3][0]) + 0.035
         a_hi = min(poly[1][0], poly[2][0]) - 0.035
         b_lo, b_hi = 0.03, (TOP - SILL) / ey.y - 0.035
+        WIN_PLUGS.append([wpos(fr, (a_lo, b_lo, 0.0)), wpos(fr, (a_hi, b_lo, 0.0)), wpos(fr, (a_hi, b_hi, 0.0)), wpos(fr, (a_lo, b_hi, 0.0))])
         with fr:
-            b.acc.add('frame', slab_geo(shrink(poly, 0.002), [rrect(a_lo, a_hi, b_lo, b_hi, 0.04, 4)], 0.10))
+            b.acc.add('frame', slab_geo(grow(poly, 0.004), [rrect(a_lo, a_hi, b_lo, b_hi, 0.04, 4)], 0.10))
 
 # ------------------------------------------------------------------ display pages (emissive images, for the renders; the game draws these live later)
 D_BG = (0.012, 0.025, 0.05)
@@ -1481,7 +1483,7 @@ def build_walls():
         wa0, wa1 = sorted((az(z0), az(z1)))
         win = rrect(wa0, wa1, y0, y1, 0.05, 3)
         strip = [(az(-0.25), -0.02), (az(0.15), -0.28), (az(0.15), 0.0), (az(-0.25), 0.0)]   # forward of the seat backs only
-        cells = auto_cells(strip, 0.22, 0.14, 0.015, 0.02, seed=3 + side)    # nothing aft of the seats: plain wall there
+        cells = []    # no switch panels on the side walls: the strip beside the forward panel was cut by the wing slab where the surfaces converge
         # a band of breaker panels forward of the window, on the facet side of the wall, above the console
         with fr:
             items = snap_items(cells, 'wall')
@@ -1502,7 +1504,6 @@ def build_ceiling():
     outline = rect((XL - 0.06, XR + 0.06, -1.05, ZB + 0.06))
     wins = []     # the two rear overhead windows are gone: solid roof panels over the seats instead
     cells = []
-    cells += auto_cells(rect((-0.58, 1.72, 0.84, 0.97)), 0.26, 0.2, 0.0, 0.02, seed=45)
     with fr:
         items = snap_items(cells, 'ceil')
         b.acc.add('clay', slab_geo(outline, [hole_of(it) for it in items], 0.08))
@@ -1575,22 +1576,45 @@ def hatch_canvas():
     return cv
 
 def build_hatch(b, HA):
-    # framed round-cornered passage hatch in the aft bulkhead (local frame: a = -x, b = y, +z toward the crew)
-    outer = rrect(HA - HATCH_W - 0.05, HA + HATCH_W + 0.05, HATCH_B0, HATCH_B1 + 0.05, 0.11, 5)
-    inner = rrect(HA - HATCH_W, HA + HATCH_W, HATCH_B0 + 0.03, HATCH_B1, 0.07, 5)
-    b.acc.add('steel', xform(slab_geo(outer, [inner], 0.05), None, (0, 0, 0.045)))
-    b.acc.add('clay', xform(slab_geo(inner, [], 0.04), None, (0, 0, 0.022)))            # the door leaf, recessed in the frame
-    for by in (-0.30, -0.62, -0.94):                                                       # hinges on the left edge (a larger)
-        b.box('steel', 0.05, 0.13, 0.02, HA + HATCH_W - 0.01, by, 0.032, bevel=0.004)
-        b.cyl('alu_dark', 0.011, 0.14, HA + HATCH_W + 0.02, by, 0.04, axis='y')
-    b.cyl('steel', 0.042, 0.03, HA - 0.16, -0.62, 0.037, axis='z', n=16)                  # latch boss
-    b.box('steel', 0.17, 0.03, 0.026, HA - 0.16, -0.62, 0.062, bevel=0.006)               # latch handle
-    b.cyl('steel', 0.085, 0.012, HA, -0.38, 0.03, axis='z', n=24)                          # porthole ring + dark glass
-    b.cyl('dash_dark', 0.066, 0.016, HA, -0.38, 0.032, axis='z', n=24)
-    b.box('hazard', 2 * HATCH_W - 0.12, 0.02, 0.004, HA, -1.07, 0.026, bevel=0)
+    """Passage hatch in the aft bulkhead (frame: a = -x, b = y, +z toward the crew). A jamb ring set into the wall with a visible reveal,
+    a rubber seal, a thick door leaf with a recessed inner panel, three hinges tied to both leaf and jamb, a latch with escutcheon and keeper,
+    a framed porthole, a kick plate, a floor sill and the placard."""
+    W = HATCH_W
+    ob0, ob1 = HATCH_B0, HATCH_B1
+    jamb_out = rrect(HA - W - 0.07, HA + W + 0.07, ob0, ob1 + 0.07, 0.12, 5)
+    opening = rrect(HA - W, HA + W, ob0 + 0.03, ob1, 0.08, 5)
+    b.acc.add('steel', xform(slab_geo(jamb_out, [opening], 0.08), None, (0, 0, 0.06)))          # jamb: z -0.02 .. 0.06, tied into the wall
+    seal_in = rrect(HA - W + 0.012, HA + W - 0.012, ob0 + 0.042, ob1 - 0.012, 0.066, 5)
+    b.acc.add('rubber', xform(slab_geo(opening, [seal_in], 0.024), None, (0, 0, 0.040)))        # rubber seal line around the leaf
+    leaf_out = seal_in
+    pane = rrect(HA - W + 0.052, HA + W - 0.052, ob0 + 0.082, ob1 - 0.052, 0.04, 5)
+    b.acc.add('clay', xform(slab_geo(leaf_out, [pane], 0.07), None, (0, 0, 0.032)))             # door leaf rim: z -0.038 .. 0.032
+    b.acc.add('hood', xform(slab_geo(pane, [], 0.03), None, (0, 0, 0.022)))                     # recessed inner panel, 10 mm below the rim
+    # kick plate and floor sill
+    b.box('steel', 2 * W - 0.14, 0.10, 0.006, HA, ob0 + 0.15, 0.025, bevel=0.002)
+    b.box('steel', 2 * W + 0.16, 0.02, 0.07, HA, ob0 + 0.01, 0.03, bevel=0.004)
+    b.box('hazard', 2 * W - 0.14, 0.014, 0.004, HA, ob0 + 0.027, 0.066, bevel=0)
+    # three hinges on the left edge: barrel on the seal line, one strap on the leaf rim and one on the jamb
+    for by in (-0.30, -0.62, -0.94):
+        hx = HA + W + 0.0
+        b.cyl('alu_dark', 0.012, 0.13, hx, by, 0.049, axis='y', n=12)
+        b.box('steel', 0.062, 0.12, 0.008, hx - 0.030, by, 0.036, bevel=0.002)                   # leaf strap (on the rim face 0.032)
+        b.box('steel', 0.062, 0.12, 0.008, hx + 0.030, by, 0.064, bevel=0.002)                   # jamb strap (on the jamb face 0.06)
+        b.cyl('steel', 0.006, 0.014, hx - 0.045, by, 0.042, axis='z', n=8)                      # rivet heads
+    # latch: escutcheon plate, boss, lever, and the keeper on the jamb
+    lx = HA - W + 0.095
+    b.box('steel', 0.075, 0.17, 0.006, lx, -0.62, 0.025, bevel=0.003)
+    b.cyl('alu_dark', 0.03, 0.018, lx, -0.62, 0.037, axis='z', n=16)
+    b.box('steel', 0.15, 0.026, 0.018, lx + 0.04, -0.62, 0.055, bevel=0.006)
+    b.cyl('red', 0.007, 0.006, lx, -0.70, 0.031, axis='z', n=10)                                # lock indicator
+    b.box('steel', 0.032, 0.09, 0.008, HA - W - 0.02, -0.62, 0.064, bevel=0.002)                # keeper on the jamb
+    # porthole with a steel ring and glass over a dark recess
+    b.cyl('steel', 0.09, 0.012, HA, -0.40, 0.028, axis='z', n=28)
+    b.cyl('dash_dark', 0.068, 0.018, HA, -0.40, 0.030, axis='z', n=28)
+    b.cyl('hudglass', 0.068, 0.004, HA, -0.40, 0.040, axis='z', n=28)
     def cb(rect_):
         with fr_hatch:
-            O('aft').panel('label2', 0.34, 0.08, HA, -0.22, 0.0225, rect_)
+            O('aft').panel('label2', 0.34, 0.08, HA, -0.205, 0.0225, rect_)
     PN_CUSTOM.append(('hatchplacard', hatch_canvas(), cb))
 
 # ------------------------------------------------------------------ build: overhead canopy: fills the ceiling over both seats, centre nearly flat, wings dropping 30 degrees
@@ -1611,7 +1635,7 @@ def build_canopy():
             xs.append(xs[-1] + w * f)
         for k in range(len(fr_cols)):
             pts = [(xs[k], y0, z0), (xs[k + 1], y0, z0), (xs[k + 1], y1, z1), (xs[k], y1, z1)]
-            poly_panel(b, pts, (0, -1, 0), zone='overhead', red=red, seed=40 + row * 3 + k)
+            poly_panel(b, pts, (0, -1, 0), zone='overhead', red=red, bays=(row < 2), seam=(row < 2), seed=40 + row * 3 + k)   # row 3 is behind the seat backs: plain
         for s, hx in ((-1, HINGE[0]), (1, HINGE[1])):
             dx = s * WING_LEN * math.cos(WING_ANG); dy = -WING_DROP
             pts = [(hx, y0, z0), (hx, y1, z1), (hx + dx, y1 + dy, z1), (hx + dx, y0 + dy, z0)]
@@ -1627,7 +1651,7 @@ def build_canopy():
         poly_panel(b, [(hx, y, z_r1), (xw, y, z_r1), (xw, y - WING_DROP, z_r1)], (0, 0, 1), seed=80, bays=False)
     ze = OZ[4]; y = oy(ze)                   # rear fascia up to the ceiling, facing aft
     pts = [(XL, y - WING_DROP, ze), (HINGE[0], y, ze), (HINGE[1], y, ze), (XR, y - WING_DROP, ze), (XR, CY, ze), (XL, CY, ze)]
-    poly_panel(b, pts, (0, 0, 1), zone='wall', wmax=0.28, hmax=0.2, seed=81)
+    poly_panel(b, pts, (0, 0, 1), zone='wall', bays=False, seam=False, wmax=0.28, hmax=0.2, seed=81)
 
 # ------------------------------------------------------------------ build: glare shield (thick hood) with the eyebrow strip of buttons, HUD units
 HOOD_T = 0.08
@@ -1718,7 +1742,7 @@ FM_BC = -0.2175
 def build_panel():
     b = O('panel')
     with IPF:
-        strips = [(0.175, 0.335, -0.415, 0.14), (0.775, 0.975, -0.415, 0.14), (1.43, 1.545, -0.415, 0.14), (-0.205, -0.17, -0.31, -0.11)]
+        strips = [(0.175, 0.335, -0.415, 0.14), (0.775, 0.975, -0.415, 0.14)]   # the narrow end columns, where the surfaces converge toward the wings, stay plain
         items = []
         for k, s in enumerate(strips):
             items += snap_items(auto_cells(rect(s), 0.17, 0.14, 0.0, 0.016, seed=100 + k, minsize=0.04), 'ip', cw_one=(k == 0))
@@ -1747,7 +1771,7 @@ def build_panel():
         L = abs(hx - xw) / math.cos(wa)
         d = Vector((s * L * math.cos(wa), 0, L * math.sin(wa)))
         top = Vector((hx, ip_y(IP_B1), ip_z(IP_B1))); bot = Vector((hx, ip_y(IP_B0), ip_z(IP_B0)))
-        poly_panel(b, [top, bot, bot + d, top + d], (-s * 0.5, 0.3, 0.8), thick=0.05, zone='ip', seed=140 + (s > 0))
+        poly_panel(b, [top, bot, bot + d, top + d], (-s * 0.5, 0.3, 0.8), thick=0.05, zone='ip', bays=False, seam=False, seed=140 + (s > 0))   # wing: converging surface, plain
         # footwell kick panel: closes the gap below the wing panel, from its lower edge down to the floor, so no sky shows by the feet
         poly_panel(b, [bot, bot + d, Vector((bot.x + d.x, FY, bot.z + d.z)), Vector((bot.x, FY, bot.z))], (-s * 0.5, 0.0, 0.8), thick=0.05, bays=False, seam=False)
         poly_panel(b, [(hx, yb + 0.02, zb - 0.02), (hx, bot.y, bot.z), (hx, FY, bot.z), (hx, FY, -0.78)], (s, 0, 0), thick=0.05, bays=False, seam=False)   # the triangle between kick panel and fascia
@@ -2078,7 +2102,7 @@ def panel_scan():
         M = c['M']; n = M @ Vector((0, 0, 1)); xa = M @ Vector((1, 0, 0)); ya = M @ Vector((0, 1, 0)); fw, fh = c['sp']['fw'], c['sp']['fh']
         res = []
         for (ux, uy) in ((0, 0), (-1, -1), (1, -1), (-1, 1), (1, 1)):
-            q = c['org'] + xa * (ux * (fw / 2 - 0.004)) + ya * (uy * (fh / 2 - 0.004)) + n * 0.012
+            q = c['org'] + xa * (ux * (fw / 2 - 0.002)) + ya * (uy * (fh / 2 - 0.002)) + n * 0.012
             ok, loc, nrm, idx, ob, mat = bpy.context.scene.ray_cast(dg, Vector(G(q)), Vector(G(-n)), distance=0.2)
             d = (loc - Vector(G(q))).length if ok else None
             res.append((d, ob.name if ok else None))
@@ -2089,6 +2113,52 @@ def panel_scan():
 PBAD = panel_scan()
 log('PANEL PLACEMENT SCAN:', len(PBAD), 'of', len(PN_CELLS), 'panels not sitting cleanly on their surface')
 for pb in PBAD[:40]: log('  ', pb)
+def leak_scan():
+    plugs = []
+    for k, q in enumerate(WIN_PLUGS):
+        me = bpy.data.meshes.new('plug%d' % k); me.from_pydata([G(v) for v in q], [], [(0, 1, 2, 3)]); me.update()
+        ob = bpy.data.objects.new('plug%d' % k, me); scene.collection.objects.link(ob); plugs.append(ob)
+    bpy.context.view_layer.update()
+    try:
+        return _leak_scan()
+    finally:
+        for ob in plugs:
+            bpy.data.objects.remove(ob, do_unlink=True)
+
+def _leak_scan():
+    """Full-sphere rays from both seat eyes plus head offsets (+-10 cm): every ray must hit something, except through the forward windows
+    (open holes: yaw within 80 deg of forward, above the sill) and the side windows (they carry glass). Returns the leaking rays."""
+    dg = bpy.context.evaluated_depsgraph_get()
+    leaks = []
+    offs = [(0, 0, 0)] + [(sx * 0.1, sy * 0.1, sz * 0.1) for sx in (-1, 1) for sy in (-1, 1) for sz in (-1, 1)]
+    for ex in (0.0, 1.10):
+        for off in offs:
+            o = Vector(G((ex + off[0], off[1], off[2])))
+            for yaw in range(-180, 180, 3):
+                for pitch in range(-90, 91, 3):
+                    y, pi = math.radians(yaw), math.radians(pitch)
+                    d = Vector(G(Vector((math.sin(y) * math.cos(pi), math.sin(pi), -math.cos(y) * math.cos(pi)))))
+                    ok, loc, nrm, idx, ob, mat = bpy.context.scene.ray_cast(dg, o, d, distance=50)
+                    if ok:
+                        continue
+                    if True:
+                        leaks.append((ex, tuple(round(v, 2) for v in off), yaw, pitch))
+    return leaks
+LEAKS = leak_scan()
+log('LEAK SCAN (full sphere, head offsets):', len(LEAKS), 'rays escape outside the forward windows')
+_bins = {}
+for _e, _o, _y, _p in LEAKS:
+    _bins.setdefault((_e, _y // 20 * 20, _p // 20 * 20), []).append((_o, _y, _p))
+for _k, _v in sorted(_bins.items())[:40]:
+    log('  leak bin eye x=%.2f yaw %d pitch %d: %d rays, e.g. %s' % (_k[0], _k[1], _k[2], len(_v), _v[0]))
+if '--probe' in argv:
+    dg_ = bpy.context.evaluated_depsgraph_get()
+    for yawd in (30, 40, 50, 60):
+        for pitd in (-20, -30, -40):
+            y_, p_ = math.radians(yawd), math.radians(pitd)
+            d_ = Vector(G(Vector((-math.sin(y_) * math.cos(p_), math.sin(p_), -math.cos(y_) * math.cos(p_)))))
+            ok_, loc_, nrm_, idx_, ob_, mat_ = bpy.context.scene.ray_cast(dg_, Vector(G((0, 0, 0))), d_, distance=30)
+            log('PROBE yaw', yawd, 'pitch', pitd, ob_.name if ok_ else None, ob_.data.materials[ob_.data.polygons[idx_].material_index].name if ok_ else None, [round(v, 2) for v in (loc_.x, loc_.z, -loc_.y)] if ok_ else None)
 RAY_BAD = ray_check()
 log('RAY CHECK blocked corners:', RAY_BAD)
 
@@ -2210,6 +2280,7 @@ def render_all(outdir):
         (14, 'over-shoulder', (0.55, -0.2, 0.45), d(180, -3), (0, 1, 0), 80, (1280, 800), False),
         (15, 'seat-close', (0.55, 0.0, 0.5), d(-35, -22), (0, 1, 0), 55, (1280, 800), False),
         (16, 'roof-aft', (0, 0, 0), d(180, 62), (0, 1, 0), 85, (1280, 800), False),
+        (17, 'ip-right-end', (0, 0, 0), Vector(wpos(IPF, (0.88, -0.1, 0.0))).normalized(), (0, 1, 0), 30, (1280, 800), False),
         (7, 'overview', (-1.9, 1.15, 0.05), (Vector((0.55, -0.15, 0.05)) - Vector((-1.9, 1.15, 0.05))).normalized(), (0, 1, 0), 52, (1280, 800), False),
     ]
     t_all = time.time()

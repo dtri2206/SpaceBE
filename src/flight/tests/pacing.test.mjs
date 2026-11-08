@@ -166,12 +166,23 @@ test('objectives: one line per phase; checklist steps only move forward and tick
   assert.equal(e.update('chute', { blackout: 'after' }).steps[3].status, 'current');
 });
 
+test('pacing: a manual-control window forces 1x', () => {
+  const fc = mk({ start: { altitude: 20000, speed: 400, flightPathDeg: 60 } });
+  const p = createPacer();
+  p.stepManual(1); p.stepManual(1);
+  assert.equal(p.decide(paceContext(fc, { countdown: false }), 1 / 60).warp, 4);
+  const d = p.decide(paceContext(fc, { manual: true }), 1 / 60);
+  assert.equal(d.warp, 1); assert.equal(d.reason, 'manual');
+});
+
 test('ratings: documented thresholds, text, stored in order, cleared on a new mission', () => {
-  const good = rateAscent({ avgDeviationDeg: 2.1, fuelLeftPct: 34, peakG: 3.8 });
-  assert.equal(good.stars, 3); assert.match(good.text, /^ASCENT ★★★ · avg deviation 2\.1° · fuel left 34 % · peak 3\.8 g/);
-  assert.equal(rateAscent({ avgDeviationDeg: 7, fuelLeftPct: 34, peakG: 3.8 }).stars, 2);
-  assert.equal(rateAscent({ avgDeviationDeg: 2, fuelLeftPct: 1, peakG: 3.8 }).stars, 1);
-  assert.equal(rateAscent({ avgDeviationDeg: 2, fuelLeftPct: 30, peakG: 6.5 }).stars, 2);
+  const good = rateAscent({ fuelLeftPct: 34, peakG: 3.8, manualFlown: true, manualAccuracyPct: 90 });
+  assert.equal(good.stars, 3); assert.match(good.text, /^ASCENT ★★★ · manual accuracy 90 % · fuel left 34 % · peak 3\.8 g/);
+  assert.equal(rateAscent({ fuelLeftPct: 34, peakG: 3.8, manualFlown: true, manualAccuracyPct: 70 }).stars, 2);
+  assert.equal(rateAscent({ fuelLeftPct: 1, peakG: 3.8, manualFlown: true, manualAccuracyPct: 95 }).stars, 1);
+  assert.equal(rateAscent({ fuelLeftPct: 30, peakG: 6.5, manualFlown: true, manualAccuracyPct: 95 }).stars, 2);
+  const auto = rateAscent({ fuelLeftPct: 34, peakG: 3.8 });
+  assert.equal(auto.stars, 1); assert.match(auto.text, /^ASCENT ★☆☆ · flown by the computer · fuel left 34 % · peak 3\.8 g/);
   const land = rateLanding({ touchdownSpeed: 1.4, offsetM: 42, fuelLeftPct: 12 });
   assert.equal(land.stars, 3); assert.match(land.text, /^LANDING ★★★ · 1\.4 m\/s · 42 m from target · fuel 12 %/);
   assert.equal(rateLanding({ touchdownSpeed: 2.9, offsetM: 42, fuelLeftPct: 12 }).stars, 1);

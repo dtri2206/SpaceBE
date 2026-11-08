@@ -5,6 +5,8 @@
 //   ORBIT   coast; T = transfer burn to Mars (Δv from balance.json deltaVKmS.transfer) → CRUISE (Role 4).
 //   ENTRY   Mars entry (heat shield, chute); below 6 km moves to LANDING on its own.
 //   LANDING powered descent and touchdown; E after landing → INTERIOR (Role 2 surface).
+// The flight computer (autopilot.js) flies the whole mission; the player watches and takes the stick in short manual
+// windows (manualControl.js): F when offered, mouse to aim, Space to lock, Esc to give it back. Only the ascent window for now.
 // Failures emit flight:failed; Role 4's story module charges the penalty and shows the ending.
 import * as THREE from 'three';
 import { assets, createLaunchSite, createSpaceScene, getTerrainHeight, graphics, cinematic } from '/src/graphics/index.js';
@@ -12,16 +14,20 @@ import { audio } from '/src/audio/index.js';
 import { G0, PLANETS, contract, economy, events, getShip, input, requestState, ui } from '/src/core/index.js';
 import { astronaut } from '/src/surface/astronaut.js';
 import { getMars } from '/src/surface/scenes.js';
-import { FlightController } from './FlightController.js';
+import { FlightController, TUNING } from './FlightController.js';
 import { createCockpitControls, createCockpitIndicators } from './cockpitControls.js';
 import { ascentGuide, assistReadout, landingGuide, predictPath } from './flightAssist.js';
 import { createDebrisField } from './debris.js';
 import { atmosphereTop, pressureRatio } from './atmosphere.js';
+import { createAutopilot } from './autopilot.js';
+import { MANUAL, createManualWindow, dirFromOffsets, frameFor, offsetsFromDir } from './manualControl.js';
+import { createManualAimPanel } from './hud/manualAimPanel.js';
 import { createPacer, createEventDetector, paceContext } from './pacing.js';
 import { approachBack, computeCorridor, corridorGauge, predictInterface } from './corridor.js';
 import { createChecklist, objectiveText } from './objectives.js';
 import { clearPhaseRatings, createPhaseTracker, getPhaseRatings } from './rating.js';
-import { dot } from './vec.js';
+import { attitudeDeg } from './attitude.js';
+import { dot, qRotate, LOCAL_RIGHT, LOCAL_UP } from './vec.js';
 import { STARTS } from './presets.js';
 import { createFlightHUD } from './hud/createFlightHUD.js';
 import { createSteeringDisplay, createGuidanceReference } from './steering.js';
@@ -55,8 +61,8 @@ const TELEMETRY_EVERY = 0.5; // s (contract: flight:telemetry about twice per se
 const toCockpit = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2); // nose +Y → cockpit −Z
 
 // Mission state that survives state changes (LAUNCH → ORBIT keeps the same controller; LANDING ⇄ INTERIOR too).
-const mission = { fc: null, planetId: null, fuelForMars: null, debrisDone: false, tracker: createPhaseTracker(), card: null, ascentList: createChecklist('ascent'), entryList: createChecklist('entry'), blackout: 'before' };
-const ENTRY_FPA = -22.8; // deg at the atmosphere's edge: inside the corridor but off its centre, so a small trim (W/S) pays off
+const mission = { fc: null, autopilot: createAutopilot(), manualAscent: createManualWindow('ascent', MANUAL.windows.ascent), planetId: null, fuelForMars: null, debrisDone: false, tracker: createPhaseTracker(), card: null, ascentList: createChecklist('ascent'), entryList: createChecklist('entry'), blackout: 'before' };
+const ENTRY_FPA = -22.8; // deg at the atmosphere's edge: inside the corridor but off its centre, so a small RCS trim pays off
 const ENTRY_APPROACH = 40; // s of approach before the atmosphere (time to trim the corridor)
 const CARD_SECONDS = 6;
 const WARP_KEYS = { Period: 1, Comma: -1 };
@@ -68,6 +74,7 @@ const v3 = (p) => new THREE.Vector3(p.x, p.y, p.z);
 function newController(planetId, start, fuel) {
   const fc = new FlightController({ bus: events, planets: PLANETS, g0: G0, planetId, shipSpec: getShip(), start, fuel });
   mission.fc = fc;
+  mission.autopilot = createAutopilot(); // one flight computer per controller
   mission.planetId = planetId;
   return fc;
 }
@@ -85,6 +92,7 @@ function controllerFor(state) {
     mission.fuelForMars = null;
     mission.debrisDone = false;
     clearPhaseRatings(); // a new mission starts: forget last flight's ratings
+    mission.manualAscent = createManualWindow('ascent', MANUAL.windows.ascent); // the ascent window is offered once per mission
     mission.tracker = createPhaseTracker();
     mission.ascentList = createChecklist('ascent');
     mission.entryList = createChecklist('entry');
@@ -149,7 +157,7 @@ function showModel(object, on) {
 }
 
 // Under the parachute the ship hangs nose-up, so the window shows only sky. Tip the nose forward and 35° down so
-// the ground and horizon are in view; BURN NOW (hold Space) still turns it retrograde for the burn.
+// the ground and horizon are in view; the flight computer still turns it retrograde for the burn.
 function faceTheGround(fc) {
   const up = v3(fc.up);
   const along = v3(fc.vel).projectOnPlane(up);
@@ -330,6 +338,113 @@ function placeChaseCamera(camera, centre, branch, vel, forward, dt, heightOverGr
   camera.lookAt(centre);
 }
 
+// ---------- manual control (windows: manualControl.js) ----------
+const SMOOTH = (x) => x * x * (3 - 2 * x);
+const ZOOM_SECONDS = 0.6;
+const ZOOM_FILL = 0.75; // the display's height fills this much of the camera's vertical FOV
+const BRAKE_PULSE = 0.3; // s the ASSIST/brake switch pulses after a lock (animation only)
+const callout = (text, t = CALLOUT_SECONDS) => { if (s) s.callout = { text, t }; };
+
+function offerManualUi() {
+  if (!s) return;
+  callout('Gravity turn coming up. The stick is yours if you want it.', MANUAL.windows.ascent.offerSeconds);
+  audio.play('radio.blip');
+  s.pacer.event('manual_offer', s.fc.t, 0.5); // back to 1× now
+}
+
+function startManual() {
+  const w = mission.manualAscent;
+  if (!s || s.phase0?.active || !w.offered || !w.take()) return;
+  s.chase = false; // always from the cockpit (the camera zooms into its centre display)
+  try { input.lockPointer(); } catch { /* pointer lock may be refused */ }
+  audio.play('cockpit.switch');
+  callout('You have the stick.');
+  s.zoom.target = 1;
+}
+
+// ends = text of the callout; sound/pulse only for a lock
+function finishManual(text, { lock = false } = {}) {
+  if (!s) return;
+  callout(text);
+  if (lock) { audio.play('cockpit.switch'); s.brakePulse = BRAKE_PULSE; }
+  s.zoom.target = 0;
+}
+
+function lockManual() {
+  const w = mission.manualAscent;
+  if (!s || s.phase0?.active || !w.lock()) return;
+  finishManual('Guidance locked. Computer has it.', { lock: true });
+}
+
+function cancelManual() {
+  const w = mission.manualAscent;
+  if (!s || !w.cancel()) return;
+  finishManual('Computer has it.');
+}
+
+// Zoom pose for a cockpit: in the rig's local frame (camera = child of the rig at the pilot's eye = origin).
+const _m = new THREE.Matrix4(), _q = new THREE.Quaternion();
+function displayInfo(rig, camera, cockpit) {
+  const cached = s.zoomCache.get(cockpit);
+  if (cached !== undefined && (cached === null || Math.abs(cached.aspect - camera.aspect) < 0.05)) return cached;
+  const mesh = cockpit.getObjectByName('centreDisplay');
+  if (!mesh?.geometry) { s.zoomCache.set(cockpit, null); return null; }
+  mesh.geometry.computeBoundingBox();
+  const bb = mesh.geometry.boundingBox;
+  const local = [];
+  for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) local.push(new THREE.Vector3(x, y, z));
+  rig.updateWorldMatrix(true, true);
+  const toRig = _m.copy(rig.matrixWorld).invert().multiply(mesh.matrixWorld).clone();
+  const pts = local.map((p) => p.clone().applyMatrix4(toRig));
+  const centre = pts.reduce((a, p) => a.add(p), new THREE.Vector3()).multiplyScalar(1 / pts.length);
+  const eyeDir = centre.clone().negate();
+  const dist = eyeDir.length();
+  if (dist < 1e-4) { s.zoomCache.set(cockpit, null); return null; }
+  eyeDir.normalize();
+  const quat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(centre.clone().add(eyeDir), centre, UP));
+  const inv = quat.clone().invert();
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const p of pts) { const v = p.clone().sub(centre).applyQuaternion(inv); minX = Math.min(minX, v.x); maxX = Math.max(maxX, v.x); minY = Math.min(minY, v.y); maxY = Math.max(maxY, v.y); }
+  const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+  let d = Math.max((maxY - minY) / (2 * tan * ZOOM_FILL), (maxX - minX) / (2 * tan * camera.aspect * 0.9));
+  d = Math.min(d, dist); // never beyond the eye
+  const pos = centre.clone().addScaledVector(eyeDir, d);
+  const info = { mesh, corners: local, pos, quat: new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(pos, centre, UP)), aspect: camera.aspect };
+  s.zoomCache.set(cockpit, info);
+  return info;
+}
+
+// Blend the cockpit camera from the normal pose (origin, lookQ) to the display zoom pose.
+function applyZoom(camera, rig, cockpit, lookQ) {
+  const e = SMOOTH(s.zoom.k);
+  if (e <= 0) return;
+  const info = displayInfo(rig, camera, cockpit);
+  if (!info) return;
+  camera.position.copy(info.pos).multiplyScalar(e);
+  camera.quaternion.copy(lookQ).slerp(info.quat, e);
+}
+
+// Bounding rect (CSS px) of the centre display seen from `camera`, or null.
+function displayRect(camera, rig, cockpit) {
+  const info = displayInfo(rig, camera, cockpit);
+  if (!info) return null;
+  camera.updateWorldMatrix(true, false);
+  info.mesh.updateWorldMatrix(true, false);
+  const el = graphics.renderer?.domElement;
+  const box = el?.getBoundingClientRect?.();
+  const W = box?.width || window.innerWidth, H = box?.height || window.innerHeight, L = box?.left || 0, T = box?.top || 0;
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (const c of info.corners) {
+    const p = info.mesh.localToWorld(c.clone()).project(camera);
+    if (p.z > 1) return null;
+    const x = L + (p.x + 1) / 2 * W, y = T + (1 - p.y) / 2 * H;
+    minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+  }
+  return { left: minX, top: minY, width: maxX - minX, height: maxY - minY };
+}
+
+const clampUnit = (v) => (Number.isFinite(v) ? Math.max(-1, Math.min(1, v)) : 0);
+
 // ---------- transfer burn (ORBIT → CRUISE) ----------
 function transferBurn() {
   const fc = mission.fc;
@@ -359,6 +474,20 @@ export default {
       // set the outside camera for screenshots: orbit(yawDeg, pitchDeg, dist); `wheel` fakes a wheel step; chase(on) toggles the view
       orbit(yawDeg, pitchDeg, dist) { if (s) { s.orbit.yaw = THREE.MathUtils.degToRad(yawDeg); s.orbit.pitch = THREE.MathUtils.degToRad(pitchDeg); if (dist) s.orbit.dist = dist; s.cam.ready = false; } return s?.orbit; },
       wheel(delta) { if (s) s.orbit.dist = stepZoom(s.orbit.dist, delta); return s?.orbit.dist; },
+      manual: {
+        get state() { return mission.manualAscent.state; },
+        offer() { // force-offer the ascent window now, even if the guide step is not 'turn'
+          if (!s || !mission.manualAscent.offer()) return false;
+          s.debugDir = { ...s.fc.forward };
+          offerManualUi();
+          return true;
+        },
+        take() { startManual(); return mission.manualAscent.state; },
+        lock() { lockManual(); return mission.manualAscent.state; },
+        cancel() { cancelManual(); return mission.manualAscent.state; },
+        aim(yawDeg, pitchDeg) { mission.manualAscent.setAim(yawDeg, pitchDeg); return mission.manualAscent.readout().aim; },
+        track(on) { if (s) s.manualTrack = !!on; return !!s?.manualTrack; },
+      },
       chase(on) { if (s && !s.phase0?.active && s.chase !== on) { s.chase = on; if (on) { resetOrbit(s.orbit); s.cam.ready = false; } } return s?.chase; },
     }; // debug only
     setTimeout(prepareLaunchSite, 0); // after boot finished its own work
@@ -371,7 +500,7 @@ export default {
     const view = buildSpaceView(fc.planetId);
     s = {
       state, fc, view, surface: null, mode: null,
-      look: { yaw: 0, pitch: 0 }, orbit: createOrbit(state === 'LAUNCH' ? ZOOM_PAD : ZOOM_DEFAULT), cam: createChaseState(), chase: false, pacer: createPacer(), events: createEventDetector(), warpInfo: { warp: 1 }, assist: true,
+      look: { yaw: 0, pitch: 0 }, orbit: createOrbit(state === 'LAUNCH' ? ZOOM_PAD : ZOOM_DEFAULT), cam: createChaseState(), chase: false, zoom: { k: 0, target: 0 }, zoomCache: new Map(), brakePulse: 0, manualTrack: false, debugDir: null, pacer: createPacer(), events: createEventDetector(), warpInfo: { warp: 1 },
       corridor: fc.planetId === 'mars' && fc.altitude > atmosphereTop(fc.planet) ? computeCorridor(fc) : null,
       sinceTelemetry: 0, engineSound: false, done: false, indicators: createCockpitIndicators(), steering: createSteeringDisplay(), steeringPlan: createGuidanceReference(),
     };
@@ -386,15 +515,18 @@ export default {
     guideMark.textContent = '◎';
     guideMark.style.color = '#7dffa8';
     s.hud.root.append(guideMark);
+    s.aimPanel = createManualAimPanel({ parent: hudLayer });
     s.controls = createCockpitControls({
       input,
-      onToggleAssist: () => { if (s.phase0?.active) return; s.assist = !s.assist; },
+      onManual: startManual,
+      onLock: lockManual,
       isLanded: () => fc.landed,
       onStandUp: () => requestState('INTERIOR'),
     });
+    input.onEscape(cancelManual); // Esc during manual control gives the stick back (core clears it on every state change)
     if (state === 'LAUNCH') s.cam.heading.set(0, 0, 1); // on the pad "behind" is the clear side, away from the tower and tanks
     input.onPress('KeyC', () => {
-      if (s.phase0?.active) return;
+      if (s.phase0?.active || mission.manualAscent.active) return;
       s.chase = !s.chase;
       if (s.chase) { resetOrbit(s.orbit); s.cam.ready = false; } // behind and above, zoom kept
     });
@@ -446,20 +578,22 @@ export default {
     if (!s) return;
     const { fc, view } = s;
     const mouse = input.mouseDelta();
-    if (Math.abs(mouse.x) < MAX_MOUSE_STEP && Math.abs(mouse.y) < MAX_MOUSE_STEP) {
+    const mouseOk = Math.abs(mouse.x) < MAX_MOUSE_STEP && Math.abs(mouse.y) < MAX_MOUSE_STEP;
+    const manualWin = mission.manualAscent;
+    if (manualWin.active) { /* the mouse aims the ○ (below), it neither looks around nor orbits */ }
+    else if (mouseOk) {
       if (s.chase) applyMouse(s.orbit, mouse.x, mouse.y); // outside: the mouse orbits the rocket, cockpit look untouched
       else {
         s.look.yaw = s.look.yaw - mouse.x * 0.002;
         s.look.pitch = Math.max(-1.2, Math.min(1.2, s.look.pitch - mouse.y * 0.002));
       }
     }
-    if (s.chase) s.orbit.dist = stepZoom(s.orbit.dist, input.wheelDelta?.()); // core input adds wheelDelta; none yet = no zoom
+    if (s.chase && !manualWin.active) s.orbit.dist = stepZoom(s.orbit.dist, input.wheelDelta?.()); // core input adds wheelDelta; none yet = no zoom
 
     if (s.phase0?.active) {
       fc.holdDown = true; fc.throttle = 0;
       s.steering.update(null, false, null, performance.now() / 1000);
       s.hud.setSteeringVisible(false);
-      s.controls.endFrame();
       s.phase0.update();
       s.hud.update(fc.telemetry, assistReadout(fc), true, { objective: s.phase0.objective });
       if (s.phase0.boarding) return; // cinematic owns the camera
@@ -479,25 +613,64 @@ export default {
       graphics.setView(ritualView.scene, ritualView.camera);
       return; // no physics, pacing, ratings, body or telemetry time during the ritual
     }
-    s.controls.poll();
     if (s.countdown > 0) {
       s.countdown = Math.max(0, COUNTDOWN - (performance.now() - s.countdownAt) / 1000);
       if (s.countdown <= IGNITION_AT && fc.throttle === 0) fc.throttle = 1; // main engine start at T-3
       if (s.countdown <= 0) fc.holdDown = false; // T-0: clamps release
     }
-    // pacing: time compression + automatic slow-down (pacing.js); physics stays at the fixed step
     const top = atmosphereTop(fc.planet);
     const approaching = fc.planetId === 'mars' && fc.altitude > top && !fc.landed;
-    const pilot = { ...s.controls.input };
-    if (state === 'ENTRY' && approaching) pilot.trim = pilot.pitch; // W/S trim the entry angle before the atmosphere (RCS, costs fuel)
     const ascent0 = ascentGuide(fc), landing0 = landingGuide(fc);
+
+    // manual-control window (ascent): offer at the gravity turn, once per mission
+    const win = mission.manualAscent;
+    if (win.state === 'idle' && MANUAL.windows.ascent.enabled && fc.planetId === 'earth' && fc.liftoffT !== null && !fc.failed
+        && ascent0?.step === 'turn' && state === 'LAUNCH') {
+      win.offer();
+      offerManualUi();
+    }
+    if (win.busy && (fc.failed || fc.planetId !== 'earth' || fc.landed)) { win.close(); s.zoom.target = 0; } // a failure ends the window: no stars
+    const auto = mission.autopilot.update(fc, { countdown: s.countdown > 0, corridor: s.corridor });
+    let pilot = auto;
+    let readout = null;
+    const dtMan = Math.min(dt, 0.1);
+    if (win.active) {
+      const guideDir = ascent0?.direction ?? s.debugDir;
+      if (!guideDir) { win.forceLock(); finishManual('Computer has it.', { lock: true }); } // the guide vanished
+      else {
+        s.manualFrame = frameFor(guideDir, fc.up);
+        if (s.manualTrack) win.setAim(win.target.yawDeg, win.target.pitchDeg);
+        readout = win.update(dtMan, { mouse: mouseOk ? mouse : { x: 0, y: 0 }, noseOffset: offsetsFromDir(s.manualFrame, fc.forward) });
+        s.manualReadout = readout;
+        if (win.active) pilot = { ...auto, aim: dirFromOffsets(s.manualFrame, readout.aim.yawDeg, readout.aim.pitchDeg) };
+        else if (readout.events.includes('autolocked')) finishManual('Time. Computer has it.', { lock: true });
+      }
+    } else if (win.offered) {
+      for (const ev of win.update(dtMan).events) if (ev === 'declined') { callout('Computer has it.'); s.zoom.target = 0; }
+    }
+    if (!win.busy) s.manualReadout = null;
+    s.zoom.k = Math.max(0, Math.min(1, s.zoom.k + (s.zoom.target > s.zoom.k ? dt : -dt) / ZOOM_SECONDS));
+    if (!win.active && s.zoom.target === 1) s.zoom.target = 0;
+    // pacing: time compression + automatic slow-down (pacing.js); physics stays at the fixed step
     const aligned = !ascent0 || dot(fc.forward, ascent0.direction) > Math.cos(THREE.MathUtils.degToRad(6));
-    const pace = paceContext(fc, { ascent: ascent0, landing: landing0, countdown: s.countdown > 0, trimming: !!pilot.trim, aligned });
+    const pace = paceContext(fc, { ascent: ascent0, landing: landing0, countdown: s.countdown > 0, trimming: !!pilot.trim, aligned, manual: win.busy });
     for (const name of s.events.update(pace)) s.pacer.event(name, pace.t);
     s.warpInfo = s.pacer.decide(pace, Math.min(dt, 0.1));
     fc.update(dt, pilot, { timeWarp: s.warpInfo.warp, stopOnNotice: true });
-    s.controls.endFrame();
-    const stickValues = s.indicators.update(pilot, fc.throttle, { assist: s.assist, brakeBurn: pilot.brake && fc.engineLit });
+    // cockpit stick/lever (animation only, never fed to physics)
+    const manualNow = win.active;
+    let stickPitch = 0, stickYaw = 0;
+    if (manualNow && readout) {
+      const nose = offsetsFromDir(s.manualFrame, fc.forward);
+      stickPitch = clampUnit((readout.aim.pitchDeg - nose.pitchDeg) / 5);
+      stickYaw = clampUnit((readout.aim.yawDeg - nose.yawDeg) / 5);
+    } else if (fc.omega) {
+      stickPitch = clampUnit(dot(fc.omega, qRotate(fc.orient, LOCAL_RIGHT)) / TUNING.maxTurnRate);
+      stickYaw = clampUnit(-dot(fc.omega, qRotate(fc.orient, LOCAL_UP)) / TUNING.maxTurnRate);
+    }
+    s.brakePulse = Math.max(0, s.brakePulse - dt);
+    const engineOff = fc.liftoffT !== null && fc.throttle === 0 && !fc.landed && fc.phase !== 'landed';
+    const stickValues = s.indicators.update({ pitch: stickPitch, yaw: stickYaw, brake: s.brakePulse > 0, cutoff: engineOff }, fc.throttle, { assist: manualNow, brakeBurn: !!pilot.brake && fc.engineLit });
     for (const c of [s.view?.cockpit, s.site?.cockpit, s.surface?.cockpit]) c?.userData?.setControls?.(stickValues);
     const t = fc.telemetry;
     const a = assistReadout(fc);
@@ -524,7 +697,7 @@ export default {
 
     // phase ratings (stars) + the numbers behind the entry corridor gauge
     const interfaceAngle = approaching ? predictInterface(fc)?.fpaDeg ?? null : null;
-    for (const r of mission.tracker.update(fc, { guideDir: ascent0?.direction ?? null, guideStep: ascent0?.step ?? null, corridor: s.corridor, interfaceAngleDeg: interfaceAngle })) mission.card = { text: r.text, t: CARD_SECONDS };
+    for (const r of mission.tracker.update(fc, { guideDir: ascent0?.direction ?? null, guideStep: ascent0?.step ?? null, corridor: s.corridor, interfaceAngleDeg: interfaceAngle, manualAscent: win.result() })) mission.card = { text: r.text, t: CARD_SECONDS };
     if (mission.card) { mission.card.t -= dt; if (mission.card.t <= 0) mission.card = null; }
 
     // automatic state moves
@@ -556,6 +729,7 @@ export default {
         sv.camera.position.set(0, 0, 0);
         sv.camera.up.set(0, 1, 0);
         sv.camera.quaternion.copy(lookQ);
+        applyZoom(sv.camera, sv.rig, sv.cockpit, lookQ);
       }
       const thr = t.thrust > 0 ? fc.throttle : 0;
       sv.flame.userData.set({ throttle: thr, airDensity: air });
@@ -584,6 +758,7 @@ export default {
         sv.camera.position.set(0, 0, 0);
         sv.camera.up.set(0, 1, 0);
         sv.camera.quaternion.copy(lookQ);
+        applyZoom(sv.camera, sv.rig, sv.cockpit, lookQ);
       }
       const thr = t.thrust > 0 ? fc.throttle : 0;
       sv.flame.userData.set({ throttle: thr, airDensity: air });
@@ -596,7 +771,7 @@ export default {
       view.frame.position.copy(view.planet.position);
       syncDebris(view, fc, dt);
       s.pathTimer = (s.pathTimer ?? 0) - dt;
-      view.path.visible = s.assist && s.chase && !fc.onGround; // seen edge-on from the cockpit: outside camera only
+      view.path.visible = s.chase && !fc.onGround; // seen edge-on from the cockpit: outside camera only
       if (view.path.visible && s.pathTimer <= 0) {
         s.pathTimer = 0.5;
         const pts = predictPath(fc, { seconds: t.phase === 'orbit' ? 3500 : 600 });
@@ -614,6 +789,7 @@ export default {
         view.camera.position.set(0, 0, 0);
         view.camera.up.set(0, 1, 0);
         view.camera.quaternion.copy(lookQ);
+        applyZoom(view.camera, view.rig, view.cockpit, lookQ);
       }
       if (s.mode !== 'space') { s.mode = 'space'; graphics.setSunDirection(new THREE.Vector3(0.7, 0.45, 0.55)); graphics.setView(view.scene, view.camera); }
     }
@@ -643,6 +819,8 @@ export default {
       events.emit('flight:telemetry', {
         t: fc.t, phase: t.phase, altitude: t.altitude, speed: t.speed, gForce: t.gLoad, q: t.dynamicPressure,
         fuelKg: t.fuel, engineTemp: t.engineTemp, radiationMsv: astronaut.body.doseMSv,
+        verticalSpeed: t.verticalSpeed, throttle: t.thrust > 0 ? fc.throttle : 0, fuelMax: fc.ship.fuelMass, fuelFrac: t.fuelFrac,
+        thrust: t.thrust, twr: t.twr, isp: t.isp, deltaVLeft: t.deltaVLeft, maxQ: t.maxQ, ...attitudeDeg(fc),
       });
     }
 
@@ -650,9 +828,10 @@ export default {
     if (fc.landed) a.warnings.push({ level: 'amber', text: 'LANDED: press E to stand up' });
     if (s.debrisWarning > 0) a.warnings.unshift({ level: 'red', text: 'ORBITAL DEBRIS AHEAD: steer and burn sideways to dodge' });
     if (state === 'ORBIT' && t.phase === 'orbit') a.warnings.push({ level: 'amber', text: `IN ORBIT: press T for the transfer burn (${fmt((economy.balance.deltaVKmS?.transfer ?? 2.1) * 1000)} m/s)` });
-    const guide = s.assist && !(s.countdown > 0) ? ascentGuide(fc) ?? landingGuide(fc) : null;
-    if (guide && state === 'ENTRY' && approaching) a.warnings.unshift({ level: 'amber', text: 'Approach: trim the entry angle before the air. Hold W for steeper, S for shallower (small fuel cost)' });
-    else if (guide) a.warnings.unshift({ level: 'amber', text: guide.text });
+    const guide = !(s.countdown > 0) ? ascent0 ?? landing0 : null;
+    const status = mission.autopilot.status;
+    if (state === 'ENTRY' && approaching && !(s.countdown > 0)) a.warnings.unshift({ level: 'amber', text: 'Approach: the computer trims the entry angle with small RCS pushes (costs a little fuel)' });
+    else if (!(s.countdown > 0) && status.step !== 'standby' && status.step !== 'landed') a.warnings.unshift({ level: 'amber', text: status.text });
     if (s.callout?.t > 0) {
       s.callout.t -= dt;
       a.warnings.unshift({ level: 'amber', text: `MISSION CONTROL: ${s.callout.text}` });
@@ -661,6 +840,7 @@ export default {
       const n = Math.ceil(s.countdown);
       a.warnings.unshift({ level: n <= IGNITION_AT ? 'red' : 'amber', text: `T-${n}${n <= IGNITION_AT ? ' · MAIN ENGINE START' : ' · clamps on'}` });
     }
+    if (win.offered) a.warnings.unshift({ level: 'manual-offer', text: 'MANUAL CONTROL AVAILABLE · press F (gravity turn)' });
     // objective, step checklist, warp indicator, entry corridor gauge
     const earth = fc.planetId === 'earth';
     if (landing0?.blackout) mission.blackout = 'in'; else if (mission.blackout === 'in') mission.blackout = 'after';
@@ -669,7 +849,7 @@ export default {
     if (earth && ascent0?.step === 'coast' && pace.tApo !== null) a.warnings.unshift({ level: 'amber', text: `Coasting to apoapsis… ${t.altitude > top ? `T-${Math.ceil(pace.tApo)} s` : 'climbing out of the air'}` });
     const gauge = s.corridor && fc.altitude > 60000 && !fc.chuteOpen && !fc.failed ? corridorGauge(fc, s.corridor) : null;
     const warpShown = s.warpInfo.warp > 1 || fc.warpEffective > 1.05;
-    s.hud.update(t, a, s.assist, {
+    s.hud.update(t, a, true, {
       objective: objectiveText(fc, { state, debrisActive: s.debrisWarning > 0 }),
       checklist,
       warp: warpShown ? { value: fc.warpEffective, label: s.warpInfo.label ?? (s.warpInfo.auto ? null : 'manual (, .)'), auto: s.warpInfo.auto } : null,
@@ -678,20 +858,36 @@ export default {
     });
     const cam = s.mode === 'surface' ? s.surface.camera : s.mode === 'site' ? s.site.camera : view.camera;
     const project = (dir) => {
-      if (!dir || !s.assist) return null;
+      if (!dir) return null;
       const world = new THREE.Vector3();
       cam.getWorldPosition(world);
       const p = world.add(v3(dir).multiplyScalar(1000)).project(cam);
       return p.z < 1 && Math.abs(p.x) < 1 && Math.abs(p.y) < 1 ? { x: (p.x + 1) * 50, y: (1 - p.y) * 50 } : null;
     };
     const activeCockpit = s.mode === 'surface' ? s.surface.cockpit : s.mode === 'site' ? s.site.cockpit : view.cockpit;
-    const steering = s.steering.update(activeCockpit, s.assist && !fc.failed,
-      () => s.steeringPlan.readout(fc, { ...pilot, cutoff: false }, { corridor: s.corridor, countdown: s.countdown > 0 }), performance.now() / 1000);
+    const steering = s.steering.update(activeCockpit, !fc.failed,
+      () => s.steeringPlan.readout(fc, pilot, { corridor: s.corridor, countdown: s.countdown > 0, manualOffer: win.offered, manual: win.active ? { lockReady: !!s.manualReadout?.lockReady } : null }), performance.now() / 1000);
     s.hud.setSteeringVisible(steering.fallback);
     const toLocal = (d) => (d && s.mode === 'surface' ? v3(d).applyQuaternion(s.surface.toLocal) : d);
     s.hud.marker('pro', steering.fallback ? project(toLocal(a.prograde)) : null);
     s.hud.marker('retro', steering.fallback ? project(toLocal(a.retrograde)) : null);
     s.hud.marker('guide', steering.fallback ? project(toLocal(guide?.direction)) : null);
+    // manual-control overlay: Role 3's setAim if the cockpit has it, else our panel on the projected centre display
+    s.hud.setManual(win.active);
+    const rig = s.mode === 'surface' ? s.surface.rig : s.mode === 'site' ? s.site.rig : view.rig;
+    const live = win.active ? s.manualReadout : null;
+    if (typeof activeCockpit?.userData?.setAim === 'function') {
+      s.aimPanel.update(null, null);
+      if (s.aimShown && s.aimShown !== activeCockpit) { s.aimShown.userData.setAim?.(null); s.aimShown = null; }
+      if (live) {
+        const R = MANUAL.rangeDeg;
+        const at = (o) => ({ x: 0.5 + o.yawDeg / (2 * R), y: 0.5 + o.pitchDeg / (2 * R) });
+        activeCockpit.userData.setAim({ target: at(live.target), aim: at(live.aim), radius: MANUAL.toleranceDeg / (2 * R), accuracy: live.accuracy, timeLeft: live.timeLeft, lockReady: live.lockReady, label: live.label });
+        s.aimShown = activeCockpit;
+      } else if (s.aimShown) { s.aimShown.userData.setAim?.(null); s.aimShown = null; }
+    } else {
+      s.aimPanel.update(live, live ? displayRect(cam, rig, activeCockpit) : null, s.callout?.t > 0 ? s.callout.text : null);
+    }
     const danger = t.collisionWarning && fc.obstacles.find((o) => o.id === t.collisionWarning.id);
     s.hud.marker('collision', danger ? project(v3(danger.pos).sub(v3(fc.pos)).normalize()) : null);
   },
@@ -702,6 +898,10 @@ export default {
     // (for example the ENDING screen) doesn't inherit the ship's attitude and look at the cockpit's rear wall.
     s.steering.dispose();
     s.phase0?.dispose();
+    mission.manualAscent.close(); // a state change ends an open window (no stars)
+    s.aimPanel.dispose();
+    s.aimShown?.userData?.setAim?.(null);
+    s.hud.setManual(false);
     const cam = graphics.camera;
     cam.removeFromParent();
     cam.position.set(0, 0, 0);

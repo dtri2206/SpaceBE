@@ -1,0 +1,36 @@
+{
+  "degPerPixel": 0.02,
+  "rangeDeg": 10,
+  "toleranceDeg": 2.5,
+  "windows": {
+    "ascent": {
+      "enabled": true,
+      "label": "ASCENT · GRAVITY TURN",
+      "offerSeconds": 6,
+      "durationSeconds": 12,
+      "lockReadyAfter": 6,
+      "onTargetForLock": 0.5,
+      "gust": { "pitch": [[2.5, 4.3, 0], [1.5, 2.1, 1.0]], "yaw": [[2.0, 3.7, 2.0], [1.0, 1.9, 0.5]] }
+    },
+    "entry": {
+      "comment": "Next task: manual entry-angle window. Disabled until then.",
+      "enabled": false,
+      "label": "ENTRY · ANGLE",
+      "offerSeconds": 6,
+      "durationSeconds": 12,
+      "lockReadyAfter": 6,
+      "onTargetForLock": 0.5,
+      "gust": { "pitch": [[1.5, 4.0, 0], [1.0, 2.0, 1.0]], "yaw": [[1.5, 3.5, 2.0], [0.8, 1.8, 0.5]] }
+    },
+    "landing": {
+      "comment": "Next task: manual landing window. Disabled until then.",
+      "enabled": false,
+      "label": "LANDING · TOUCHDOWN",
+      "offerSeconds": 6,
+      "durationSeconds": 12,
+      "lockReadyAfter": 6,
+      "onTargetForLock": 0.5,
+      "gust": { "pitch": [[1.5, 4.0, 0], [1.0, 2.0, 1.0]], "yaw": [[1.5, 3.5, 2.0], [0.8, 1.8, 0.5]] }
+    }
+  }
+}

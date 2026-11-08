@@ -32,6 +32,8 @@ function loadDeck() {
         for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
           if (!m || seen.has(m)) continue;
           seen.add(m);
+          // the engine-flame light glints off the printed panels (rough 0.5) and blows some of them out to white squares: make them matte
+          if (m.name === 'label2') { m.roughness = 1; m.metalness = 0; m.color.multiplyScalar(0.3); }
           if (m.name === 'fixture') m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.35);
           else if (m.name === 'label2') m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.8);
           else if (m.isMeshStandardMaterial && m.emissive.getHex() === 0 && !m.transparent && m.metalness < 0.3 && !/^fabric/.test(m.name) && !isSaturated(m.color)) m.color.multiplyScalar(DECK_ALBEDO);

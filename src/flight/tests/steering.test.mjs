@@ -42,13 +42,14 @@ test('forecast applies held throttle, pitch, brake, fuel and drag with no live m
   assert.deepEqual(steeringReadout(fc, { throttleUp: true }), power, 'forecast is deterministic');
 });
 
-test('W lowers a nose above its gravity-turn target; S raises a nose below it', () => {
+test('a nose off its gravity-turn target gets an AUTO correcting hint (the computer steers)', () => {
   const fc = controller('earth', { altitude: 18000, speed: 300, flightPathDeg: 70 });
   const roll = qFromAxisAngle(v3(0, 1, 0), -Math.PI / 2);
   fc.orient = roll;
-  assert.match(steeringHint(fc).text, /Hold W/);
+  assert.match(steeringHint(fc).text, /^AUTO · correcting/);
   fc.orient = qMul(qFromAxisAngle(v3(0, 0, 1), -Math.PI / 2), roll);
-  assert.match(steeringHint(fc).text, /Hold S/);
+  assert.match(steeringHint(fc).text, /^AUTO · correcting/);
+  assert.match(steeringHint(fc, { manualOffer: true }).text, /press F/);
 });
 
 test('orbit, entry and landing provide valid short-horizon guidance with phase-specific hints', () => {
@@ -62,10 +63,10 @@ test('orbit, entry and landing provide valid short-horizon guidance with phase-s
     assert.ok(data.planned.length > 1 && data.predicted.length > 1);
     assert.ok(data.planned.flat().every(Number.isFinite)); assert.ok(data.hint.text.length < 40);
   }
-  assert.match(steeringHint(orbit).text, /Orbit/);
+  assert.match(steeringHint(orbit).text, /Orbit · T = transfer burn/);
   entry.setStart({ ...STARTS.marsEntry, altitude: 130000 });
-  assert.match(steeringHint(entry, { corridor: { centreDeg: -55, steepDeg: -60, shallowDeg: -50 } }).text, /Hold W/);
-  assert.match(steeringHint(entry, { corridor: { centreDeg: -5, steepDeg: -10, shallowDeg: 0 } }).text, /Hold S/);
+  assert.match(steeringHint(entry, { corridor: { centreDeg: -55, steepDeg: -60, shallowDeg: -50 } }).text, /trimming entry angle/);
+  assert.match(steeringHint(entry, { corridor: { centreDeg: -5, steepDeg: -10, shallowDeg: 0 } }).text, /trimming entry angle/);
 });
 
 test('bad data returns null; ground and zero velocity produce finite geometry', () => {
@@ -95,8 +96,8 @@ test('entry reference follows interface trim instead of a Mars ascent or current
   const fc = controller('mars', { altitude: 130000, speed: 1400, flightPathDeg: -26 });
   const corridor = { centreDeg: -55, steepDeg: -60, shallowDeg: -50 };
   const data = steeringReadout(fc, { trim: -1 }, { corridor });
-  assert.match(data.hint.text, /Hold W/);
-  assert.deepEqual(data.planned, data.predicted, 'reference applies same steeper-entry trim the hint asks for');
+  assert.match(data.hint.text, /trimming entry angle/);
+  assert.deepEqual(data.planned, data.predicted, 'reference applies same steeper-entry trim the hint announces');
 });
 
 test('monitor mode hides steering symbols and reticle; collision warning remains independent', async () => {
@@ -137,19 +138,16 @@ test('both throttle directions and W/S change the cyan rollout with live control
   assert.deepEqual(serial(fc), before);
 });
 
-test('following the displayed W or S hint reduces real-controller pointing error', () => {
+test('the aim input the computer sends reduces real-controller pointing error', () => {
   const roll = qFromAxisAngle(v3(0, 1, 0), -Math.PI / 2);
   for (const orientation of [roll, qMul(qFromAxisAngle(v3(0, 0, 1), -Math.PI / 2), roll)]) {
     const fc = controller('earth', { altitude: 18000, speed: 300, flightPathDeg: 70 });
     fc.orient = orientation;
     const target = ascentGuide(fc).direction;
     const before = dot(fc.forward, target);
-    const hint = steeringHint(fc).text;
     const copy = copyForPrediction(fc);
-    const pitch = hint.includes('Hold W') ? -1 : hint.includes('Hold S') ? 1 : 0;
-    assert.notEqual(pitch, 0);
-    for (let n = 0; n < 5; n++) copy.update(.1, { pitch });
-    assert.ok(dot(copy.forward, target) > before, hint);
+    for (let n = 0; n < 5; n++) copy.update(.1, { aim: target });
+    assert.ok(dot(copy.forward, target) > before);
   }
 });
 
@@ -173,4 +171,15 @@ test('persistent reference cannot follow a displaced ship; UI switches and F ret
   display.update(b, true, () => (afterSwitch = plan.readout(fc, {})), 2);
   assert.deepEqual(afterSwitch.planned, displaced.planned);
   assert.equal(afterSwitch.hint.level, 'warn');
+});
+
+test('manual hint wins over every other hint and follows lockReady', () => {
+  const fc = controller('earth', { altitude: 18000, speed: 300, flightPathDeg: 70 });
+  const fly = steeringHint(fc, { manualOffer: true, manual: { lockReady: false } });
+  assert.deepEqual(fly, { text: 'MANUAL · keep ○ on +', level: 'warn' });
+  const lock = steeringHint(fc, { manualOffer: true, countdown: true, manual: { lockReady: true } });
+  assert.deepEqual(lock, { text: 'LOCK READY · SPACE or CLICK', level: 'ok' });
+  assert.match(steeringHint(fc, { manual: null }).text, /^AUTO/);
+  const ro = steeringReadout(fc, {}, { manual: { lockReady: true } });
+  if (ro) assert.equal(ro.hint.text, 'LOCK READY · SPACE or CLICK');
 });

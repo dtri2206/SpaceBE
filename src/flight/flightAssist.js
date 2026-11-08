@@ -109,14 +109,14 @@ export function ascentGuide(fc, profile = ASCENT_PROFILE) {
   };
   const top = atmosphereTop(fc.planet);
   if (t.apoapsis < profile.targetApoapsis) {
-    if (t.altitude < profile.turnStart) return { step: 'climb', direction: up, text: 'Climb straight up at full throttle (Q = more throttle)' };
+    if (t.altitude < profile.turnStart) return { step: 'climb', direction: up, text: 'Climbing straight up at full throttle' };
     const deg = Math.min(89, (t.altitude - profile.turnStart) / profile.metresPerDegree);
     return { step: 'turn', direction: tilt(deg), pitchDeg: deg, text: steeringData.turnText.replace('{degrees}', deg.toFixed(0)) };
   }
   if (t.verticalSpeed > 15 && t.altitude < t.apoapsis - 3000) {
-    return { step: 'coast', direction: east, text: `Engine off (X). Coast up to the apoapsis (${(t.apoapsis / 1000).toFixed(0)} km)` };
+    return { step: 'coast', direction: east, text: `Engine off: coasting up to the apoapsis (${(t.apoapsis / 1000).toFixed(0)} km)` };
   }
-  if (t.periapsis < top) return { step: 'circularise', direction: east, text: 'At the apoapsis: burn sideways (prograde) to round the orbit' };
+  if (t.periapsis < top) return { step: 'circularise', direction: east, text: 'At the apoapsis: burning sideways (prograde) to round the orbit' };
   return null;
 }
 
@@ -133,13 +133,13 @@ export function landingGuide(fc) {
   const a = assistReadout(fc);
   if (t.heatFlux > 0 && !fc.chuteOpen && t.altitude > 15000) {
     const blackout = t.heatFlux > t.heatLimit * BLACKOUT_HEAT_FRAC; // hot plasma around the ship blocks the radio (real effect)
-    return { step: 'entry', blackout, text: blackout ? 'PLASMA BLACKOUT: no radio. The heat shield takes the heat, ride it down' : 'Entry: the heat shield takes the heat. Keep your hands off and ride it down' };
+    return { step: 'entry', blackout, text: blackout ? 'PLASMA BLACKOUT: no radio. The heat shield takes the heat, ride it down' : 'Entry: the heat shield takes the heat. The computer holds the attitude, ride it down' };
   }
   if (!fc.chuteOpen && t.speed > 500) return { step: 'slowing', text: 'Too fast for the parachute yet: the air is slowing you down' };
   if (t.altitude < 200 && t.verticalSpeed > -12) {
-    return { step: 'touchdown', text: `Ease the throttle (Q/E): touch down under ${TOUCHDOWN_HINT} m/s, nose up` };
+    return { step: 'touchdown', text: `Easing down: touchdown under ${TOUCHDOWN_HINT} m/s, nose up` };
   }
-  if (a.burnNow) return { step: 'burn', text: 'BURN NOW: hold SPACE for the retro burn' };
-  if (fc.chuteOpen) return { step: 'chute', text: `Parachute out. Wait for BURN NOW (${Number.isFinite(a.stoppingDistance) ? a.stoppingDistance.toFixed(0) : '—'} m to stop) · C = outside view` };
+  if (a.burnNow) return { step: 'burn', text: 'BURN NOW: retro burn' };
+  if (fc.chuteOpen) return { step: 'chute', text: `Parachute out. Wait for BURN NOW (${Number.isFinite(a.stoppingDistance) ? a.stoppingDistance.toFixed(0) : '—'} m to stop)` };
   return { step: 'wait', text: 'Falling: wait for BURN NOW' };
 }

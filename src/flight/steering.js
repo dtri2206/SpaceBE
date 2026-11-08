@@ -41,31 +41,32 @@ function attitudeError(fc, direction) {
 }
 
 const command = (angle) => Math.abs(angle) <= tuning.angleToleranceDegrees * rad ? 0 : Math.sign(angle);
+// What the flight computer would do from here on the guided plan (the dashed reference line). Uses the controller's
+// own computer inputs: aim (the ship turns toward it within its turn rate) and throttleTarget.
 function guidanceInput(fc, corridor, entryTrim) {
   const ascent = fc.planetId === 'earth' ? ascentGuide(fc) : null, landing = landingGuide(fc);
-  const guide = ascent ?? landing;
-  const error = guide?.direction ? attitudeError(fc, guide.direction) : { pitch: 0, yaw: 0 };
-  const control = { pitch: command(error.pitch), yaw: command(error.yaw) };
+  const control = {};
   if (ascent) {
-    control.cutoff = ascent.step === 'coast';
-    control.throttleUp = !control.cutoff;
-    if (fc.telemetry.dynamicPressure > fc.telemetry.maxQ * .8) { control.throttleUp = false; control.throttleDown = true; }
-  } else if (fc.phase === 'orbit') control.cutoff = true;
+    control.aim = ascent.direction;
+    control.throttleTarget = ascent.step === 'coast' ? 0 : fc.telemetry.dynamicPressure > fc.telemetry.maxQ * .8 ? 0.5 : 1;
+  } else if (fc.phase === 'orbit') control.throttleTarget = 0;
   else if (fc.altitude > atmosphereTop(fc.planet) && corridor) {
     control.trim = entryTrim;
   } else if (landing?.step === 'burn') control.brake = true;
   else if (landing?.step === 'touchdown') {
     control.brake = fc.telemetry.verticalSpeed < -3;
     control.throttleDown = !control.brake;
-  } else if (landing) control.cutoff = true;
+  } else if (landing) control.throttleTarget = 0;
   return control;
 }
 
-export function steeringHint(fc, { corridor = null, countdown = false } = {}) {
+export function steeringHint(fc, { corridor = null, countdown = false, manualOffer = false, manual = null } = {}) {
   const words = tuning.hint;
+  if (manual) return manual.lockReady ? { text: words.manualLock, level: 'ok' } : { text: words.manualFly, level: 'warn' };
   if (countdown) return { text: words.countdown, level: 'ok' };
   if (fc.failed) return { text: words.failed, level: 'warn' };
   if (fc.landed) return { text: words.landed, level: 'ok' };
+  if (manualOffer) return { text: words.manualOffer, level: 'ok' };
   if (corridor && fc.altitude > atmosphereTop(fc.planet)) {
     const gauge = corridorGauge(fc, corridor);
     if (gauge.status !== 'ok') return { text: gauge.angleDeg > corridor.centreDeg ? words.steeper : words.shallower, level: 'warn' };
@@ -128,7 +129,7 @@ export function steeringReadout(fc, controls = {}, options = {}) {
     return Math.min(nearest, Math.hypot(ship[0] - point[0] - fraction * dx, ship[1] - point[1] - fraction * dy));
   }, Infinity);
   let hint = steeringHint(fc, options);
-  if (hint.level === 'ok' && distance > tuning.offTrackTolerance) hint = { text: tuning.hint.offTrack, level: 'warn' };
+  if (!options.manual && hint.level === 'ok' && distance > tuning.offTrackTolerance) hint = { text: tuning.hint.offTrack, level: 'warn' };
   return {
     view: 'side', planned: plannedPlot, predicted: raw[1].map(project),
     ship: { x: ship[0], y: ship[1], heading: Math.atan2(dot(fc.forward, up) / spans[1], dot(fc.forward, east) * fc.planet.radius / len(fc.pos) / spans[0]) },

@@ -4,12 +4,12 @@ function createFlightHUD({ parent = document.body } = {}) {
   root.className = "flight-presentation";
   root.innerHTML = `<style>
 .flight-presentation{position:absolute;inset:0;pointer-events:none;color:#d8eff1;font:12px/1.5 ui-monospace,monospace;--cyan:#72e6e0;--amber:#ffbe75}
-.flight-presentation *{box-sizing:border-box}.flight-presentation .top{position:absolute;top:30px;left:32px;right:32px;display:flex;justify-content:space-between;letter-spacing:.18em}
+.flight-presentation *{box-sizing:border-box;text-shadow:0 1px 2px #000}.flight-presentation .top{position:absolute;top:30px;left:32px;right:32px;display:flex;justify-content:space-between;letter-spacing:.18em}
 .flight-presentation small{color:#8daeb8;font-size:10px;letter-spacing:.15em}.flight-presentation .readings{position:absolute;left:32px;bottom:92px;display:flex;gap:28px}
 .flight-presentation strong{display:block;font-size:26px;font-weight:400}.flight-presentation .panel{position:absolute;right:32px;bottom:92px;width:255px;padding:18px;border:1px solid #72e6e033;background:#071419bc}
 .flight-presentation .row{display:flex;justify-content:space-between;margin:6px 0}.flight-presentation meter{width:100%;height:5px;display:block;accent-color:var(--cyan)}
-.flight-presentation .formula{position:absolute;left:32px;top:100px;max-width:330px;color:#b3d3da}.flight-presentation .formula b{color:var(--cyan);font-weight:400;font-size:18px}
-.flight-presentation .warnings{position:absolute;left:25%;right:25%;top:23%;text-align:center;color:var(--amber);letter-spacing:.12em}.flight-presentation .red{color:#ff6978}
+.flight-presentation .formula{position:absolute;left:32px;top:100px;max-width:330px;color:#b3d3da;background:rgba(4,14,18,.72);padding:3px 10px;border-radius:4px}.flight-presentation .formula b{color:var(--cyan);font-weight:400;font-size:18px}
+.flight-presentation .warnings{position:absolute;left:25%;right:25%;top:23%;text-align:center;color:var(--amber);letter-spacing:.12em}.flight-presentation .warnings>div{background:rgba(4,14,18,.72);padding:3px 10px;border-radius:4px;display:inline-block;margin:1px 0}.flight-presentation .warnings{display:flex;flex-direction:column;align-items:center}.flight-presentation .formula:empty{display:none}.flight-presentation .red{color:#ff6978}.flight-presentation .manual-offer{color:#72e6e0;font-size:14px;letter-spacing:.16em}
 .flight-presentation .reticle{position:absolute;left:50%;top:50%;width:28px;height:28px;transform:translate(-50%,-50%);border:1px solid #72e6e066;border-radius:50%}
 .flight-presentation .marker{position:absolute;display:none;color:var(--cyan);transform:translate(-50%,-50%);font-size:24px}.flight-presentation .retro{color:var(--amber)}.flight-presentation .collision{color:#ff6978}
 .flight-presentation .vignette{position:absolute;inset:0;background:radial-gradient(ellipse,transparent 25%,#000 100%);opacity:0}
@@ -23,6 +23,8 @@ function createFlightHUD({ parent = document.body } = {}) {
 .flight-presentation .gauge .mark{position:absolute;left:-9px;width:0;height:0;border:6px solid transparent;border-left:9px solid #fff;transform:translateY(-6px)}
 .flight-presentation .gauge .lab{height:150px;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0;color:#8daeb8;letter-spacing:.1em}.flight-presentation .gauge .lab .mid{color:#7dffa8}
 .flight-presentation .gauge .hint{clear:both;padding-top:8px;color:var(--amber)}.flight-presentation .gauge.bad .hint{color:#ff6978}
+/* manual control: the other panels must not cover the centre display */
+.flight-presentation.manual .warnings,.flight-presentation.manual .formula{display:none}.flight-presentation.manual .top,.flight-presentation.manual .readings,.flight-presentation.manual .panel,.flight-presentation.manual .objective,.flight-presentation.manual .warp,.flight-presentation.manual .checklist,.flight-presentation.manual .gauge,.flight-presentation.manual .help,.flight-presentation.manual .engine-state,.flight-presentation.manual .reticle{opacity:.25}
 @media(max-width:700px){.flight-presentation .objective{top:56px;max-width:90%;font-size:10px}.flight-presentation .warp{top:30px;left:16px;font-size:10px}.flight-presentation .checklist{right:16px;width:150px;font-size:9px;top:90px}.flight-presentation .gauge{left:16px;top:170px;width:150px}.flight-presentation .card{top:130px;font-size:11px}.flight-presentation .panel{right:16px;width:185px}.flight-presentation .readings{left:16px;gap:12px}.flight-presentation strong{font-size:18px}.flight-presentation .formula{max-width:250px}.flight-presentation .help{font-size:9px}}
 </style><div class="vignette"></div><div class="top"><span>FLIGHT / <span data-id="phase"></span></span><span data-id="clock"></span></div>
 <div class="objective" data-role="objective"></div><div class="warp" data-role="warp"></div><div class="checklist" data-role="checklist" style="display:none"></div><div class="card" data-role="card" role="status"></div>
@@ -30,7 +32,7 @@ function createFlightHUD({ parent = document.body } = {}) {
 <div class="readings"><div><small>ALTITUDE / km</small><strong data-id="alt"></strong></div><div><small>VELOCITY / m/s</small><strong data-id="speed"></strong></div><div><small>VERTICAL / m/s</small><strong data-id="vertical"></strong></div></div>
 <div class="panel"><small>PROPULSION & FLIGHT ENVELOPE</small><div class="row"><span>THROTTLE</span><span data-id="throttle"></span></div><meter min="0" max="1" data-id="throttleMeter"></meter><div class="row"><span>FUEL</span><span data-id="fuel"></span></div><meter min="0" max="1" data-id="fuelMeter"></meter><div class="row"><span>Δv REMAINING</span><span data-id="dv"></span></div><div class="row"><span>MAX-Q</span><span data-id="q"></span></div><meter min="0" max="1" data-id="qMeter"></meter><div class="row"><span>G LOAD</span><span data-id="g"></span></div><div class="row"><span>APO / PERI km</span><span data-id="orbit"></span></div><div class="row"><span>HEAT / LIMIT</span><span data-id="heat"></span></div></div>
 <div class="engine-state" style="position:absolute;right:32px;bottom:64px" data-id="engineState"></div>
-<div class="help">CLICK mouse look · W/S pitch · A/D yaw · Q/E throttle · X cut-off · SPACE brake · F assist · C outside view · mouse orbit · wheel zoom</div>`;
+<div class="help">CLICK mouse look · F take manual control (when offered) · SPACE / CLICK lock · ESC give back · C outside view · mouse orbit · wheel zoom · , . time warp</div>`;
   parent.append(root);
   const fields = Object.fromEntries([...root.querySelectorAll("[data-id]")].map((el) => [el.dataset.id, el]));
   const formula = root.querySelector(".formula"), warnings = root.querySelector(".warnings");
@@ -61,6 +63,7 @@ function createFlightHUD({ parent = document.body } = {}) {
       warnings.replaceChildren(...a.warnings.map((w) => {
         const el = document.createElement("div");
         el.className = w.level;
+        if (w.level === "manual-offer") el.style.opacity = (0.7 + 0.3 * Math.cos(performance.now() / 1000 * 2 * Math.PI)).toFixed(2);
         el.textContent = w.text;
         return el;
       }));
@@ -117,6 +120,8 @@ function createFlightHUD({ parent = document.body } = {}) {
       }
       root.querySelector(".vignette").style.opacity = Math.min(0.85, Math.max(0, (t.gLoad - 3.5) / 4));
     },
+    // manual control: dim every panel except the warning line (25 % opacity via the `manual` class)
+    setManual(on) { root.classList.toggle('manual', !!on); },
     setSteeringVisible(visible) {
       root.querySelector('.reticle').style.display = visible ? 'block' : 'none';
       if (!visible) for (const kind of ['pro', 'retro', 'guide']) {

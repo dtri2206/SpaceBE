@@ -4,18 +4,19 @@
 // Physics never changes: FlightController sub-steps at FIXED_DT whatever the warp (see allowedWarp there).
 //
 //   const pacer = createPacer();
-//   const ctx = paceContext(fc, { ascent, landing, countdown, trimming, aligned });  // facts about the ship
+//   const ctx = paceContext(fc, { ascent, landing, countdown, trimming, aligned, manual });  // facts about the ship
 //   for (const name of detector.update(ctx)) pacer.event(name, ctx.t);                // key events → 1×
 //   const { warp, auto, label } = pacer.decide(ctx, dtReal);
 //   fc.update(dtReal, input, { timeWarp: warp });
 //
 // Policy (all inside decide()):
-//   LAUNCH   countdown, liftoff and the first 35 s of the climb: 1×. Gravity turn: 4× while you follow the guide
+//   LAUNCH   countdown, liftoff and the first 35 s of the climb: 1×. Gravity turn: 4× while the nose follows the guide
 //            (pointing within 6° of it, Max-Q and g in the green), else 1×. Circularise: 1×.
 //            Coast after engine cut-off: up to 50× (tiers 50/10/4/2) until 10 s before the apoapsis, then 1×.
-//   ENTRY    approach: first 8 s at 1× (time to trim the corridor with W/S, 1× while a trim key is down), then up to
+//   ENTRY    approach: first 8 s at 1× (time for the computer's RCS trim of the corridor, 1× while it trims), then up to
 //            10× until 5 s before the atmosphere. Heating: 4× (10× in the almost-empty top air), blackout included.
 //            Parachute deploy: 1× for a moment, then 4× for the quiet fall down to 2 km; below 2 km, BURN NOW, touchdown: 1×.
+//   MANUAL   while a manual-control window is offered or active (ctx.manual): always 1× (reason 'manual').
 //   Key events drop to 1× for a moment and cancel any manual warp: Max-Q warning, engine cut-off, entering the
 //   circularise step, debris warning, entry interface, parachute, BURN NOW, below 1 km on Mars.
 
@@ -70,7 +71,7 @@ export function tierFor(gameSeconds, dtReal, cap) {
 }
 
 // Facts about the ship the policy needs. `ascent`/`landing` are ascentGuide(fc) / landingGuide(fc) (or null).
-export function paceContext(fc, { ascent = null, landing = null, countdown = false, trimming = false, aligned = true, interface: iface } = {}) {
+export function paceContext(fc, { ascent = null, landing = null, countdown = false, trimming = false, aligned = true, manual = false, interface: iface } = {}) {
   const t = fc.telemetry;
   const top = atmosphereTop(fc.planet);
   const mars = fc.planetId === 'mars';
@@ -81,7 +82,7 @@ export function paceContext(fc, { ascent = null, landing = null, countdown = fal
     airDensity: airDensity(fc.planet, t.altitude),
     ascentStep: ascent?.step ?? null, landingStep: landing?.step ?? null, blackout: !!landing?.blackout,
     sinceLiftoff: fc.liftoffT === null ? 0 : fc.t - fc.liftoffT,
-    qFrac: t.dynamicPressure / t.maxQ, gLoad: t.gLoad, aligned, trimming,
+    qFrac: t.dynamicPressure / t.maxQ, gLoad: t.gLoad, aligned, trimming, manual,
     tApo: ascent?.step === 'coast' ? timeToApoapsis(fc) : null,
     tInterface: approaching ? (iface !== undefined ? iface : predictInterface(fc)?.time ?? null) : null,
     approaching,
@@ -129,6 +130,7 @@ export function createPacer() {
     decide(ctx, dtReal = 1 / 60) {
       const one = (reason = null) => ({ warp: 1, auto: false, reason, label: null });
       if (ctx.failed || ctx.landed || ctx.onGround || ctx.countdown) return one();
+      if (ctx.manual) return one('manual'); // a manual-control window is offered or open: the player must not be rushed
       if (ctx.t < p.suspendUntil) return one('event');
       const auto = (warp, reason) => (warp > 1 ? { warp, auto: true, reason, label: `AUTO WARP · ${reason}` } : one(reason));
       const manual = () => ({ warp: p.manual, auto: false, reason: null, label: null });

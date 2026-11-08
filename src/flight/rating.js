@@ -5,15 +5,18 @@
 //   getPhaseRatings() → Array<{ phase: 'ascent' | 'entry' | 'landing', stars: 1 | 2 | 3, stats: {...}, text: string }>
 //     In the order the phases were finished; a phase that was not flown (or not finished) is simply missing.
 //     Cleared when a new mission starts (LAUNCH). `text` is the one-line card the pilot saw, e.g.
-//       'ASCENT ★★☆ · avg deviation 2.1° · fuel left 34 % · peak 3.8 g'
+//       'ASCENT ★☆☆ · flown by the computer · fuel left 34 % · peak 3.8 g'
+//       'ASCENT ★★☆ · manual accuracy 78 % · fuel left 34 % · peak 3.8 g'
 //       'ENTRY ★★★ · corridor centre 1.2° off · peak 0.9 g · heat 6 % of limit'
 //       'LANDING ★★★ · 1.4 m/s · 42 m from target · fuel 12 %'
-//     stats: ascent  { avgDeviationDeg, fuelLeftPct, peakG }
+//     stats: ascent  { avgDeviationDeg, fuelLeftPct, peakG, manualFlown, manualAccuracyPct }
 //            entry   { interfaceAngleDeg, centreOffsetDeg, peakG, peakHeatPct, trimDv }
 //            landing { touchdownSpeed, offsetM, fuelLeftPct }
 //
 // Thresholds (stars = the worst of the listed metrics):
-//   ASCENT   deviation from the guide while the engine burns:  ≤ 5° → 3 · ≤ 10° → 2 · else 1
+//   ASCENT   the flight computer flies the climb; stars come from the manual gravity-turn window (manualControl.js):
+//            not flown by the player:                           1 star (flown by the computer)
+//            manual accuracy (nose within 2.5° of the target):  ≥ 85 % → 3 · ≥ 60 % → 2 · else 1
 //            peak g:                                            ≤ 5.5 → 3 · ≤ 7 → 2 · else 1
 //            fuel left in orbit:                                ≥ 8 % → 3 · ≥ 2 % → 2 · else 1
 //   ENTRY    interface angle vs the corridor centre, in half-widths: ≤ 0.5 → 3 · ≤ 0.85 → 2 · else 1
@@ -26,7 +29,7 @@ import { dot, len, norm, sub, scale } from './vec.js';
 import { flightPathDeg } from './corridor.js';
 
 export const RATING_LIMITS = {
-  ascent: { dev: [5, 10], g: [5.5, 7], fuel: [8, 2] },
+  ascent: { dev: [5, 10], manual: [85, 60], g: [5.5, 7], fuel: [8, 2] },
   entry: { centre: [0.5, 0.85], g: [4, 6] },
   landing: { speed: [2, 2.7], offset: [60, 200], fuel: [3, 0.5] },
 };
@@ -38,8 +41,11 @@ const f = (v, d = 0) => (Number.isFinite(v) ? v.toFixed(d) : '—');
 
 export function rateAscent(st) {
   const L = RATING_LIMITS.ascent;
-  const stars = Math.min(lowerIsBetter(st.avgDeviationDeg, L.dev), lowerIsBetter(st.peakG, L.g), higherIsBetter(st.fuelLeftPct, L.fuel));
-  return { phase: 'ascent', stars, stats: st, text: `ASCENT ${starText(stars)} · avg deviation ${f(st.avgDeviationDeg, 1)}° · fuel left ${f(st.fuelLeftPct)} % · peak ${f(st.peakG, 1)} g` };
+  const gf = Math.min(lowerIsBetter(st.peakG, L.g), higherIsBetter(st.fuelLeftPct, L.fuel));
+  const flown = !!st.manualFlown;
+  const stars = flown ? Math.min(higherIsBetter(st.manualAccuracyPct ?? 0, L.manual), gf) : 1;
+  const lead = flown ? `manual accuracy ${f(st.manualAccuracyPct)} %` : 'flown by the computer';
+  return { phase: 'ascent', stars, stats: st, text: `ASCENT ${starText(stars)} · ${lead} · fuel left ${f(st.fuelLeftPct)} % · peak ${f(st.peakG, 1)} g` };
 }
 
 export function rateEntry(st) {
@@ -63,14 +69,15 @@ export function storeRating(r) {
   return r;
 }
 
-// Collects the numbers while the phases are flown. Feed it every frame: tracker.update(fc, { guideDir, corridorInfo, dt }).
+// Collects the numbers while the phases are flown. Feed it every frame: tracker.update(fc, { guideDir, guideStep, corridor, interfaceAngleDeg, manualAscent }).
+// manualAscent = { flown, accuracyPct } from the ascent manual window (null = not flown).
 // Returns the ratings that were finished by this update (usually none).
 export function createPhaseTracker() {
   const a = { n: 0, sum: 0, peakG: 0, rated: false, flown: false };
   const e = { peakG: 0, peakHeat: 0, angle: null, offset: null, rated: false, seen: false };
   const l = { aim: null, rated: false };
   return {
-    update(fc, { guideDir = null, guideStep = null, corridor = null, interfaceAngleDeg = null } = {}) {
+    update(fc, { guideDir = null, guideStep = null, corridor = null, interfaceAngleDeg = null, manualAscent = null } = {}) {
       const done = [];
       const t = fc.telemetry;
       if (fc.failed) return done;
@@ -85,7 +92,7 @@ export function createPhaseTracker() {
         }
         if (t.phase === 'orbit') {
           a.rated = true;
-          done.push(storeRating(rateAscent({ avgDeviationDeg: a.n ? a.sum / a.n : 0, fuelLeftPct: t.fuelFrac * 100, peakG: a.peakG })));
+          done.push(storeRating(rateAscent({ avgDeviationDeg: a.n ? a.sum / a.n : 0, fuelLeftPct: t.fuelFrac * 100, peakG: a.peakG, manualFlown: !!manualAscent?.flown, manualAccuracyPct: manualAscent?.flown ? manualAscent.accuracyPct : null })));
         }
       }
       // entry: peak loads from the interface to the parachute

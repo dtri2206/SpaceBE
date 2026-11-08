@@ -7,6 +7,9 @@
 //   const fc = new FlightController({ bus: events, planets: PLANETS, g0: G0, planetId: 'earth', shipSpec, start: 'pad' });
 //   every frame: fc.update(dt, controls.input)   // controls from cockpitControls.js
 //   read: fc.telemetry  (HUD / Flight Assist / black box)
+//   Autopilot inputs (autopilot.js), both optional:
+//     input.aim = {x,y,z}          unit vector (planet-centred): steer the nose toward it (same turn-rate limits); ignored with input.brake
+//     input.throttleTarget = 0..1  set the throttle at once (<= 0 = engine off; > 0 lights the engine, costs an ignition, honours minThrottle)
 //   fc.onNotice = (type, data) => {...}            // EVERY flight notice, for HUD/sound (not on the bus)
 //
 // ShipSpec units follow src/core/contract.js: masses in kg, thrust in N. shipSpec.launch.tempC = launch weather.
@@ -326,6 +329,12 @@ export class FlightController {
       }
     }
     if (input.throttleDown && this.throttle > 0) this.throttle = Math.max(minT > 0 ? minT : 0, this.throttle - T.throttleRate * dt);
+    const target = input.throttleTarget;
+    if (Number.isFinite(target)) {
+      if (target <= 0) this.throttle = 0;
+      else if (this.throttle === 0 && !this.engineLit && !this._ignite()) this.throttle = 0; // no restart left
+      else this.throttle = Math.min(1, Math.max(minT, target));
+    }
 
     // rotation (brake = auto-point retrograde, then burn)
     let throttle = this.throttle;
@@ -337,7 +346,9 @@ export class FlightController {
       throttle = aligned && (this.engineLit || this._ignite()) ? 1 : 0;
       this._braking = true;
     } else {
-      this._steerInput(input.pitch ?? 0, input.yaw ?? 0, dt);
+      const aim = input.aim;
+      if (aim && Number.isFinite(aim.x) && Number.isFinite(aim.y) && Number.isFinite(aim.z) && (aim.x || aim.y || aim.z)) this._steerToward(norm(aim), dt);
+      else this._steerInput(input.pitch ?? 0, input.yaw ?? 0, dt);
       this._braking = false;
     }
     this._integrateRotation(dt);
