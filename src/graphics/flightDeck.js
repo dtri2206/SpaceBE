@@ -6,6 +6,7 @@ import {
 } from './cockpitScreens.js';
 
 const URL = '/assets/models/flightdeck.glb';
+const DECK_ALBEDO = 0.2; // see loadDeck
 const loader = new GLTFLoader();
 let deckTemplate = null;
 let deckLoad = null;
@@ -22,6 +23,19 @@ function loadDeck() {
   if (!deckLoad) {
     deckLoad = loader.loadAsync(URL).then(({ scene }) => {
       scene.name = 'flightdeck:v3.1';
+      // The pad's sun and sky lights are strong, so the light grey deck washed out to white and the ceiling fixtures bloomed.
+      // Darken the unlit-colour materials a little and cap emissive glow, so the deck keeps the contrast of the Blender renders.
+      const seen = new Set();
+      scene.traverse((o) => {
+        if (!o.isMesh) return;
+        for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+          if (!m || seen.has(m)) continue;
+          seen.add(m);
+          if (m.name === 'fixture') m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.35);
+          else if (m.name === 'label2') m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.8);
+          else if (m.isMeshStandardMaterial && m.emissive.getHex() === 0 && !m.transparent && m.metalness < 0.3 && !/^fabric/.test(m.name)) m.color.multiplyScalar(DECK_ALBEDO);
+        }
+      });
       deckTemplate = scene;
       return scene;
     }).catch((err) => {
@@ -118,7 +132,7 @@ function installDeck(group) {
   // Give mutable meshes private materials; every cockpit gets independent lamps and switches.
   model.traverse((o) => {
     if (!o.isMesh || ['displayLeft', 'centreDisplay', 'displayRight'].includes(o.name)) return;
-    if (/^(cutoffLamp|alarmLamp|tick\.\d+|btnLamp\.)/.test(o.name) || ['assistCap', 'retroCap'].includes(o.name)) {
+    if (/^(cutoffLamp|alarmLamp|tick\.?\d+|btnLamp)/.test(o.name) || ['assistCap', 'retroCap'].includes(o.name)) {
       o.material = Array.isArray(o.material) ? o.material.map((m) => m.clone()) : o.material.clone();
     }
   });
@@ -127,20 +141,27 @@ function installDeck(group) {
   const cutoffGuard = named('cutoffGuard'), cutoffSwitch = named('cutoffSwitch');
   const assistCap = named('assistCap');
   const retroCap = named('retroCap');
-  const assistCapY = assistCap?.position.y ?? 0, retroCapY = retroCap?.position.y ?? 0;
+  // FLIGHT MODE sits on the tilted instrument panel (17 deg): its caps press in along the panel normal, not along world y.
+const PANEL_NORMAL = new THREE.Vector3(0, Math.sin(0.2967), Math.cos(0.2967));
+const assistBase = assistCap?.position.clone(), retroBase = retroCap?.position.clone();
   const cutoffLamp = named('cutoffLamp'), alarmLamp = named('alarmLamp');
-  const ticks = Array.from({ length: 10 }, (_, i) => named(`tick.${i}`));
+  const ticks = Array.from({ length: 10 }, (_, i) => named(`tick${i}`));
   const controls = { pitch: 0, yaw: 0, throttle: 0, targetPitch: 0, targetYaw: 0, targetThrottle: 0, cutoff: false, lock: false, manual: false, lockHold: 0 };
   const buttonMap = new Map();
+  // GLTFLoader strips '.', ':' and brackets from node names: 'btn:hatch' arrives as 'btnhatch', 'btnCap.hatch' as 'btnCaphatch'.
   model.traverse((o) => {
-    if (!o.name.startsWith('btn:')) return;
-    const id = o.name.slice(4);
-    const cap = named(`btnCap.${id}`), lamp = named(`btnLamp.${id}`);
-    if (cap && lamp) buttonMap.set(id, { cap, lamp, originalZ: cap.position.z, press: 0 });
+    const m = /^btn(?!Cap|Lamp)(.+)$/.exec(o.name);
+    if (!m) return;
+    const id = m[1];
+    const cap = named(`btnCap${id}`), lamp = named(`btnLamp${id}`);
+    if (cap && lamp) buttonMap.set(id, { cap, lamp, originalZ: cap.position.z, press: -1 });
   });
   const setLamp = (b, state) => {
     const colors = { off: 0x1b2630, amber: 0xffb41f, green: 0x3df07a, red: 0xff4d3d };
-    if (b && colors[state] !== undefined) b.lamp.material.color.set(colors[state]);
+    if (!b || colors[state] === undefined) return;
+    const mat = b.lamp.material;
+    mat.color.set(colors[state]);
+    if (mat.emissive) { mat.emissive.set(state === 'off' ? 0x000000 : colors[state]); mat.emissiveIntensity = state === 'off' ? 0 : 1.6; }
   };
   const shown = { cutoff: false, lock: false, manual: false };
   const setButton = (id, state) => {
@@ -200,8 +221,8 @@ function installDeck(group) {
     cutoffSwitch && (cutoffSwitch.rotation.x += ((swGoal * 2 - 1) * 0.55 - cutoffSwitch.rotation.x) * (1 - Math.exp(-22 * dt)));
     controls.lockHold = Math.max(0, controls.lockHold - dt);
     const lockDown = controls.lock || controls.lockHold > 0;
-    if (retroCap) retroCap.position.y = retroCapY - (lockDown ? 0.008 : 0);
-    if (assistCap) assistCap.position.y = assistCapY - (controls.manual ? 0.008 : 0);
+    if (retroCap) retroCap.position.copy(retroBase).addScaledVector(PANEL_NORMAL, lockDown ? -0.004 : 0);
+    if (assistCap) assistCap.position.copy(assistBase).addScaledVector(PANEL_NORMAL, controls.manual ? -0.004 : 0);
     if (cutoffLamp && shown.cutoff !== controls.cutoff) { shown.cutoff = controls.cutoff; colourMaterial(cutoffLamp, '#f87171', controls.cutoff ? 1.5 : 0.16); }
     if (retroCap && shown.lock !== lockDown) { shown.lock = lockDown; colourMaterial(retroCap, '#fbbf24', lockDown ? 1.3 : 0.3); }
     if (assistCap && shown.manual !== controls.manual) { shown.manual = controls.manual; colourMaterial(assistCap, '#22d3ee', controls.manual ? 1.3 : 0.3); }
@@ -210,7 +231,7 @@ function installDeck(group) {
       b.press += dt;
       const u = b.press / 0.15;
       const depth = u >= 2 ? 0 : u < 1 ? u : 2 - u;
-      b.cap.position.z = b.originalZ - 0.011 * depth;
+      b.cap.position.z = b.originalZ - 0.005 * depth;
       if (u >= 2) b.press = -1;
     }
     if (alarmLamp?.isMesh) {

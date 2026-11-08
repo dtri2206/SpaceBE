@@ -317,17 +317,13 @@ def add_wear(name, dirt=0.35, scuff=0.55, rough_add=0.25, scale=30.0):
     nt.links.new(ra.outputs['Value'], bsdf.inputs['Roughness'])
 
 def quilt_maps(size=256):
-    """Diamond-quilted cloth: colour (blue with pale stitching) and a pillowy height map. One tile holds 2 x 2 diamonds."""
+    """Smooth upholstery: fine woven blue cloth, no quilting, a very soft large-scale pillow shade. One tile = 0.12 m, 32 weave cells."""
     yy, xx = np.mgrid[0:size, 0:size] / size
-    u = ((xx + yy) * 2) % 1.0; v = ((xx - yy) * 2) % 1.0
-    d = np.minimum(np.minimum(u, 1 - u), np.minimum(v, 1 - v))
-    h = np.clip(d * 6, 0, 1) ** 0.7
+    weave = 0.5 + 0.5 * np.sin(xx * 2 * np.pi * 8) * np.sin(yy * 2 * np.pi * 8)   # low frequency, so it never aliases
     n = fbm(size, size, 8, 3, 3)
-    blue = np.array([0.15, 0.20, 0.50])
-    col = blue[None, None, :] * (0.50 + 0.50 * h[..., None]) * (0.92 + 0.16 * n[..., None])
-    thread = np.clip(1 - d / 0.012, 0, 1)[..., None]
-    col = col * (1 - thread * 0.7) + np.array([0.7, 0.74, 0.92]) * thread * 0.7
-    return make_image('quilt', np.clip(col, 0, 1)), make_image('quilt_h', h * 0.9 + 0.1 * n, srgb=False)
+    blue = np.array([0.12, 0.18, 0.44])
+    col = blue[None, None, :] * (0.975 + 0.025 * weave[..., None]) * (0.97 + 0.05 * n[..., None])
+    return make_image('quilt', np.clip(col, 0, 1)), make_image('quilt_h', weave * 0.5 + 0.25 * n, srgb=False)
 
 def glass_material(name='glass', fac=0.05, tint=(0.78, 0.9, 0.95)):
     m = bpy.data.materials.new(name); m.use_nodes = True
@@ -366,8 +362,8 @@ def define_materials():
     material('seam', (0.012, 0.012, 0.014), 0.8)
     material('bezel', (0.045, 0.045, 0.05), 0.45)
     qc, qh = quilt_maps()
-    material('fabric', (1, 1, 1), 0.9, image=qc, bump_image=qh, bump_strength=0.9, world_uv=8.3)
-    material('fabric2', (0.6, 0.6, 0.6), 0.9, image=qc, bump_image=qh, bump_strength=0.9, world_uv=8.3)
+    material('fabric', (1, 1, 1), 0.6, image=qc, world_uv=8.3, spec=0.55)
+    material('fabric2', (0.6, 0.6, 0.6), 0.6, image=qc, world_uv=8.3, spec=0.55)
     material('seatframe', (0.06, 0.06, 0.065), 0.45, metal=0.5)
     material('floorgrey', (0.16, 0.16, 0.17), 0.75)
     material('stickmat', (0.035, 0.035, 0.04), 0.4)
@@ -1456,17 +1452,15 @@ def build_ceiling():
     b = O('ceiling')
     fr, _ = pf((0, CY, 0), (1, 0, 0), (0, -1, 0))   # local a = x, b = +z
     outline = rect((XL - 0.06, XR + 0.06, -1.05, ZB + 0.06))
-    wins = [(xc - 0.225, xc + 0.225, 0.40, 0.80) for xc in (0.0, 1.10)]
+    wins = []     # the two rear overhead windows are gone: solid roof panels over the seats instead
     cells = []
-    for (a0, a1) in ((-0.58, -0.26), (0.26, 0.84), (1.36, 1.72)):
+    for (a0, a1) in ((-0.58, 1.72),):
         cells += auto_cells(rect((a0, a1, 0.40, 0.80)), 0.26, 0.2, 0.0, 0.02, seed=int(a0 * 10) + 40)
     cells += auto_cells(rect((-0.58, 1.72, 0.84, 0.97)), 0.26, 0.2, 0.0, 0.02, seed=45)
     with fr:
         items = snap_items(cells, 'ceil')
-        b.acc.add('clay', slab_geo(outline, [rrect(*w, 0.05, 3) for w in wins] + [hole_of(it) for it in items], 0.08))
+        b.acc.add('clay', slab_geo(outline, [hole_of(it) for it in items], 0.08))
         place_panels(b, items)
-        for (a0, a1, b0, b1) in wins:
-            b.box('glass', a1 - a0 + 0.02, b1 - b0 + 0.02, 0.003, (a0 + a1) / 2, (b0 + b1) / 2, -0.05, bevel=0)
 
 def build_floor():
     b = O('floor')
@@ -1494,12 +1488,16 @@ def build_cables():
     b.tube('cable', [(XR - 0.02, y, 0.30), (1.60, y, 0.58), (1.50, y, 0.95)], 0.009, n=6)
 
 def build_aft():
+    global fr_hatch
     b = O('aft')
     fr, _ = pf((0, 0, ZB), (-1, 0, 0), (0, 0, -1))      # a = -x
+    fr_hatch = fr
     outline = rect((-(XR + 0.06), -(XL - 0.06), FY, CY + 0.06))
     wins = [(-xc - 0.225, -xc + 0.225, 0.08, 0.46) for xc in (0.0, 1.10)]
     cells = []
-    cells += auto_cells(rect((-(XR - 0.06), -(XL + 0.06), -0.44, 0.0)), 0.28, 0.20, 0.0, 0.025, seed=11)
+    HA = -X0          # hatch centre in the aft frame (a = -x)
+    cells += auto_cells(rect((-(XR - 0.06), HA - 0.38, -0.44, 0.0)), 0.28, 0.20, 0.0, 0.025, seed=11)
+    cells += auto_cells(rect((HA + 0.38, -(XL + 0.06), -0.44, 0.0)), 0.28, 0.20, 0.0, 0.025, seed=15)
     cells += auto_cells(rect((-(XR - 0.06), -(XL + 0.06), 0.50, 0.66)), 0.28, 0.16, 0.0, 0.025, seed=12)
     cells += auto_cells(rect((-(XL + 0.06), -(XL + 0.06 + 0.5), -1.04, -0.50)), 0.3, 0.2, 0.0, 0.025, seed=13)
     cells += auto_cells(rect((-(XR - 0.06 - 0.5), -(XR - 0.06), -1.04, -0.50)), 0.3, 0.2, 0.0, 0.025, seed=14)
@@ -1509,6 +1507,36 @@ def build_aft():
         place_panels(b, items)
         for (a0, a1, b0, b1) in wins:
             b.box('glass', a1 - a0 + 0.02, b1 - b0 + 0.02, 0.003, (a0 + a1) / 2, (b0 + b1) / 2, -0.04, bevel=0)
+        build_hatch(b, HA)
+
+HATCH_W, HATCH_B0, HATCH_B1 = 0.27, FY, -0.10
+def hatch_canvas():
+    ppm = 1000
+    W, H = 340, 80
+    cv = Canvas(W, H, PN_BASE)
+    cv.outline(2, 2, W - 4, H - 4, (0.06, 0.06, 0.07), 2, r=4)
+    cv.mtext('TO MID-DECK', W / 2, 30, 24, (0.97, 0.97, 0.95))
+    cv.mtext('CABIN', W / 2, 62, 16, (0.97, 0.85, 0.4))
+    return cv
+
+def build_hatch(b, HA):
+    # framed round-cornered passage hatch in the aft bulkhead (local frame: a = -x, b = y, +z toward the crew)
+    outer = rrect(HA - HATCH_W - 0.05, HA + HATCH_W + 0.05, HATCH_B0, HATCH_B1 + 0.05, 0.11, 5)
+    inner = rrect(HA - HATCH_W, HA + HATCH_W, HATCH_B0 + 0.03, HATCH_B1, 0.07, 5)
+    b.acc.add('steel', xform(slab_geo(outer, [inner], 0.05), None, (0, 0, 0.045)))
+    b.acc.add('clay', xform(slab_geo(inner, [], 0.04), None, (0, 0, 0.022)))            # the door leaf, recessed in the frame
+    for by in (-0.30, -0.62, -0.94):                                                       # hinges on the left edge (a larger)
+        b.box('steel', 0.05, 0.13, 0.02, HA + HATCH_W - 0.01, by, 0.032, bevel=0.004)
+        b.cyl('alu_dark', 0.011, 0.14, HA + HATCH_W + 0.02, by, 0.04, axis='y')
+    b.cyl('steel', 0.042, 0.03, HA - 0.16, -0.62, 0.037, axis='z', n=16)                  # latch boss
+    b.box('steel', 0.17, 0.03, 0.026, HA - 0.16, -0.62, 0.062, bevel=0.006)               # latch handle
+    b.cyl('steel', 0.085, 0.012, HA, -0.38, 0.03, axis='z', n=24)                          # porthole ring + dark glass
+    b.cyl('dash_dark', 0.066, 0.016, HA, -0.38, 0.032, axis='z', n=24)
+    b.box('hazard', 2 * HATCH_W - 0.12, 0.02, 0.004, HA, -1.07, 0.026, bevel=0)
+    def cb(rect_):
+        with fr_hatch:
+            O('aft').panel('label2', 0.34, 0.08, HA, -0.22, 0.0225, rect_)
+    PN_CUSTOM.append(('hatchplacard', hatch_canvas(), cb))
 
 # ------------------------------------------------------------------ build: overhead canopy: fills the ceiling over both seats, centre nearly flat, wings dropping 30 degrees
 ROWS = [(1, (0.55, 0.45), True), (2, (0.30, 0.40, 0.30), True), (3, (1.0,), False)]   # (knot index, centre column fractions, red guard rows)
@@ -1665,6 +1693,9 @@ def build_panel():
         d = Vector((s * L * math.cos(wa), 0, L * math.sin(wa)))
         top = Vector((hx, ip_y(IP_B1), ip_z(IP_B1))); bot = Vector((hx, ip_y(IP_B0), ip_z(IP_B0)))
         poly_panel(b, [top, bot, bot + d, top + d], (-s * 0.5, 0.3, 0.8), thick=0.05, zone='ip', seed=140 + (s > 0))
+        # footwell kick panel: closes the gap below the wing panel, from its lower edge down to the floor, so no sky shows by the feet
+        poly_panel(b, [bot, bot + d, Vector((bot.x + d.x, FY, bot.z + d.z)), Vector((bot.x, FY, bot.z))], (-s * 0.5, 0.0, 0.8), thick=0.05, bays=False, seam=False)
+        poly_panel(b, [(hx, yb + 0.02, zb - 0.02), (hx, bot.y, bot.z), (hx, FY, bot.z), (hx, FY, -0.78)], (s, 0, 0), thick=0.05, bays=False, seam=False)   # the triangle between kick panel and fascia
 
 def flightmode_canvas():
     ppm = 1100
@@ -1962,6 +1993,27 @@ def ray_check():
                 bad += 1
             log(f'  ray to centreDisplay corner ({sx:+d},{sy:+d}): first hit {ob.name if ok else None} at {((loc - o).length if ok else 0):.3f} m (display at {dist:.3f})  {"OK" if hit_ok else "BLOCKED"}')
     return bad
+def hole_scan():
+    dg = bpy.context.evaluated_depsgraph_get()
+    out = []
+    for ex in (0.0, 1.10):
+        o = Vector(G((ex, 0.0, 0.0)))
+        for yaw in range(-180, 180, 4):
+            for pitch in range(-89, 60, 4):
+                y, pi = math.radians(yaw), math.radians(pitch)
+                dgame = Vector((math.sin(y) * math.cos(pi), math.sin(pi), -math.cos(y) * math.cos(pi)))
+                d = Vector(G(dgame))
+                ok, loc, nrm, idx, ob, mat = bpy.context.scene.ray_cast(dg, o, d, distance=30)
+                if not ok:
+                    out.append((ex, yaw, pitch, None, None))
+                elif 'wall' not in ob.name and nrm.dot(d) > 0 and pitch < 0:
+                    out.append((ex, yaw, pitch, ob.name, 'BACKFACE'))
+    return out
+if '--scan' in argv:
+    log('WALLINFO zA L/R', JOINTS[0][0].z, JOINTS[6][0].z, 'wing end z', ip_z(IP_B0) + (XL - IP_A0) / math.cos(math.radians(35)) * math.sin(math.radians(35)) * 0, 'ip z b0', ip_z(IP_B0), ip_y(IP_B0), 'IP_B1', ip_y(IP_B1), ip_z(IP_B1))
+    hs = hole_scan()
+    log('HOLE SCAN misses/backfaces', len(hs))
+    for h in [h for h in hs if h[2] < 0 and h[3] is None][:60]: log('  MISS', h)
 RAY_BAD = ray_check()
 log('RAY CHECK blocked corners:', RAY_BAD)
 
@@ -2075,6 +2127,14 @@ def render_all(outdir):
         (5, 'right', (0, 0, 0), d(60, -15), (0, 1, 0), 65, (1280, 800), False),
         (6, 'photo-match', (X0, 0.25, 0.90), d(0, -12), (0, 1, 0), float(arg('--fisheye', 160)), (800, 1280), True),
         (8, 'manual-zoom', (0, 0, 0), (Vector(wpos(IPF, (0, 0, 0.0252)))).normalized(), (0, 1, 0), 22, (1280, 800), False),
+        (9, 'close-eyebrow', (0, 0, 0), Vector(wpos(EBF, (0.02, 0.0, 0.015))).normalized(), (0, 1, 0), 24, (1600, 800), False),
+        (10, 'close-flightmode', (0, 0, 0), Vector(wpos(IPF, (0.0, FM_BC, 0.0087))).normalized(), (0, 1, 0), 18, (1600, 800), False),
+        (11, 'feet', (0, 0, 0), d(0, -68), (0, 1, 0), 75, (1280, 800), False),
+        (12, 'feet-left', (0, 0, 0), d(-35, -58), (0, 1, 0), 75, (1280, 800), False),
+        (13, 'feet-right', (0, 0, 0), d(35, -58), (0, 1, 0), 75, (1280, 800), False),
+        (14, 'over-shoulder', (0.55, -0.2, 0.45), d(180, -3), (0, 1, 0), 80, (1280, 800), False),
+        (15, 'seat-close', (0.55, 0.0, 0.5), d(-35, -22), (0, 1, 0), 55, (1280, 800), False),
+        (16, 'roof-aft', (0, 0, 0), d(180, 62), (0, 1, 0), 85, (1280, 800), False),
         (7, 'overview', (-1.9, 1.15, 0.05), (Vector((0.55, -0.15, 0.05)) - Vector((-1.9, 1.15, 0.05))).normalized(), (0, 1, 0), 52, (1280, 800), False),
     ]
     t_all = time.time()
