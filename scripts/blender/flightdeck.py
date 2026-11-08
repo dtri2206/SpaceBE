@@ -894,7 +894,7 @@ def pn_draw(sp):
                 cv.disc(cx, cy, 0.0048 * P, (0.55, 0.57, 0.6), height=0.8)
                 sgn = -1 if it['pos'] == 'up' else (1 if it['pos'] == 'down' else 0)
                 cv.line(cx, cy, cx, cy + sgn * 0.0075 * P, (0.95, 0.95, 0.97), 2)
-                if it['guard']: cv.rect(cx - 0.0095 * P, cy - 0.0125 * P, 0.019 * P, 0.025 * P, (0.75, 0.1, 0.07) if it['guard'] == 'red' else (0.85, 0.65, 0.1), r=1)
+                if it['guard']: cv.rect(cx - 0.0082 * P, cy - 0.0125 * P, 0.0164 * P, 0.025 * P, (0.75, 0.1, 0.07) if it['guard'] == 'red' else (0.85, 0.65, 0.1), r=1)
             cv.mtext(it['lab'], cx, cy - 0.0195 * P, 0.0034 * P, lab_c)
             cv.mtext('ON', cx + 0.0125 * P, cy - 0.009 * P, 0.0024 * P, tuple(fg * 0.7), 'l')
             cv.mtext('OFF', cx + 0.0125 * P, cy + 0.009 * P, 0.0024 * P, tuple(fg * 0.7), 'l')
@@ -959,6 +959,47 @@ def pn_draw(sp):
             cv.mtext(it['lab'], cx, cy, w * 0.42, (0.95, 0.95, 0.95))
     return cv
 
+PN_FAILS = []
+PN_CHECKED = set()
+def pn_footprints(sp):
+    """(label, x0, x1, y0, y1) of the real 3D parts of every item, panel-local metres (mirrors pn_geometry)."""
+    out = []
+    for i, it in enumerate(sp['items']):
+        t = it['t']; x = it.get('x', 0.0); y = it.get('y', 0.0)
+        if t == 'tog':
+            if it['guard']:
+                out.append(('tog+guard', x - 0.0098, x + 0.0098, y - 0.014, y + 0.018))
+            else:
+                ext = 0.006 if it['pos'] == 'mid' else 0.0128
+                out.append(('tog', x - 0.006, x + 0.006, y - (ext if it['pos'] == 'down' else 0.006), y + (ext if it['pos'] == 'up' else 0.006)))
+        elif t == 'brkrow' and it['row'] == 0:
+            for k, xx in enumerate(it['xs']):
+                out.append(('brk%d' % k, xx - 0.00425, xx + 0.00425, it['y'] - 0.0045, it['y'] + 0.0045))
+        elif t == 'knob':
+            r = it['r']; out.append(('knob', x - r, x + r, y - r, y + r))
+        elif t == 'master':
+            out.append(('master', x - 0.018, x + 0.018, y - 0.014, y + 0.014))
+        elif t == 'ptt':
+            out.append(('ptt', x - 0.011, x + 0.011, y - 0.011, y + 0.011))
+        elif t == 'key':
+            w = it['w'] * 0.45; out.append(('key', x - w, x + w, y - w, y + w))
+    return out
+
+def pn_check(sp):
+    if sp['name'] in PN_CHECKED:
+        return
+    PN_CHECKED.add(sp['name'])
+    fw, fh = sp['fw'], sp['fh']; tol = 0.001
+    fps = pn_footprints(sp)
+    for lab, x0, x1, y0, y1 in fps:
+        if x0 < -fw / 2 + 0.003 - tol or x1 > fw / 2 - 0.003 + tol or y0 < -fh / 2 + 0.003 - tol or y1 > fh / 2 - (0.003 if sp['kind'] == 'mini' else 0.0165) + tol:
+            PN_FAILS.append((sp['pid'], sp['kind'], 'outside face', lab, round(x0, 4), round(x1, 4), round(y0, 4), round(y1, 4), fw, fh))
+    for i in range(len(fps)):
+        for j in range(i + 1, len(fps)):
+            a, c = fps[i], fps[j]
+            if min(a[2], c[2]) - max(a[1], c[1]) > 0.0005 and min(a[4], c[4]) - max(a[3], c[3]) > 0.0005 and not (a[0].startswith('brk') and c[0].startswith('brk')):
+                PN_FAILS.append((sp['pid'], sp['kind'], 'overlap', a[0], c[0], round(a[1], 4), round(c[1], 4)))
+
 def pn_geometry(b, sp, rect, D):
     fw, fh = sp['fw'], sp['fh']
     zf = 0.0085
@@ -966,6 +1007,7 @@ def pn_geometry(b, sp, rect, D):
     b.panel('label2', fw, fh, 0, 0, zf, rect)
     if sp.get('flat'):
         return
+    pn_check(sp)
     for it in sp['items']:
         t = it['t']
         if t == 'tog':
@@ -978,9 +1020,9 @@ def pn_geometry(b, sp, rect, D):
                 ov_cone(b, 'steel', (x, y, zf + 0.004), (x, y + s * 0.009, zf + 0.022), 0.0038, 0.0024, 5)
             if it['guard']:
                 gm_ = it['guard']
-                b.box(gm_, 0.024, 0.032, 0.003, x, y + 0.002, zf + 0.027, bevel=0)
+                b.box(gm_, 0.0195, 0.032, 0.003, x, y + 0.002, zf + 0.027, bevel=0)
                 for sx in (-1, 1):
-                    b.box(gm_, 0.003, 0.032, 0.027, x + sx * 0.0105, y + 0.002, zf + 0.0135, bevel=0)
+                    b.box(gm_, 0.003, 0.032, 0.027, x + sx * 0.0082, y + 0.002, zf + 0.0135, bevel=0)
         elif t == 'brkrow' and it['row'] == 0:
             r_ = np.random.RandomState(it['seed'])
             for x in it['xs']:
@@ -1454,8 +1496,6 @@ def build_ceiling():
     outline = rect((XL - 0.06, XR + 0.06, -1.05, ZB + 0.06))
     wins = []     # the two rear overhead windows are gone: solid roof panels over the seats instead
     cells = []
-    for (a0, a1) in ((-0.58, 1.72),):
-        cells += auto_cells(rect((a0, a1, 0.40, 0.80)), 0.26, 0.2, 0.0, 0.02, seed=int(a0 * 10) + 40)
     cells += auto_cells(rect((-0.58, 1.72, 0.84, 0.97)), 0.26, 0.2, 0.0, 0.02, seed=45)
     with fr:
         items = snap_items(cells, 'ceil')
@@ -1496,11 +1536,7 @@ def build_aft():
     wins = [(-xc - 0.225, -xc + 0.225, 0.08, 0.46) for xc in (0.0, 1.10)]
     cells = []
     HA = -X0          # hatch centre in the aft frame (a = -x)
-    cells += auto_cells(rect((-(XR - 0.06), HA - 0.38, -0.44, 0.0)), 0.28, 0.20, 0.0, 0.025, seed=11)
-    cells += auto_cells(rect((HA + 0.38, -(XL + 0.06), -0.44, 0.0)), 0.28, 0.20, 0.0, 0.025, seed=15)
-    cells += auto_cells(rect((-(XR - 0.06), -(XL + 0.06), 0.50, 0.66)), 0.28, 0.16, 0.0, 0.025, seed=12)
-    cells += auto_cells(rect((-(XL + 0.06), -(XL + 0.06 + 0.5), -1.04, -0.50)), 0.3, 0.2, 0.0, 0.025, seed=13)
-    cells += auto_cells(rect((-(XR - 0.06 - 0.5), -(XR - 0.06), -1.04, -0.50)), 0.3, 0.2, 0.0, 0.025, seed=14)
+    cells = []        # plain painted wall: no switch panels behind the seats
     with fr:
         items = snap_items(cells, 'wall')
         b.acc.add('clay', slab_geo(outline, [rrect(*w, 0.05, 3) for w in wins] + [hole_of(it) for it in items], 0.06))
@@ -1508,7 +1544,20 @@ def build_aft():
         for (a0, a1, b0, b1) in wins:
             b.box('glass', a1 - a0 + 0.02, b1 - b0 + 0.02, 0.003, (a0 + a1) / 2, (b0 + b1) / 2, -0.04, bevel=0)
         build_hatch(b, HA)
+        build_aft_fittings(b, HA)
 
+def build_aft_fittings(b, HA):
+    # two grab bars either side of the hatch, and a strapped stowage bag on the wall to the left of it
+    for sx in (-1, 1):
+        ax = HA + sx * 0.44
+        b.cyl('steel', 0.012, 0.50, ax, -0.62, 0.05, axis='y', n=10)
+        for by in (-0.84, -0.40):
+            b.cyl('steel', 0.009, 0.05, ax, by, 0.025, axis='z', n=8)
+    bx, by_ = -1.30, -0.62
+    b.rbox('fabric2', 0.36, 0.26, 0.09, bx, by_, 0.045, 0.02, segs=2)
+    for dx in (-0.09, 0.09):
+        b.box('seatframe', 0.03, 0.28, 0.094, bx + dx, by_, 0.047, bevel=0.003)
+    b.box('steel', 0.04, 0.03, 0.01, bx, by_ + 0.02, 0.094, bevel=0.003)
 HATCH_W, HATCH_B0, HATCH_B1 = 0.27, FY, -0.10
 def hatch_canvas():
     ppm = 1000
@@ -1662,8 +1711,7 @@ FM_BC = -0.2175
 def build_panel():
     b = O('panel')
     with IPF:
-        strips = [(0.175, 0.335, -0.415, 0.14), (0.775, 0.975, -0.415, 0.14), (-0.44, 0.22, -0.415, -0.325), (0.88, 1.54, -0.415, -0.325),
-                  (1.43, 1.545, -0.415, 0.14), (-0.205, -0.17, -0.31, -0.11)]
+        strips = [(0.175, 0.335, -0.415, 0.14), (0.775, 0.975, -0.415, 0.14), (1.43, 1.545, -0.415, 0.14), (-0.205, -0.17, -0.31, -0.11)]
         items = []
         for k, s in enumerate(strips):
             items += snap_items(auto_cells(rect(s), 0.17, 0.14, 0.0, 0.016, seed=100 + k, minsize=0.04), 'ip', cw_one=(k == 0))
@@ -1685,7 +1733,7 @@ def build_panel():
                 O(nm).quad(mat, w, h, x, row, 0.0252)
     # lower fascia down to the floor
     yb = ip_y(IP_B0); zb = ip_z(IP_B0)
-    poly_panel(b, [(IP_A0, yb + 0.02, zb - 0.02), (IP_A1, yb + 0.02, zb - 0.02), (IP_A1, FY, -0.78), (IP_A0, FY, -0.78)], (0, 0, 1), thick=0.06, zone='ip', seed=130)
+    poly_panel(b, [(IP_A0, yb + 0.02, zb - 0.02), (IP_A1, yb + 0.02, zb - 0.02), (IP_A1, FY, -0.78), (IP_A0, FY, -0.78)], (0, 0, 1), thick=0.06, zone='ip', bays=False, seam=False, seed=130)
     # wing panels: outboard of each display block, angled 35 degrees toward the seat, joining the panel to the side console
     wa = math.radians(35)
     for s, hx, xw in ((-1, IP_A0, XL), (1, IP_A1, XR)):
@@ -1768,13 +1816,13 @@ def build_side_console(s):
     zones = [(CON_Z0, CON_Z1), (CON_Z1, CON_Z2)]
     for k, (z0, z1) in enumerate(zones):
         y0, y1 = con_s(z0), con_s(z1)
-        poly_panel(b, [(X(ui), y0, z0), (X(um), y0, z0), (X(um), y1, z1), (X(ui), y1, z1)], (0, 1, 0), thick=0.05, zone=zone, bays=not (s < 0 and k == 0), wmax=0.17, hmax=0.20, margin=0.012, seed=200 + k + 5 * (s > 0))
-        poly_panel(b, [(X(um), y0, z0), (X(uw), y0 + CON_RISE, z0), (X(uw), y1 + CON_RISE, z1), (X(um), y1, z1)], (-s * 0.57, 0.82, 0), thick=0.05, zone=zone, wmax=0.20, hmax=0.20, margin=0.015, seed=210 + k + 5 * (s > 0))
+        poly_panel(b, [(X(ui), y0, z0), (X(um), y0, z0), (X(um), y1, z1), (X(ui), y1, z1)], (0, 1, 0), thick=0.05, zone=zone, bays=False, seam=False, wmax=0.17, hmax=0.20, margin=0.012, seed=200 + k + 5 * (s > 0))
+        poly_panel(b, [(X(um), y0, z0), (X(uw), y0 + CON_RISE, z0), (X(uw), y1 + CON_RISE, z1), (X(um), y1, z1)], (-s * 0.57, 0.82, 0), thick=0.05, zone=zone, bays=False, seam=False, wmax=0.20, hmax=0.20, margin=0.015, seed=210 + k + 5 * (s > 0))
     prof = [(CON_Z0, FY), (CON_Z2, FY), (CON_Z2, -0.50), (CON_Z1, -0.50), (CON_Z0, -0.10)]
-    poly_panel(b, [(X(ui), y, z) for z, y in prof], (-s, 0, 0), thick=0.05, zone='wall', wmax=0.28, hmax=0.2, margin=0.03, seed=220 + (s > 0))
+    poly_panel(b, [(X(ui), y, z) for z, y in prof], (-s, 0, 0), thick=0.05, zone='wall', bays=False, seam=False, wmax=0.28, hmax=0.2, margin=0.03, seed=220 + (s > 0))
     prof2 = [(CON_Z0, FY), (CON_Z2, FY), (CON_Z2, -0.50 + CON_RISE), (CON_Z1, -0.50 + CON_RISE), (CON_Z0, -0.10 + CON_RISE)]
     poly_panel(bo, [(X(uw), y, z) for z, y in prof2], (s, 0, 0), thick=0.05, bays=False, seam=False)   # outer shell against the wall
-    poly_panel(b, [(X(uw), FY, CON_Z2), (X(ui), FY, CON_Z2), (X(ui), -0.50, CON_Z2), (X(uw), -0.50 + CON_RISE, CON_Z2)], (0, 0, 1), thick=0.05, zone='wall', wmax=0.28, hmax=0.2, margin=0.03, seed=230 + (s > 0))
+    poly_panel(b, [(X(uw), FY, CON_Z2), (X(ui), FY, CON_Z2), (X(ui), -0.50, CON_Z2), (X(uw), -0.50 + CON_RISE, CON_Z2)], (0, 0, 1), thick=0.05, zone='wall', bays=False, seam=False, wmax=0.28, hmax=0.2, margin=0.03, seed=230 + (s > 0))
 
 def build_centre_console():
     b = O('consoleC')
@@ -1796,8 +1844,8 @@ def build_centre_console():
         return [i for i in its if i]
     poly_panel(b, [(xl, yf, zf), (xr, yf, zf), (xr, ya, za), (xl, ya, za)], (0, 1, 0), thick=0.06, items=top_items)
     for s, xs in ((-1, xl), (1, xr)):
-        poly_panel(b, [(xs, FY, zf), (xs, FY, za), (xs, ya, za), (xs, yf, zf)], (s, 0, 0), thick=0.05, zone='wall', wmax=0.28, hmax=0.2, margin=0.03, seed=301 + (s > 0))
-    poly_panel(b, [(xl, FY, za), (xr, FY, za), (xr, ya, za), (xl, ya, za)], (0, 0, 1), thick=0.05, zone='wall', wmax=0.28, hmax=0.2, margin=0.03, seed=303)
+        poly_panel(b, [(xs, FY, zf), (xs, FY, za), (xs, ya, za), (xs, yf, zf)], (s, 0, 0), thick=0.05, zone='wall', bays=False, seam=False, wmax=0.28, hmax=0.2, margin=0.03, seed=301 + (s > 0))
+    poly_panel(b, [(xl, FY, za), (xr, FY, za), (xr, ya, za), (xl, ya, za)], (0, 0, 1), thick=0.05, zone='wall', bays=False, seam=False, wmax=0.28, hmax=0.2, margin=0.03, seed=303)
 
 # ------------------------------------------------------------------ build: hand controllers, throttle
 def build_sticks():
@@ -1930,6 +1978,8 @@ def pn_finish():
     for name, cv, cb in PN_CUSTOM:
         cb(OVA.rects[name])
     log('console panels', len(PN_CELLS), 'unique faces', len(PN_SPECS))
+    log('SWITCH CHECK (footprint inside face / no overlaps):', len(PN_FAILS), 'problems')
+    for f in PN_FAILS[:60]: log('  ', f)
 
 # ------------------------------------------------------------------ build everything
 make_display_materials()
@@ -2014,6 +2064,24 @@ if '--scan' in argv:
     hs = hole_scan()
     log('HOLE SCAN misses/backfaces', len(hs))
     for h in [h for h in hs if h[2] < 0 and h[3] is None][:60]: log('  MISS', h)
+def panel_scan():
+    # each typed panel must sit on its surface: a ray dropped on its four corners and centre meets the printed face 3.5 mm down
+    dg = bpy.context.evaluated_depsgraph_get(); bad = []
+    for c in PN_CELLS:
+        M = c['M']; n = M @ Vector((0, 0, 1)); xa = M @ Vector((1, 0, 0)); ya = M @ Vector((0, 1, 0)); fw, fh = c['sp']['fw'], c['sp']['fh']
+        res = []
+        for (ux, uy) in ((0, 0), (-1, -1), (1, -1), (-1, 1), (1, 1)):
+            q = c['org'] + xa * (ux * (fw / 2 - 0.004)) + ya * (uy * (fh / 2 - 0.004)) + n * 0.012
+            ok, loc, nrm, idx, ob, mat = bpy.context.scene.ray_cast(dg, Vector(G(q)), Vector(G(-n)), distance=0.2)
+            d = (loc - Vector(G(q))).length if ok else None
+            res.append((d, ob.name if ok else None))
+        ds = [r[0] for r in res]
+        if any(d is None or d < 0.0025 or d > 0.0045 for d in ds):
+            bad.append((c['sp']['pid'], tuple(round(x, 2) for x in G(c['org'])), [(None if d is None else round(d * 1000, 1), nm) for d, nm in res][:3]))
+    return bad
+PBAD = panel_scan()
+log('PANEL PLACEMENT SCAN:', len(PBAD), 'of', len(PN_CELLS), 'panels not sitting cleanly on their surface')
+for pb in PBAD[:40]: log('  ', pb)
 RAY_BAD = ray_check()
 log('RAY CHECK blocked corners:', RAY_BAD)
 

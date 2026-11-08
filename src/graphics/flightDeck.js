@@ -6,6 +6,7 @@ import {
 } from './cockpitScreens.js';
 
 const URL = '/assets/models/flightdeck.glb';
+const isSaturated = (c) => { const hi = Math.max(c.r, c.g, c.b), lo = Math.min(c.r, c.g, c.b); return hi > 0.05 && (hi - lo) / hi > 0.6; }; // red guards, yellow, lamps keep their colour
 const DECK_ALBEDO = 0.2; // see loadDeck
 const loader = new GLTFLoader();
 let deckTemplate = null;
@@ -33,7 +34,7 @@ function loadDeck() {
           seen.add(m);
           if (m.name === 'fixture') m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.35);
           else if (m.name === 'label2') m.emissiveIntensity = Math.min(m.emissiveIntensity, 0.8);
-          else if (m.isMeshStandardMaterial && m.emissive.getHex() === 0 && !m.transparent && m.metalness < 0.3 && !/^fabric/.test(m.name)) m.color.multiplyScalar(DECK_ALBEDO);
+          else if (m.isMeshStandardMaterial && m.emissive.getHex() === 0 && !m.transparent && m.metalness < 0.3 && !/^fabric/.test(m.name) && !isSaturated(m.color)) m.color.multiplyScalar(DECK_ALBEDO);
         }
       });
       deckTemplate = scene;
