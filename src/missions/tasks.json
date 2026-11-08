@@ -1,0 +1,17 @@
+{
+  "note": "Mars task placement (metres on the Mars surface; the lander is at the origin, the hatch faces +z). Ids are contract TASKS. Each prop is a Role 3 asset name.",
+  "tasks": [
+    { "taskId": "scan1", "label": "Terrain scan A", "prop": "scanPoint", "x": 14, "z": 26, "hold": 3, "prompt": "Hold E: run the ground radar scan", "entry": "task-scan" },
+    { "taskId": "energy", "label": "Deploy the solar panels", "prop": "solarPanel", "x": 24, "z": 9, "hold": 3, "prompt": "Hold E: unfold the solar panels", "entry": "task-energy", "part": "panels" },
+    { "taskId": "energy", "label": "Map the buried ice", "prop": "iceDeposit", "x": 42, "z": 48, "hold": 3, "prompt": "Hold E: map the buried ice with radar", "entry": "isru", "part": "ice" },
+    { "taskId": "sampleBasalt", "label": "Basalt sample", "prop": "sampleRock", "x": -20, "z": 32, "hold": 2, "prompt": "Hold E: drill a basalt core into a sealed tube", "entry": "sample-basalt" },
+    { "taskId": "scan2", "label": "Terrain scan B", "prop": "scanPoint", "x": -48, "z": 74, "hold": 3, "prompt": "Hold E: run the ground radar scan", "entry": "task-scan" },
+    { "taskId": "sampleClay", "label": "Clay sample", "prop": "sampleRock", "x": 64, "z": 96, "hold": 2, "prompt": "Hold E: collect clay into a sealed tube", "entry": "sample-clay" },
+    { "taskId": "log1", "label": "Halcyon-1 log (Mei Lin Hart)", "prop": "dataLog", "x": -86, "z": 132, "hold": 1, "prompt": "Hold E: recover the data log", "entry": "comms-delay" },
+    { "taskId": "log2", "label": "Halcyon-1 log (Elena Marsh)", "prop": "dataLog", "x": -103, "z": 150, "hold": 1, "prompt": "Hold E: recover the data log", "entry": "comms-delay" },
+    { "taskId": "sampleHematite", "label": "Hematite spherules", "prop": "sampleRock", "x": 112, "z": 158, "hold": 2, "prompt": "Hold E: collect hematite spherules", "entry": "sample-hematite" },
+    { "taskId": "discovery", "label": "The rock in the delta", "prop": "discoveryRock", "x": 172, "z": -140, "hold": 4, "prompt": "Hold E: analyse the rock and upload the data", "entry": "discovery" }
+  ],
+  "wreck": { "prop": "halcyonLander", "x": -95, "z": 142, "rotation": 0.6 },
+  "radius": 2.8
+}

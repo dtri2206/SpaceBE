@@ -1,0 +1,57 @@
+{
+  "chapters": [
+    {
+      "id": "basics",
+      "title": "1. What a rocket is, in one page",
+      "paragraphs": [
+        "A rocket is a tank of propellant with an engine at the bottom and a reason to go at the top. Everything else is there to keep those three alive.",
+        "The engine throws exhaust out the back as fast as it can. The rocket moves forward because of that push: Newton's third law. The faster the exhaust (that is what Isp measures), the less propellant you need for the same trip.",
+        "Almost all of the mass on the stand is propellant. A ship that is 85 % fuel by mass is normal. That is why every kilogram of hardware or samples matters: you pay for it with fuel, and fuel with more fuel.",
+        "Order of a sensible stack, top to bottom: nose cone, capsule (with the crew), heat shield, tanks, engine. Side-mounted parts clamp to the tanks and the capsule; landing legs clamp to the engine so the feet reach the ground."
+      ]
+    },
+    {
+      "id": "numbers",
+      "title": "2. Reading the numbers without fear",
+      "paragraphs": [
+        "TWR (thrust-to-weight ratio): how hard the engine pushes compared with how heavy the ship is. Below 1 the ship sits on the pad. Above 1.2 it climbs briskly. Think of a car pulling a trailer uphill: more trailer, more engine.",
+        "Δv (delta-v): the total change of speed the ship can make before the tank is empty. It is your fuel budget written as speed. The trip to Mars needs a fixed amount per leg; if your Δv is bigger than the sum, you get there.",
+        "Isp (specific impulse): how efficiently the engine turns propellant into push. A higher number means each kilogram of fuel buys more Δv. Hydrogen is best but bulky; kerosene is dense and cheap; methane sits between and can be made on Mars.",
+        "Centre of mass and centre of pressure: where the ship balances, and where the air pushes on it. Keep the push behind the balance point (fins low on the stack) or the ship tries to swap ends in thick air, like an arrow thrown feathers-first.",
+        "Reliability: every part has a small chance to fail. Multiply them all and a ship with forty parts is only as good as the cheapest one. The poll warns below 80 %."
+      ]
+    },
+    {
+      "id": "recipe",
+      "title": "3. A ship that comes back: the recipe",
+      "paragraphs": [
+        "1. Start with the capsule at the Crew Systems lab. Add a spare oxygen bottle, a radiation shelter and an antenna. No antenna means nothing you find can be sent home.",
+        "2. At Propulsion, pick an engine for the pad: a sea-level nozzle and a pump big enough that TWR stays above 1.2 with full tanks. A vacuum nozzle loses about a third of its thrust in air; it belongs on upper stages, which we do not have yet.",
+        "3. Add tanks of the same fuel as the engine until Δv covers the trip to Mars (the Telemetry board shows the legs). Tanks of a different fuel are dead weight.",
+        "4. At Structures, add a heat shield (entry heating grows with the cube of speed), landing legs, a parachute and fins low on the stack.",
+        "5. Run the static fire at the Test console. If the vehicle does not lift in the hold-down test, it will not lift on the pad either.",
+        "6. Pick a launch window at the Range terminal. The cold morning is free. Cheap seals are not rated for it: the Challenger crew learned that at 2 °C."
+      ]
+    },
+    {
+      "id": "history",
+      "title": "4. Lessons people paid for",
+      "paragraphs": [
+        "Challenger, 1986: an O-ring in a booster seal stiffened in the cold and let hot gas through. Engineers had warned the night before. Lesson: a warning you override is still a warning.",
+        "Columbia, 2003: a piece of foam struck the wing on ascent. The damage was small, nobody inspected it, and the heat of re-entry did the rest. Lesson: small damage kills; inspect.",
+        "Apollo 13, 1970: a tank exploded on the way to the Moon. Calm problem-solving brought everyone home. Lesson: a shelter, a plan and a cool head are hardware too.",
+        "Mars Climate Orbiter, 1999: one team used pounds-force, the other newtons. The probe burned up. Lesson: units are part of the design."
+      ]
+    },
+    {
+      "id": "stations",
+      "title": "5. The stations in this hall",
+      "paragraphs": [
+        "Integration console: the stand. Click a glowing node on the vehicle, then pick a part; or drag a part onto the node. Undo with Z, redo with Y, Delete removes the selected part. Q and E turn the stand.",
+        "Propulsion workshop, Structures bay, Crew systems lab: each shows the parts of that trade with a picture and what the part is for. ADD TO VEHICLE puts the part in a sensible place; move it later on the stand.",
+        "Parts warehouse: every part the agency can buy. Test console: the static fire, the hold-down liftoff test and the readiness poll. Range terminal: the launch window and its weather.",
+        "This handbook: the right-hand page is yours. Write what worked and what did not. It is saved with your agency."
+      ]
+    }
+  ]
+}

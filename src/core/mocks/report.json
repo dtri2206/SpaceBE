@@ -1,0 +1,16 @@
+{
+  "outcome": "failure",
+  "rootCause": "Thermal: heat shield breached at T+412 s",
+  "timeline": [
+    { "t": 0, "label": "Liftoff" },
+    { "t": 82, "label": "Max-Q reached" },
+    { "t": 160, "label": "Orbit reached" },
+    { "t": 412, "label": "Heat shield breached on entry" }
+  ],
+  "astronaut": { "peakGForce": 7.2, "radiationMsv": 140, "o2UsedPercent": 12, "peakCo2": 0.6, "minSuitTempC": 14, "peakHeartRate": 168 },
+  "ship": { "maxQKpa": 31, "peakEngineTempK": 3400, "hits": 1, "partFailures": [{ "part": "p2", "t": 412 }], "touchdownSpeed": null },
+  "recommendations": [
+    { "text": "Peak 7.2 g at launch: lower first-stage thrust or TWR.", "partId": "p4" },
+    { "text": "Radiation 140 mSv: add a radiation shelter.", "partId": "p1" }
+  ]
+}

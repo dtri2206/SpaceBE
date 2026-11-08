@@ -1,0 +1,113 @@
+{
+  "halcyon": {
+    "crew": [
+      { "id": "marsh", "name": "Elena Marsh", "role": "Commander" },
+      { "id": "okafor", "name": "Tomas Okafor", "role": "Flight engineer" },
+      { "id": "hart", "name": "Mei Lin Hart", "role": "Geologist" }
+    ],
+    "lastTransmission": "We found something… near the delta… it changes everything—"
+  },
+
+  "photos": [
+    { "id": "parents", "label": "Mum and Dad", "caption": "Their porch, the summer you got the job", "from": "Mum and Dad", "colors": ["#f6c177", "#c4705a"] },
+    { "id": "sister", "label": "Your sister", "caption": "Her graduation, you in the back row", "from": "Your sister", "colors": ["#9ccfd8", "#31748f"] },
+    { "id": "partner", "label": "Sam and the dog", "caption": "The beach, the windy day", "from": "Sam", "colors": ["#ebbcba", "#907aa9"] }
+  ],
+
+  "prelaunch": {
+    "brief": "Three years ago Halcyon-1 landed in Jezero Crater and went silent. You are going after them. Before you go, choose the photo you will carry and record a message for home.",
+    "messagePlaceholder": "Write a message home. It will be sent when you launch.",
+    "defaultMessage": "I'll be home before you know it."
+  },
+
+  "radio": {
+    "landed": { "from": "HQ", "delayMin": 11, "text": "Touchdown confirmed. We heard it eleven minutes after you did. Welcome to Jezero. Suit up when you're ready." },
+    "firstEva": { "from": "HQ", "delayMin": 11, "text": "Halcyon-1's lander should be about 170 metres north-west of you. First: scan the ground and get power running. Then go find them." },
+    "scan": { "from": "HQ", "delayMin": 11, "text": "Scan data received. The radar shows layers under you: this crater floor was once the bottom of a lake." },
+    "energy": { "from": "HQ", "delayMin": 11, "text": "Panels are up and the ice is mapped. With that, the ship can make oxygen and methane for the trip home." },
+    "sample": { "from": "HQ", "delayMin": 11, "text": "Sample sealed and logged. Every kilogram you carry costs fuel on the way home, so choose well." },
+    "logPickup": { "from": "HQ", "delayMin": 11, "text": "You found one of their logs. Bring it to the comms console in the ship and upload it." },
+    "log": { "from": "HQ", "delayMin": 11, "text": "Log received. We're listening to it now. Thank you for bringing them back to us." },
+    "discovery": { "from": "HQ", "delayMin": 11, "text": "We're seeing the same patterns they did. It's not proof of life. But it's the best clue anyone has ever found. Upload everything." },
+    "complete": { "from": "HQ", "delayMin": 11, "text": "That's all of it. The return window won't wait. Get to the pilot seat and come home." },
+    "paleBlueDot": { "from": "HQ", "delayMin": 11, "text": "Look up, just above the crater rim. That bright point of light is Earth. Everyone you have ever loved is on that dot." },
+    "family1": { "from": "{family}", "delayMin": 6, "text": "The house is quiet without you. We watched the launch four times. Eat something that isn't from a pouch for us when you're back." },
+    "family2": { "from": "{family}", "delayMin": 14, "text": "They showed your landing on the news. I didn't understand half of it. I understood that you made it. That's enough." }
+  },
+
+  "logs": {
+    "log1": {
+      "title": "Halcyon-1 · personal log · Mei Lin Hart · sol 41",
+      "text": "Forty-one sols. Tomas has started talking to the plants. I've started answering for them. The delta is everything we hoped: layers on layers, a whole lake written in stone. Elena says we stay on schedule. I keep looking north-east anyway."
+    },
+    "log2": {
+      "title": "Halcyon-1 · mission log · Elena Marsh · sol 97",
+      "text": "HQ forecasts a regional dust storm in three to five sols. Mei Lin found something in the delta she can't explain: dark rims, pale centres, like spots on a leopard. If it's what she thinks, it changes everything. One more trip. We'll be back before the storm."
+    },
+    "final": {
+      "title": "Halcyon-1 · final log · Elena Marsh · sol 99",
+      "text": "The storm came early. The panels are buried and the batteries are going. HQ told us to stay inside. I said yes, and then I said one more trip, because it mattered so much. It still matters. But a warning is not an obstacle. Whoever comes after us: listen to it. And finish the work."
+    }
+  },
+
+  "returnTrip": [
+    { "caption": "Liftoff from Jezero Crater", "planet": "mars", "duration": 6 },
+    { "caption": "Trans-Earth injection: the engine burns for home", "planet": "mars", "duration": 5 },
+    { "caption": "Cruise: seven months between two worlds", "planet": "none", "duration": 7, "showFinalLog": true },
+    { "caption": "Earth entry at 11.5 km/s, faster than any Mars entry", "planet": "earth", "duration": 6 },
+    { "caption": "Parachutes… and splashdown", "planet": "earth", "duration": 5 }
+  ],
+
+  "endings": {
+    "homecoming": { "title": "Homecoming", "tone": "hopeful", "scene": "earth", "text": "You were away 2 years, 7 months. The world saw what you found in the delta, and the names of the Halcyon-1 crew were read out at the start of the evening news.", "family": "You came home. That's the whole message. You came home." },
+    "adrift": { "title": "Adrift: The Last Message", "tone": "heartbreaking", "scene": "space", "text": "There was not enough fuel to come back." },
+    "rud": { "title": "Rapid Unscheduled Disassembly", "tone": "dark-humor", "scene": "earth", "text": "Engineers have a polite phrase for when a rocket explodes. This was a very rapid, very unscheduled disassembly. The good news: the black box survived." },
+    "burnup": { "title": "Burn-up", "tone": "serious", "scene": "mars", "text": "Entering an atmosphere at thousands of metres per second turns air into plasma hotter than the surface of the Sun. Without enough protection, nothing survives it." },
+    "outOfBreath": { "title": "Out of Breath", "tone": "quiet", "scene": "mars", "text": "The suit is a tiny spaceship, and its air ran out before you got home. On Mars, every step outside is measured against the gauge on your wrist." },
+    "bankrupt": { "title": "Bankrupt", "tone": "humor", "scene": "earth", "text": "The agency has been sold to a company that makes self-heating soup. Your rocket now stands in a museum lobby, next to a sign that says PLEASE DO NOT CLIMB. You get to start over with fresh funding." },
+    "coldMorning": { "title": "Cold Morning", "tone": "serious", "scene": "earth", "text": "It was below freezing on the pad. The cheap seals went stiff, and hot gas found its way through. The warning was on the screen, and the launch went ahead anyway." },
+    "theFoam": { "title": "The Foam", "tone": "serious", "scene": "mars", "text": "Something hit the heat shield on the way up. It looked small. Nobody inspected it. On entry, the plasma found the damage." },
+    "pureOxygen": { "title": "Pure Oxygen", "tone": "serious", "scene": "earth", "text": "In pure oxygen, a single spark becomes a fire that spreads faster than anyone can react." },
+    "successfulFailure": { "title": "Successful Failure", "tone": "hopeful", "scene": "space", "text": "A tank exploded halfway to Mars. You stayed calm, worked the problem, and came home alive. The mission failed. You didn't." },
+    "silentReturn": { "title": "Silent Return", "tone": "serious", "scene": "earth", "text": "The capsule lost its air on the way down, and nobody was wearing a suit. It landed perfectly, and silently." },
+    "unitError": { "title": "Unit Error", "tone": "serious", "scene": "mars", "text": "One supplier's numbers were in pound-force, everyone else's in newtons. The ship flew exactly as its maths said, into the ground." },
+    "falseTouchdown": { "title": "False Touchdown", "tone": "serious", "scene": "mars", "text": "A cheap sensor felt the legs unfold and decided you had landed. The engine shut off forty metres up." },
+    "spin": { "title": "Spin", "tone": "hopeful", "scene": "space", "text": "A thruster stuck open and the ship spun faster and faster. You found the right switches before your vision went grey, and survived." },
+    "beagle": { "title": "Beagle", "tone": "quiet", "scene": "mars", "text": "You landed perfectly. Then the panels never fully opened, and they covered the antenna. Nobody on Earth ever heard from you." }
+  },
+
+  "adrift": {
+    "hq": { "from": "HQ", "delayMin": 4, "text": "We've run every number we have, three times, with every team. There's no rescue we can fly in time. We are so sorry. We're staying on this channel." },
+    "tries": [
+      "You run the numbers again. Fuel: 0 kg. The answer doesn't change.",
+      "You try to point the ship back toward home. Nothing pushes it there.",
+      "You recheck every valve and every tank. Empty is still empty.",
+      "You call HQ again. The reply will take minutes. You already know what it says."
+    ],
+    "dim": "The lights dim to save power.",
+    "photo": "You take out the photo you chose before launch.",
+    "message": "Your message, recorded before launch:",
+    "logPrompt": "Write a final log entry.",
+    "airOut": "The air runs out.",
+    "reply": "The reply from your family arrived 14 minutes later.",
+    "replyText": "We got your message. We're all here, together, reading it again and again. We love you. We are so proud of you. Come home to us if you can.",
+    "help": "If you or someone you know is struggling, help is available: findahelpline.com"
+  },
+
+  "lessons": {
+    "challenger": { "title": "Challenger, 1986", "text": "On 28 January 1986 it was about 2 °C at the launch pad. Engineers warned the night before that the rubber O-rings sealing the solid rocket boosters might not seal in the cold. The launch went ahead. 73 seconds after liftoff a seal failed and Challenger broke apart. All seven crew died.", "lesson": "Listen to warnings. Don't let risk become normal.", "entry": "history-challenger" },
+    "columbia": { "title": "Columbia, 2003", "text": "82 seconds after launch, a piece of foam struck the leading edge of Columbia's left wing. The damage was never inspected in orbit. On re-entry on 1 February 2003, hot gas entered the wing and the shuttle broke apart. All seven crew died.", "lesson": "Small damage can kill. Inspect it.", "entry": "history-columbia" },
+    "apollo1": { "title": "Apollo 1, 1967", "text": "On 27 January 1967, during a ground test, a fire started in the pure-oxygen cabin of Apollo 1. It spread in seconds. Gus Grissom, Ed White and Roger Chaffee died.", "lesson": "Fires in oxygen-rich air spread terrifyingly fast.", "entry": "history-apollo1" },
+    "apollo13": { "title": "Apollo 13, 1970", "text": "Two days into the flight, an oxygen tank exploded. The crew used the lunar module as a lifeboat while engineers on the ground worked out how to bring them home. All three came back alive.", "lesson": "Calm problem-solving saves lives.", "entry": "history-apollo13" },
+    "soyuz11": { "title": "Soyuz 11, 1971", "text": "On 30 June 1971 a valve opened as the Soyuz 11 modules separated before re-entry, and the cabin lost its air. The crew wore no pressure suits. Georgy Dobrovolsky, Vladislav Volkov and Viktor Patsayev are the only people to have died in space.", "lesson": "Wear the suit in critical phases.", "entry": "history-soyuz11" },
+    "marsClimateOrbiter": { "title": "Mars Climate Orbiter, 1999", "text": "Ground software gave thruster data in pound-force seconds, while the navigation team expected newton-seconds. The small error grew over months, and in September 1999 the orbiter flew far too low into Mars' atmosphere and was lost.", "lesson": "Units matter.", "entry": "history-mco" },
+    "marsPolarLander": { "title": "Mars Polar Lander, 1999", "text": "Its legs most likely jolted when they unfolded, a sensor read that as touchdown, and the engine shut off about 40 m up. In 2016 ESA's Schiaparelli lander also cut its descent short after a sensor gave a false reading.", "lesson": "Sensors can lie. Use redundancy.", "entry": "history-mpl" },
+    "gemini8": { "title": "Gemini 8, 1966", "text": "A thruster stuck on and spun the capsule to about one turn per second. Neil Armstrong shut down the main thrusters and used the re-entry thrusters to stop the spin. The crew came home safely.", "lesson": "Stay calm and know your controls.", "entry": "history-gemini8" },
+    "beagle2": { "title": "Beagle 2, 2003", "text": "Beagle 2 landed on Mars on Christmas Day 2003 and was never heard from. In 2015 orbital photos found it on the surface: its solar panels had only partly opened, covering the antenna.", "lesson": "Success can still fail at the last step.", "entry": "history-beagle2" }
+  },
+
+  "endingEntries": {
+    "rud": "maxq-gforce", "burnup": "entry-heat", "outOfBreath": "crew-oxygen", "adrift": "rocket-equation",
+    "coldMorning": "history-challenger", "theFoam": "history-columbia", "homecoming": "getting-to-mars", "bankrupt": "rocket-equation"
+  }
+}

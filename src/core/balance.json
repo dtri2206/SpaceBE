@@ -1,0 +1,1 @@
+{ "provisional": true, "startMoney": 5000000, "penaltyRate": 0.2, "penaltyBase": 250000, "homecomingBonus": 2000000, "insolvencyFloor": 1000000, "deltaVKmS": { "ascent": 4.1, "transfer": 1.0, "landing": 0.3, "return": 2.7 } }

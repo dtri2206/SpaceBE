@@ -1,0 +1,340 @@
+{
+  "license": "NASA 3D Resources (https://github.com/nasa/NASA-3D-Resources): NASA material is generally not subject to copyright. Credit: NASA.",
+  "models": {
+    "shuttle_engines": {
+      "file": "shuttle_engines.glb",
+      "source": "Space Shuttle (D)/Space Shuttle (D) eng.glb",
+      "bytes": 480216
+    },
+    "shuttle_rcs": {
+      "file": "shuttle_rcs.glb",
+      "source": "Space Shuttle (D)/Space Shuttle (D) rcs.glb",
+      "bytes": 480224
+    },
+    "external_tank": {
+      "file": "external_tank.glb",
+      "source": "Space Shuttle Parts/External tank.glb",
+      "bytes": 848352
+    },
+    "srb": {
+      "file": "srb.glb",
+      "source": "Space Shuttle Parts/Solid Rocket Booster.glb",
+      "bytes": 2665460
+    },
+    "payload": {
+      "file": "payload.glb",
+      "source": "Space Shuttle Parts/Payload.glb",
+      "bytes": 516016
+    },
+    "docking_system": {
+      "file": "docking_system.glb",
+      "source": "Space Shuttle Parts/Orbiter Docking System.glb",
+      "bytes": 841040
+    },
+    "apollo_soyuz": {
+      "file": "apollo_soyuz.glb",
+      "source": "Apollo Soyuz/Apollo Soyuz.glb",
+      "bytes": 952608
+    },
+    "gemini": {
+      "file": "gemini.glb",
+      "source": "Gemini/Gemini.glb",
+      "bytes": 1387812
+    },
+    "stardust_capsule": {
+      "file": "stardust_capsule.glb",
+      "source": "Stardust/Stardust capsule.glb",
+      "bytes": 2282444
+    },
+    "esas_crew_module": {
+      "file": "esas_crew_module.glb",
+      "source": "ESAS Crew Module/ESAS Crew Module.glb",
+      "bytes": 7664
+    },
+    "lunar_module": {
+      "file": "lunar_module.glb",
+      "source": "Apollo Lunar Module/Apollo Lunar Module.glb",
+      "bytes": 716840
+    },
+    "viking_lander": {
+      "file": "viking_lander.glb",
+      "source": "Viking Lander/Viking Lander.glb",
+      "bytes": 1849384
+    },
+    "oru": {
+      "file": "oru.glb",
+      "source": "Orbital Replacement Unit/Orbital Replacement Unit.glb",
+      "bytes": 585684
+    },
+    "voyager_antenna": {
+      "file": "voyager_antenna.glb",
+      "source": "Voyager Probe (B)/Voyager Probe (B) (antenna).glb",
+      "bytes": 166352
+    },
+    "saturn_v": {
+      "file": "saturn_v.glb",
+      "source": "Saturn V/Saturn V.glb",
+      "bytes": 927212
+    },
+    "redstone": {
+      "file": "redstone.glb",
+      "source": "Redstone 3 (Freedom 7)/Redstone 3 (Freedom 7).glb",
+      "bytes": 1028400
+    },
+    "satkit_body1": {
+      "file": "satkit_body1.glb",
+      "source": "Satellite Kit/Satellite Kit body 1.glb",
+      "bytes": 2916
+    },
+    "satkit_body2": {
+      "file": "satkit_body2.glb",
+      "source": "Satellite Kit/Satellite Kit body 2.glb",
+      "bytes": 5256
+    },
+    "satkit_body3": {
+      "file": "satkit_body3.glb",
+      "source": "Satellite Kit/Satellite Kit body 3.glb",
+      "bytes": 4944
+    },
+    "satkit_radio1": {
+      "file": "satkit_radio1.glb",
+      "source": "Satellite Kit/Satellite Kit radio 1.glb",
+      "bytes": 8436
+    },
+    "satkit_radio2": {
+      "file": "satkit_radio2.glb",
+      "source": "Satellite Kit/Satellite Kit radio 2.glb",
+      "bytes": 8752
+    },
+    "satkit_radio3": {
+      "file": "satkit_radio3.glb",
+      "source": "Satellite Kit/Satellite Kit radio 3.glb",
+      "bytes": 9012
+    },
+    "satkit_wings1": {
+      "file": "satkit_wings1.glb",
+      "source": "Satellite Kit/Satellite Kit wings 1.glb",
+      "bytes": 4860
+    },
+    "satkit_wings2": {
+      "file": "satkit_wings2.glb",
+      "source": "Satellite Kit/Satellite Kit wings 2.glb",
+      "bytes": 8172
+    },
+    "satkit_wings3": {
+      "file": "satkit_wings3.glb",
+      "source": "Satellite Kit/Satellite Kit wings 3.glb",
+      "bytes": 14820
+    },
+    "parker": {
+      "file": "parker.glb",
+      "source": "Parker Solar Probe/Parker Solar Probe.glb",
+      "bytes": 443572
+    },
+    "sdo": {
+      "file": "sdo.glb",
+      "source": "Solar Dynamics Observatory/Solar Dynamics Observatory.glb",
+      "bytes": 497844
+    },
+    "astronaut": {
+      "file": "astronaut.glb",
+      "source": "Astronaut/Astronaut.glb",
+      "bytes": 762988
+    },
+    "aces_suit": {
+      "file": "aces_suit.glb",
+      "source": "Advanced Crew Escape Suit/Advanced Crew Escape Suit.glb",
+      "bytes": 858408
+    },
+    "mark3_suit": {
+      "file": "mark3_suit.glb",
+      "source": "Mark III Spacesuit/Mark III Spacesuit.glb",
+      "bytes": 894092
+    },
+    "eva_suit": {
+      "file": "eva_suit.glb",
+      "source": "Space Shuttle Parts/EVA suit.glb",
+      "bytes": 715864
+    },
+    "robonaut": {
+      "file": "robonaut.glb",
+      "source": "Robonaut 2/Robonaut 2.glb",
+      "bytes": 1066836
+    },
+    "mission_control": {
+      "file": "mission_control.glb",
+      "source": "JSC Mission Control Room/JSC Mission Control Room.glb",
+      "bytes": 185220
+    },
+    "gantry": {
+      "file": "gantry.glb",
+      "source": "Gantry/Gantry.glb",
+      "bytes": 1386348
+    },
+    "crawler": {
+      "file": "crawler.glb",
+      "source": "Crawler/Crawler.glb",
+      "bytes": 1629892
+    },
+    "habitat1": {
+      "file": "habitat1.glb",
+      "source": "Habitat Demonstration Unit/Habitat Demonstration Unit (part 1).glb",
+      "bytes": 516748
+    },
+    "habitat2": {
+      "file": "habitat2.glb",
+      "source": "Habitat Demonstration Unit/Habitat Demonstration Unit (part 2).glb",
+      "bytes": 710988
+    },
+    "pistol_grip_tool": {
+      "file": "pistol_grip_tool.glb",
+      "source": "Pistol Grip Tool/Pistol Grip Tool.glb",
+      "bytes": 236300
+    },
+    "wrench": {
+      "file": "wrench.glb",
+      "source": "Wrench/Wrench.glb",
+      "bytes": 30720
+    },
+    "ratchet": {
+      "file": "ratchet.glb",
+      "source": "Ratchet/Ratchet.glb",
+      "bytes": 33508
+    },
+    "hammer": {
+      "file": "hammer.glb",
+      "source": "Hammer/Hammer.glb",
+      "bytes": 10912
+    },
+    "grease_gun": {
+      "file": "grease_gun.glb",
+      "source": "Grease Gun/Grease gun.glb",
+      "bytes": 48596
+    },
+    "crew_lock_bag": {
+      "file": "crew_lock_bag.glb",
+      "source": "Crew Lock Bag/Crew Lock Bag.glb",
+      "bytes": 609256
+    },
+    "tether": {
+      "file": "tether.glb",
+      "source": "Tether/Tether.glb",
+      "bytes": 491904
+    },
+    "base_station": {
+      "file": "base_station.glb",
+      "source": "Base Station/Base Station.glb",
+      "bytes": 21752
+    },
+    "mobile_launcher": {
+      "file": "mobile_launcher.glb",
+      "source": "Mobile Launcher/Mobile Launcher (assembled).glb",
+      "bytes": 198480
+    },
+    "tall_dish": {
+      "file": "tall_dish.glb",
+      "source": "Tall Dish/Tall Dish (dish).glb",
+      "bytes": 1390916
+    },
+    "tall_dish_post": {
+      "file": "tall_dish_post.glb",
+      "source": "Tall Dish/Tall Dish (post).glb",
+      "bytes": 244516
+    },
+    "canadarm": {
+      "file": "canadarm.glb",
+      "source": "Space Shuttle Remote Manipulator System (Canadarm)/Space Shuttle Remote Manipulator System (Canadarm).glb",
+      "bytes": 271276
+    },
+    "infrared_camera": {
+      "file": "infrared_camera.glb",
+      "source": "Infrared Camera/Infrared Camera.glb",
+      "bytes": 145640
+    },
+    "wfpc": {
+      "file": "wfpc.glb",
+      "source": "Wide Field Planetary Camera/Wide Field Planetary Camera.glb",
+      "bytes": 289468
+    },
+    "cubesat1": {
+      "file": "cubesat1.glb",
+      "source": "CubeSat - 1 RU Generic/CubeSat - 1 RU Generic.glb",
+      "bytes": 149424
+    },
+    "cubesat2": {
+      "file": "cubesat2.glb",
+      "source": "CubeSat - 2 RU Generic/CubeSat - 2 RU Generic.glb",
+      "bytes": 206108
+    },
+    "space_shuttle_d": {
+      "file": "space_shuttle_d.glb",
+      "source": "Space Shuttle (D)/Space Shuttle (D).glb",
+      "bytes": 2471932
+    },
+    "ares1": {
+      "file": "ares1.glb",
+      "source": "Ares 1 (A)/Ares 1 (A).glb",
+      "bytes": 98128
+    },
+    "jupiter_c": {
+      "file": "jupiter_c.glb",
+      "source": "Explorer Jupiter-C Rocket/Explorer Jupiter-C Rocket.glb",
+      "bytes": 149372
+    },
+    "atlas": {
+      "file": "atlas.glb",
+      "source": "Atlas 6 (Friendship 7)/Atlas 6 (Friendship 7).glb",
+      "bytes": 1026724
+    },
+    "agena": {
+      "file": "agena.glb",
+      "source": "Agena Target Vehicle/Agena Target Vehicle.glb",
+      "bytes": 1156596
+    },
+    "skylab": {
+      "file": "skylab.glb",
+      "source": "Skylab/Skylab.glb",
+      "bytes": 98396
+    },
+    "mir": {
+      "file": "mir.glb",
+      "source": "Mir/Mir.glb",
+      "bytes": 20884
+    },
+    "iss_b": {
+      "file": "iss_b.glb",
+      "source": "International Space Station (ISS) (B)/International Space Station (ISS) (B).glb",
+      "bytes": 476992
+    },
+    "deep_space_1": {
+      "file": "deep_space_1.glb",
+      "source": "Deep Space 1/Deep Space 1.glb",
+      "bytes": 934676
+    },
+    "dawn": {
+      "file": "dawn.glb",
+      "source": "Dawn/Dawn.glb",
+      "bytes": 927020
+    },
+    "near": {
+      "file": "near.glb",
+      "source": "NEAR Shoemaker/NEAR Shoemaker.glb",
+      "bytes": 701808
+    },
+    "lro": {
+      "file": "lro.glb",
+      "source": "Lunar Reconnaissance Orbiter (A)/Lunar Reconnaissance Orbiter (A).glb",
+      "bytes": 654500
+    },
+    "ingenuity": {
+      "file": "ingenuity.glb",
+      "source": "Ingenuity Mars Helicopter/Ingenuity Mars Helicopter.glb",
+      "bytes": 2019408
+    },
+    "rassor": {
+      "file": "rassor.glb",
+      "source": "Regolith Advanced Surface Systems Operations Robot (RASSOR)/Regolith Advanced Surface Systems Operations Robot (RASSOR).glb",
+      "bytes": 6283464
+    }
+  }
+}

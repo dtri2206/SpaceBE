@@ -1,0 +1,261 @@
+{
+  "newtons-laws": {
+    "title": "Newton's laws and thrust",
+    "category": "Physics",
+    "body": "A rocket doesn't push against the air. It throws mass out of the nozzle very fast, and the gas pushes back on the rocket with an equal and opposite force (Newton's third law). The force that changes the rocket's speed is thrust minus weight and drag: a = F / m.",
+    "numbers": ["Thrust = mass flow × exhaust speed", "Rocket exhaust leaves at about 2.5–4.5 km/s", "A rocket works best in a vacuum, where nothing pushes back on the exhaust"],
+    "source": "NASA Glenn Research Center, Beginner's Guide to Rockets"
+  },
+  "weight-mass": {
+    "title": "Weight is not mass",
+    "category": "Physics",
+    "body": "Mass is how much stuff something has, in kilograms, and it's the same everywhere. Weight is the force gravity puts on that mass: W = m × g. On Mars you weigh less, but you're just as hard to stop.",
+    "numbers": ["A 100 kg astronaut in a suit weighs 981 N on Earth (g = 9.81 m/s²)", "The same astronaut weighs 371 N on Mars (g = 3.71 m/s²)"],
+    "source": "NASA Mars Fact Sheet"
+  },
+  "twr": {
+    "title": "Thrust-to-weight ratio",
+    "category": "Physics",
+    "body": "TWR = thrust ÷ (mass × g). Below 1, the rocket can't lift off. Just above 1, it climbs slowly and wastes fuel fighting gravity. Too high, and the crew feels crushing g-forces and the air tears at the rocket.",
+    "numbers": ["The Saturn V lifted off with a TWR of about 1.2", "The same ship has a 2.6× higher TWR on Mars, where gravity is weaker"],
+    "source": "NASA Saturn V Flight Manual"
+  },
+  "rocket-equation": {
+    "title": "The rocket equation and Δv",
+    "category": "Physics",
+    "body": "Δv (delta-v) is how much a rocket can change its speed. Tsiolkovsky's rocket equation says Δv = Isp × g₀ × ln(full mass ÷ empty mass). Because of the logarithm, each extra kilometre per second costs more fuel than the last. That's why every kilogram matters, including the samples you bring home.",
+    "numbers": ["Low Earth orbit needs about 9.4 km/s, counting gravity and drag losses", "Konstantin Tsiolkovsky published the equation in 1903"],
+    "source": "NASA Glenn Research Center; Tsiolkovsky, 1903"
+  },
+  "specific-impulse": {
+    "title": "Specific impulse and fuel types",
+    "category": "Physics",
+    "body": "Specific impulse (Isp, in seconds) measures how efficiently an engine uses propellant. Higher is better. Kerosene and oxygen (kerolox) is dense and simple, methane and oxygen (methalox) can be made on Mars, and hydrogen and oxygen (hydrolox) has the highest Isp but the tanks must be huge and very cold.",
+    "numbers": ["Kerolox: about 280–340 s", "Methalox: about 330–380 s", "Hydrolox: about 450 s in vacuum (Space Shuttle main engine: 452 s)"],
+    "source": "NASA; engine manufacturer data"
+  },
+  "center-of-mass": {
+    "title": "Centre of mass and centre of pressure",
+    "category": "Physics",
+    "body": "In the air, a rocket is stable when its centre of pressure (where the air pushes) is behind its centre of mass, like the feathers on an arrow. Fins move the centre of pressure back. Heavy parts high up move the centre of mass forward.",
+    "numbers": ["Arrows and darts fly straight for the same reason", "Fins only work in air: in space, rockets steer with thrusters and engine gimbals"],
+    "source": "NASA Glenn Research Center, Rocket Stability"
+  },
+  "steering-in-space": {
+    "title": "Steering in space",
+    "category": "Flight",
+    "body": "There's no air to push against in space. Spacecraft turn with small thruster jets (the reaction control system), and big engines steer by tilting their nozzles (gimballing). Once a ship is spinning, it keeps spinning until a thruster stops it.",
+    "numbers": ["Gimballed engines tilt a few degrees", "Newton's first law: a turn keeps going until something stops it"],
+    "source": "NASA"
+  },
+  "orbits": {
+    "title": "Orbit is sideways speed",
+    "category": "Flight",
+    "body": "Being in orbit means moving sideways so fast that as you fall toward Earth, the ground curves away beneath you. Climbing straight up gets you height, not orbit. That's why rockets tip over into a gravity turn soon after launch.",
+    "numbers": ["The ISS moves at about 7.66 km/s, 400 km up", "It goes around Earth about every 92 minutes"],
+    "source": "NASA ISS facts"
+  },
+  "gravity-escape": {
+    "title": "Gravity and escape velocity",
+    "category": "Physics",
+    "body": "Escape velocity is the speed you'd need to coast away from a planet forever without more thrust. Smaller planets have weaker gravity and lower escape velocities, which makes leaving Mars much easier than leaving Earth.",
+    "numbers": ["Earth: 11.2 km/s", "Mars: 5.0 km/s", "Earth's gravity: 9.81 m/s², Mars: 3.71 m/s²"],
+    "source": "NASA Planetary Fact Sheets"
+  },
+  "maxq-gforce": {
+    "title": "Max-Q and g-force",
+    "category": "Flight",
+    "body": "Dynamic pressure q = ½ρv² is how hard the air pushes on a moving rocket. It peaks about a minute after launch (Max-Q), when the rocket is fast but the air is still thick, so rockets throttle down through it. G-force is the acceleration the crew feels. Lying on their backs, astronauts can take more, because blood isn't pulled away from the brain.",
+    "numbers": ["Real rockets see about 30–35 kPa at Max-Q", "Above about 4 g sitting up, vision starts to tunnel", "Space Shuttle crews felt at most about 3 g on the way up"],
+    "source": "NASA"
+  },
+  "entry-heat": {
+    "title": "Atmospheric entry and heat shields",
+    "category": "Flight",
+    "body": "Coming in from space, a ship hits the air so fast that the air in front of it is squeezed into glowing plasma. A heat shield absorbs and carries away that heat. Too steep and the ship burns up; too shallow and it skips back into space. Landing on Mars takes about seven minutes: the 'seven minutes of terror'.",
+    "numbers": ["Perseverance entered Mars' atmosphere at about 5.4 km/s", "Its heat shield reached about 1,300 °C", "Earth return from Mars: about 11–12 km/s"],
+    "source": "NASA JPL, Mars 2020 Entry, Descent and Landing"
+  },
+  "getting-to-mars": {
+    "title": "Getting to Mars",
+    "category": "Flight",
+    "body": "The cheapest way to Mars is a Hohmann transfer: half an ellipse that touches Earth's orbit at one end and Mars' at the other. Launch when Mars is about 44° ahead of Earth, and both arrive at the same place at the same time. These launch windows come every 26 months.",
+    "numbers": ["A Hohmann transfer to Mars takes about 259 days", "Perseverance flew in 203 days (2020–2021)", "Launch windows: about every 26 months"],
+    "source": "NASA JPL"
+  },
+  "mars-facts": {
+    "title": "Mars",
+    "category": "Mars",
+    "body": "Mars is half Earth's size, cold and dry, with a thin carbon dioxide atmosphere. It has the tallest volcano in the solar system, planet-wide dust storms, water ice under its surface, and sunsets that glow blue.",
+    "numbers": ["Gravity: 3.71 m/s² (38 % of Earth's)", "Radius: 3,390 km", "Atmosphere: about 95 % CO₂, under 1 % of Earth's air pressure", "Average temperature: about −60 °C", "One day (a sol): 24 h 39 min"],
+    "source": "NASA Mars Fact Sheet"
+  },
+  "radiation": {
+    "title": "Radiation between the planets",
+    "category": "Crew life",
+    "body": "Outside Earth's magnetic field, astronauts are hit by cosmic rays and by particles from solar storms. Water, food and plastic are good shields, so a spacecraft's 'storm shelter' is often a small room surrounded by supplies.",
+    "numbers": ["Curiosity's RAD measured about 1.8 mSv a day on the way to Mars", "On the Martian surface: about 0.7 mSv a day", "A chest X-ray: about 0.1 mSv"],
+    "source": "Zeitlin et al., Science 2013 (Curiosity RAD); Hassler et al., Science 2014"
+  },
+  "comms-delay": {
+    "title": "The comms delay",
+    "category": "Crew life",
+    "body": "Radio travels at the speed of light, but Mars is far. A question and its answer can take most of an hour. Mars crews can't call Mission Control for help in an emergency; they have to solve problems themselves.",
+    "numbers": ["One way: about 3 minutes at the closest, 22 at the farthest", "Halcyon-1's logs took about 11 minutes to reach Earth"],
+    "source": "NASA Mars Exploration"
+  },
+  "crew-oxygen": {
+    "title": "The suit is a tiny spaceship",
+    "category": "Crew life",
+    "body": "A spacesuit carries everything a body needs: oxygen, pressure, cooling, and a way to get rid of carbon dioxide. On Mars, every walk outside is planned around how much oxygen is left and how far it is back to the ship.",
+    "numbers": ["One person breathes about 0.84 kg of oxygen a day", "NASA's spacewalk suits support about 8 hours outside"],
+    "source": "NASA Human Integration Design Handbook"
+  },
+  "overview-effect": {
+    "title": "The overview effect",
+    "category": "Crew life",
+    "body": "Many astronauts describe a shift in how they see the world after seeing Earth from space: one small, fragile planet with no borders. Writer Frank White called it the overview effect. From Mars, Earth is just a bright star in the evening sky.",
+    "numbers": ["Voyager 1 photographed Earth as a 'pale blue dot' on 14 February 1990, from about 6 billion km", "From Mars, Earth looks like a bright evening or morning star"],
+    "source": "Frank White, The Overview Effect (1987); NASA JPL, Pale Blue Dot"
+  },
+  "isru": {
+    "title": "Living off the land (ISRU)",
+    "category": "Science",
+    "body": "Bringing everything from Earth is expensive. In-situ resource use means making what you need on Mars. NASA's MOXIE experiment on Perseverance turned Martian CO₂ into oxygen. With buried ice for hydrogen, the Sabatier reaction (CO₂ + 4H₂ → CH₄ + 2H₂O) can make methane fuel for the trip home.",
+    "numbers": ["MOXIE made 122 g of oxygen over 16 runs (2021–2023)", "At its best it made about 12 g of oxygen an hour"],
+    "source": "NASA JPL, MOXIE"
+  },
+  "task-scan": {
+    "title": "Seeing under the ground",
+    "category": "Science",
+    "body": "Ground-penetrating radar sends radio pulses into the ground and listens for echoes from buried layers. Perseverance's RIMFAX radar found layered rock under Jezero's floor, a record of the crater's past.",
+    "numbers": ["RIMFAX can see about 10 m down", "Jezero held a lake about 3.5 billion years ago"],
+    "source": "NASA JPL, Mars 2020 RIMFAX"
+  },
+  "task-energy": {
+    "title": "Solar power on Mars",
+    "category": "Science",
+    "body": "Mars is farther from the Sun, so sunlight is weaker, and dust settles on solar panels. Rovers and landers have been lost when dust covered their panels. Power is life on Mars: it heats the habitat, makes oxygen and runs the radio home.",
+    "numbers": ["Sunlight on Mars is about 43 % as strong as on Earth", "NASA's InSight lander ended its mission in 2022 when dust covered its panels"],
+    "source": "NASA JPL"
+  },
+  "sample-basalt": {
+    "title": "Basalt: volcanic rock",
+    "category": "Mars",
+    "body": "Basalt forms when lava cools. Perseverance found that the floor of Jezero Crater is volcanic rock. Volcanic rocks can be dated precisely in labs on Earth, which tells us when the lake existed.",
+    "numbers": ["Most of Mars' surface is basalt", "Samples sealed in tubes can wait on Mars for a future pick-up"],
+    "source": "NASA JPL, Mars 2020 sample cores"
+  },
+  "sample-clay": {
+    "title": "Clay: a sign of water",
+    "category": "Mars",
+    "body": "Clay minerals form when rock sits in liquid water for a long time. Orbiters spotted clays in Jezero's delta, which is one reason it was chosen: a lake and a river delta are good places to preserve signs of ancient life.",
+    "numbers": ["Jezero Crater is about 45 km wide", "Its delta formed where an ancient river flowed into the lake"],
+    "source": "NASA JPL, Jezero Crater"
+  },
+  "sample-hematite": {
+    "title": "Hematite spherules",
+    "category": "Mars",
+    "body": "In 2004, the Opportunity rover found millions of tiny grey balls of hematite, nicknamed 'blueberries', at Meridiani Planum. Hematite spherules like these form in water soaking through rock: more proof that Mars was once wet.",
+    "numbers": ["The 'blueberries' are a few millimetres across", "Opportunity explored Mars from 2004 to 2018"],
+    "source": "NASA JPL, Mars Exploration Rover"
+  },
+  "discovery": {
+    "title": "A possible biosignature",
+    "category": "Science",
+    "body": "In July 2024, Perseverance found a rock nicknamed Cheyava Falls with small 'leopard spots': pale patches with dark rims. On Earth, patterns like these can be made by microbes. They can also be made without life. It's a potential biosignature, not proof of life, and only labs on Earth can tell for sure.",
+    "numbers": ["Cheyava Falls was found in Jezero Crater in July 2024", "Perseverance sealed a core sample of it for a future return to Earth"],
+    "source": "NASA JPL, July 2024"
+  },
+  "crew-exercise": {
+    "title": "Exercise in space",
+    "category": "Crew life",
+    "body": "In weightlessness, and even in Mars gravity, muscles and bones carry less load, so they weaken. Space station crews exercise about two hours every day on a treadmill, a bike and a weight machine just to stay strong enough to walk when they get home.",
+    "numbers": ["About 2 hours of exercise per crew member per day on the ISS", "Without exercise, weight-bearing bones can lose 1–1.5% of their mineral density per month", "Mars gravity is 3.71 m/s², about 38% of Earth's"],
+    "source": "NASA Human Research Program; NASA, \"Exercising in Space\""
+  },
+  "crew-water": {
+    "title": "Every drop, again",
+    "category": "Crew life",
+    "body": "Water is heavy to launch, so a spacecraft recycles almost all of it: sweat and breath are pulled out of the cabin air, urine is distilled, and the result is filtered until it is cleaner than most tap water. Yesterday's coffee becomes tomorrow's coffee.",
+    "numbers": ["The ISS recovers about 98% of the water it uses (reached in 2023)", "Each crew member needs about 3.8 litres (1 gallon) a day for drinking, food and hygiene"],
+    "source": "NASA, ISS Environmental Control and Life Support System, 2023"
+  },
+  "crew-food": {
+    "title": "Food for a long trip",
+    "category": "Crew life",
+    "body": "Most space food is freeze-dried or heat-treated in pouches and eaten with water added. A Mars crew can't get fresh deliveries, so its food has to stay safe and keep its vitamins for years. Crews have already grown and eaten lettuce they farmed on the space station.",
+    "numbers": ["Food for a Mars mission must last up to about 5 years", "ISS crews first ate lettuce grown on board in 2015 (the Veggie experiment)"],
+    "source": "NASA Advanced Food Technology; NASA Veggie (Veg-01)"
+  },
+  "family-photo": {
+    "title": "Far from home",
+    "category": "Crew life",
+    "body": "Space station crews get a private video call with their families every week. From Mars there are no live calls: radio travels at the speed of light, and the trip takes minutes each way, so every conversation becomes a string of letters. Small personal things, like a photo, matter a lot.",
+    "numbers": ["One-way radio delay Earth to Mars: about 3 minutes at the closest, about 22 minutes at the farthest", "Earth and Mars are 55 to 400 million km apart"],
+    "source": "NASA Mars Exploration; NASA ISS crew support"
+  },
+  "history-challenger": {
+    "title": "Challenger, 1986",
+    "category": "History",
+    "body": "On 28 January 1986 it was about 2 °C at the launch pad. Engineers warned the night before that the rubber O-rings sealing the solid rocket boosters might not seal in the cold. The launch went ahead. 73 seconds after liftoff a seal failed and Challenger broke apart. Christa McAuliffe, Dick Scobee, Michael Smith, Judith Resnik, Ellison Onizuka, Ronald McNair and Gregory Jarvis died.",
+    "numbers": ["Lesson: listen to warnings, and don't let risk become normal", "The Rogers Commission investigated the accident"],
+    "source": "Report of the Presidential Commission on the Space Shuttle Challenger Accident, 1986"
+  },
+  "history-columbia": {
+    "title": "Columbia, 2003",
+    "category": "History",
+    "body": "82 seconds after launch, a piece of insulating foam struck the leading edge of Columbia's left wing. Engineers asked for images of the damage; the damage was not inspected in orbit. On re-entry on 1 February 2003, hot gas entered the wing and the shuttle broke apart. All seven crew died.",
+    "numbers": ["Lesson: small damage can kill, so inspect it", "Later shuttle flights inspected the heat shield in orbit with a camera boom"],
+    "source": "Columbia Accident Investigation Board Report, 2003"
+  },
+  "history-apollo1": {
+    "title": "Apollo 1, 1967",
+    "category": "History",
+    "body": "On 27 January 1967, during a ground test with the cabin full of pure oxygen above sea-level pressure, a fire started and spread in seconds. The hatch opened inward and could not be opened in time. Gus Grissom, Ed White and Roger Chaffee died.",
+    "numbers": ["Lesson: fires in oxygen-rich air spread terrifyingly fast", "Later Apollo capsules launched with a nitrogen–oxygen mix and an outward-opening hatch"],
+    "source": "NASA, Apollo 204 Review Board"
+  },
+  "history-apollo13": {
+    "title": "Apollo 13, 1970",
+    "category": "History",
+    "body": "Two days into the flight to the Moon, an oxygen tank in the service module exploded. The crew moved into the lunar module and used it as a lifeboat, while engineers on the ground invented fixes, like fitting square CO₂ filters into round holes. Jim Lovell, Jack Swigert and Fred Haise came home alive.",
+    "numbers": ["Lesson: calm problem-solving saves lives", "Called a 'successful failure'"],
+    "source": "NASA, Apollo 13 Review Board"
+  },
+  "history-soyuz11": {
+    "title": "Soyuz 11, 1971",
+    "category": "History",
+    "body": "On 30 June 1971 a valve opened as the Soyuz 11 modules separated before re-entry, and the cabin lost its air. The crew wore no pressure suits. Georgy Dobrovolsky, Vladislav Volkov and Viktor Patsayev are the only people to have died in space.",
+    "numbers": ["Lesson: wear the suit in critical phases", "After Soyuz 11, crews wore pressure suits for launch and landing"],
+    "source": "Roscosmos; NASA History"
+  },
+  "history-mco": {
+    "title": "Mars Climate Orbiter, 1999",
+    "category": "History",
+    "body": "Ground software produced thruster data in pound-force seconds, while the navigation software expected newton-seconds. The error grew over months of small corrections. On 23 September 1999 the orbiter passed far too low through Mars' atmosphere and was lost.",
+    "numbers": ["Lesson: units matter", "1 pound-force = 4.448 newtons"],
+    "source": "Mars Climate Orbiter Mishap Investigation Board, 1999"
+  },
+  "history-mpl": {
+    "title": "Mars Polar Lander, 1999",
+    "category": "History",
+    "body": "Mars Polar Lander went silent during landing on 3 December 1999. The most likely cause: when its legs unfolded, a sensor took the jolt for touchdown, and the engine shut off about 40 m up. In 2016, ESA's Schiaparelli lander also cut its descent short after a sensor gave a false reading.",
+    "numbers": ["Lesson: sensors can lie, so use redundancy"],
+    "source": "NASA JPL Special Review Board, 2000; ESA Schiaparelli inquiry, 2017"
+  },
+  "history-gemini8": {
+    "title": "Gemini 8, 1966",
+    "category": "History",
+    "body": "On 16 March 1966, just after the first docking in space, a stuck thruster spun Gemini 8 faster and faster, to about one turn per second. Neil Armstrong and David Scott undocked, shut down the main thrusters, and used the re-entry thrusters to stop the spin. They came home safely.",
+    "numbers": ["Lesson: stay calm and know your controls"],
+    "source": "NASA History, Gemini 8"
+  },
+  "history-beagle2": {
+    "title": "Beagle 2, 2003",
+    "category": "History",
+    "body": "The British lander Beagle 2 landed on Mars on Christmas Day 2003 and was never heard from. In 2015, NASA's Mars Reconnaissance Orbiter photographed it on the surface: its solar panels had only partly unfolded, covering its antenna.",
+    "numbers": ["Lesson: success can still fail at the last step"],
+    "source": "UK Space Agency; NASA HiRISE, 2015"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Thin Skin",
+  "parts": [
+    { "id": "p1", "type": "capsule_m", "x": 0, "y": 5.8, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p2", "type": "heat_shield_s", "x": 0, "y": 5.0, "z": 0, "rotation": 0, "variant": "thin" },
+    { "id": "p3", "type": "tank_m", "x": 0, "y": 2.5, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p4", "type": "engine_m", "x": 0, "y": 0.0, "z": 0, "rotation": 0, "variant": "methalox" },
+    { "id": "p5", "type": "leg_s", "x": 1.3, "y": 0.4, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p6", "type": "leg_s", "x": -1.3, "y": 0.4, "z": 0, "rotation": 180, "variant": null },
+    { "id": "p7", "type": "antenna_s", "x": 0, "y": 6.6, "z": 0, "rotation": 0, "variant": null }
+  ],
+  "engines": [{ "fuel": "methalox", "nozzle": "vac", "pump": "M" }],
+  "stats": {
+    "cost": 1600000, "wetMass": 38000, "dryMass": 8500, "fuelMass": 29500, "thrust": 560000,
+    "ispSL": 330, "ispVac": 380, "deltaV": 5581, "twrEarth": 1.5, "twrMars": 3.97,
+    "comOffset": 0.0, "copOffset": 0.0, "reliability": 0.85,
+    "hasHeatShield": true, "heatShieldDamaged": true, "hasLegs": true, "hasRCS": true,
+    "hasParachute": false, "hasAntenna": true, "hasShelter": true, "coldRatedSeals": true,
+    "armorHits": 1, "spareO2Tanks": 1, "power": 3500
+  },
+  "warnings": ["LOW_DV"],
+  "launch": { "tempC": 18 }
+}

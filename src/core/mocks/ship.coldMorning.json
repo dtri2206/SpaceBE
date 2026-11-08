@@ -1,0 +1,22 @@
+{
+  "name": "Cold Morning",
+  "parts": [
+    { "id": "p1", "type": "capsule_s", "x": 0, "y": 5.0, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p2", "type": "heat_shield_s", "x": 0, "y": 4.3, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p3", "type": "tank_m", "x": 0, "y": 2.2, "z": 0, "rotation": 0, "variant": "cheap_seals" },
+    { "id": "p4", "type": "engine_s", "x": 0, "y": 0.0, "z": 0, "rotation": 0, "variant": "kerolox" },
+    { "id": "p5", "type": "leg_s", "x": 1.2, "y": 0.4, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p6", "type": "leg_s", "x": -1.2, "y": 0.4, "z": 0, "rotation": 180, "variant": null }
+  ],
+  "engines": [{ "fuel": "kerolox", "nozzle": "sl", "pump": "M" }],
+  "stats": {
+    "cost": 1250000, "wetMass": 36000, "dryMass": 8000, "fuelMass": 28000, "thrust": 480000,
+    "ispSL": 282, "ispVac": 311, "deltaV": 4587, "twrEarth": 1.36, "twrMars": 3.59,
+    "comOffset": 0.1, "copOffset": 0.0, "reliability": 0.74,
+    "hasHeatShield": true, "heatShieldDamaged": false, "hasLegs": true, "hasRCS": false,
+    "hasParachute": true, "hasAntenna": true, "hasShelter": false, "coldRatedSeals": false,
+    "armorHits": 0, "spareO2Tanks": 1, "power": 3000
+  },
+  "warnings": ["LOW_DV", "NO_SHELTER", "COLD_SEALS", "LOW_RELIABILITY"],
+  "launch": { "tempC": 2 }
+}

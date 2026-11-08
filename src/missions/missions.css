@@ -1,0 +1,16 @@
+/* Role 4 mission HUD on Mars: bottom-right, clear of Role 2's helmet HUD (left) and the debug panel (corner). */
+.role4-mission {
+  position: absolute;
+  right: 24px;
+  bottom: 64px;
+  width: min(270px, calc(100vw - 48px));
+  display: grid;
+  gap: 6px;
+}
+.role4-mission .hud-value { font-size: var(--hud-text-lg); }
+.role4-mission-list { display: grid; gap: 1px; font-size: var(--hud-text-xs); color: var(--hud-muted); }
+.role4-mission-list .hud-good { color: var(--hud-green); }
+.role4-mission-target { display: flex; gap: 8px; align-items: center; color: var(--hud-cyan); font-size: var(--hud-text-sm); }
+.role4-arrow { display: inline-block; width: 14px; text-align: center; transition: transform 0.4s linear; }
+.role4-mission-hint { font-size: var(--hud-text-xs); color: var(--hud-amber); }
+.role4-mission-hint:empty { display: none; }

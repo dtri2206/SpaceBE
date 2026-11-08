@@ -1,0 +1,16 @@
+{
+  "fuels": {
+    "kerolox": { "name": "Kerosene + LOX", "density": 1.0, "isp": { "sl": [282, 311], "vac": [200, 348] }, "chamberMass": 350, "chamberCost": 120000, "special": "Cheap and compact. The weakest of the three." },
+    "methalox": { "name": "Methane + LOX", "density": 0.8, "isp": { "sl": [330, 350], "vac": [240, 380] }, "chamberMass": 400, "chamberCost": 150000, "special": "Can be made on Mars from ice and CO₂ (Sabatier), so it can refuel the return." },
+    "hydrolox": { "name": "Hydrogen + LOX", "density": 0.35, "isp": { "sl": [366, 452], "vac": [280, 465] }, "chamberMass": 450, "chamberCost": 260000, "special": "The most efficient, but it boils off slowly during the cruise and needs huge tanks." }
+  },
+  "nozzles": {
+    "sl": { "name": "Sea-level nozzle", "mass": 120, "cost": 30000, "note": "Short bell tuned for 1 atm. Strong off the pad, wasteful in vacuum." },
+    "vac": { "name": "Vacuum nozzle", "mass": 180, "cost": 40000, "note": "Long bell tuned for vacuum. Efficient in space, weak and unstable at sea level." }
+  },
+  "pumps": {
+    "S": { "name": "Small turbopump", "thrust": 100000, "mass": 500, "cost": 200000, "heatRate": 0.0015 },
+    "M": { "name": "Medium turbopump", "thrust": 300000, "mass": 1200, "cost": 500000, "heatRate": 0.002 },
+    "L": { "name": "Large turbopump", "thrust": 1000000, "mass": 3000, "cost": 1000000, "heatRate": 0.004 }
+  }
+}

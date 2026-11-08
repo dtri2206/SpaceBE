@@ -1,0 +1,24 @@
+/* Role 4 cruise HUD. */
+.role4-cruise { position: absolute; inset: 0; font-family: var(--hud-font); }
+.role4-cruise > .hud-panel { position: absolute; }
+.role4-cruise-top { left: 50%; top: 20px; transform: translateX(-50%); width: min(320px, calc(100vw - 48px)); display: grid; gap: 6px; text-align: center; }
+.role4-cruise-left { left: 24px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: 1fr; gap: 2px 0; width: 220px; }
+.role4-cruise-left .hud-label { margin-top: 6px; }
+.role4-cruise-num { font-size: var(--hud-text-md); }
+.role4-cruise-right { right: 24px; top: 50%; transform: translateY(-50%); width: min(260px, 40vw); display: grid; gap: 6px; }
+.role4-cruise-map { width: 100%; height: auto; }
+.role4-cruise-map .orbit { fill: none; stroke: var(--hud-line); stroke-width: 0.8; }
+.role4-cruise-map .transfer { fill: none; stroke: var(--hud-cyan); stroke-width: 0.8; stroke-dasharray: 3 2; opacity: 0.8; }
+.role4-cruise-map .sun { fill: #fde68a; }
+.role4-cruise-map .earth { fill: #60a5fa; }
+.role4-cruise-map .mars { fill: #f97316; }
+.role4-cruise-map .ship { fill: #ffffff; }
+.role4-cruise-legend { font-size: var(--hud-text-xs); color: var(--hud-muted); }
+.role4-cruise-legend .earth { color: #60a5fa; } .role4-cruise-legend .mars { color: #f97316; } .role4-cruise-legend .ship { color: #fff; }
+.role4-cruise-controls { left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; pointer-events: auto; }
+.role4-cruise-modal { left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(480px, calc(100vw - 48px)); display: grid; gap: 10px; background: var(--hud-surface-strong); }
+.role4-cruise-text { font-size: var(--hud-text-sm); line-height: 1.5; }
+.role4-cruise-readings { margin: 0; padding-left: 18px; font-size: var(--hud-text-sm); display: grid; gap: 2px; }
+.role4-cruise-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.role4-cruise-options { flex-direction: column; align-items: stretch; }
+@media (max-width: 800px) { .role4-cruise-left, .role4-cruise-right { display: none; } }

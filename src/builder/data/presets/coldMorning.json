@@ -1,0 +1,19 @@
+{
+  "name": "Cold Morning",
+  "symmetry": 1,
+  "launch": { "slot": "cold" },
+  "parts": [
+    { "id": "p1", "type": "capsule_s", "parent": null, "node": null, "angle": 0, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p2", "type": "heat_shield_m", "parent": "p1", "node": "bottom", "angle": 0, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p3", "type": "tank_s_kerolox", "parent": "p2", "node": "bottom", "angle": 0, "yFrac": 0.5, "variant": null, "group": null },
+    { "id": "p4", "type": "engine_m", "parent": "p3", "node": "bottom", "angle": 0, "yFrac": 0.5, "variant": null, "group": null, "engine": { "fuel": "kerolox", "nozzle": "sl", "pump": "M" } },
+    { "id": "p5", "type": "legs_m", "parent": "p4", "node": "radial", "angle": 45, "yFrac": 0.35, "variant": null, "group": null },
+    { "id": "p6", "type": "fin_m", "parent": "p3", "node": "radial", "angle": 0, "yFrac": 0.12, "variant": null, "group": "g1" },
+    { "id": "p7", "type": "fin_m", "parent": "p3", "node": "radial", "angle": 120, "yFrac": 0.12, "variant": null, "group": "g1" },
+    { "id": "p8", "type": "fin_m", "parent": "p3", "node": "radial", "angle": 240, "yFrac": 0.12, "variant": null, "group": "g1" },
+    { "id": "p9", "type": "parachute", "parent": "p1", "node": "radial", "angle": 180, "yFrac": 0.9, "variant": null, "group": null },
+    { "id": "p10", "type": "antenna_low", "parent": "p1", "node": "radial", "angle": 90, "yFrac": 0.9, "variant": null, "group": null },
+    { "id": "p11", "type": "o2_bottle", "parent": "p3", "node": "radial", "angle": 30, "yFrac": 0.75, "variant": null, "group": null },
+    { "id": "p12", "type": "seals_cheap", "parent": "p3", "node": "radial", "angle": 300, "yFrac": 0.5, "variant": null, "group": null }
+  ]
+}

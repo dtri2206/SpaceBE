@@ -1,0 +1,635 @@
+// FlightController — the reusable Newtonian flight core (Role 2). TEAM_PROMPT §6.
+//
+// Pure JS, no three.js, testable in node. Units inside: m, s, kg, N, rad.
+// Position/velocity are relative to the CURRENT planet's center (one planet per scene).
+//
+// Usage (src/flight/index.js does this with core's events, PLANETS and G0):
+//   const fc = new FlightController({ bus: events, planets: PLANETS, g0: G0, planetId: 'earth', shipSpec, start: 'pad' });
+//   every frame: fc.update(dt, controls.input)   // controls from cockpitControls.js
+//   read: fc.telemetry  (HUD / Flight Assist / black box)
+//   fc.onNotice = (type, data) => {...}            // EVERY flight notice, for HUD/sound (not on the bus)
+//
+// ShipSpec units follow src/core/contract.js: masses in kg, thrust in N. shipSpec.launch.tempC = launch weather.
+//
+// On the bus (only names from contract.js):
+//   flight:phase  { phase }                 'prelaunch'|'ascent'|'orbit'|'coast'|'entry'|'landing'|'landed'
+//   flight:event  { type, t, data }         only FLIGHT_EVENT_TYPES: 'maxq', 'debris_hit', 'blackout', 'skip_off'
+//   flight:landed { touchdownSpeed }
+//   flight:failed { endingId, cause, causeId, historyHint }   endingId is a key of ENDINGS, cause is one sentence
+// Local notices (fc.onNotice) also include: liftoff, fairing_sep, parachute, maxq_warning, heat_warning, engine_hot,
+//   g_high, orbit_achieved, fuel_empty, ignition, no_ignition, debris_near_miss.
+
+import {
+  v3, add, sub, scale, dot, cross, len, norm, clone,
+  quat, qMul, qNorm, qFromAxisAngle, qRotate, qFromTo,
+  LOCAL_FORWARD, LOCAL_UP, LOCAL_RIGHT,
+} from './vec.js';
+import {
+  airDensity, pressureRatio, dynamicPressure, heatFlux, atmosphereTop, HEAT_REAL_SCALE,
+} from './atmosphere.js';
+import { closestApproach } from './debris.js';
+
+export const FIXED_DT = 1 / 120;
+
+// Local notice → contract flight:event type (contract.js FLIGHT_EVENT_TYPES). Others stay local.
+const BUS_FLIGHT_EVENTS = { maxq_warning: 'maxq', debris_hit: 'debris_hit', blackout: 'blackout', skip_off: 'skip_off' };
+
+// Plain-sentence causes for flight:failed (contract: "cause is one plain sentence").
+const CAUSES = {
+  engine_overheat: 'The engine ran too hot for too long and blew apart.',
+  max_q_exceeded: 'The rocket went too fast in thick air and the aerodynamic load tore it apart.',
+  g_force_blackout: 'The g-force was so high that the pilot blacked out and lost the ship.',
+  no_heat_shield: 'With no heat shield, the ship burned up on atmospheric entry.',
+  heat_shield_damaged: 'The damaged heat shield let hot plasma in during entry.',
+  heat_overload: 'The entry was too fast and steep, and the heat shield could not take it.',
+  seal_failure_cold: 'The cheap seals went stiff in the cold, leaked hot gas, and the rocket broke up.',
+  crash_landing: 'The ship hit the ground too fast.',
+  tipped_over: 'The ship landed tilted and fell over.',
+  debris_impact: 'A piece of space debris hit the ship.',
+  out_of_fuel: 'Out of fuel on a path that never comes back: the ship drifts forever.',
+  skipped_off: 'The entry was too shallow, so the ship skipped off the atmosphere into deep space.',
+};
+
+// Tunables (TODO tune in playtests). Heat limits are in GAME units (see atmosphere.js).
+export const TUNING = {
+  maxQ: 40000, // Pa structural limit (real rockets see ~30–35 kPa at Max-Q)
+  maxQWarnFrac: 0.8,
+  gWarn: 4, // g: vision starts tunnelling
+  gSustainedLimit: 6, // g held for gSustainedTime → blackout → loss of vehicle
+  gSustainedTime: 4,
+  gInstantLimit: 12,
+  heatLimit: { none: 4e3, damaged: 7e3, shield: 2e5 }, // W/m² (game units); a good Mars entry peaks ≈ 1e4
+  chuteMaxSpeed: 500, // m/s: supersonic chute (Perseverance opened at about Mach 1.7)
+  chuteMaxAltitude: 15000, // m
+  heatGrace: 1.0, // s above the limit before failure
+  touchdownLimit: { legs: 3, noLegs: 1 }, // m/s
+  uprightCos: Math.cos((20 * Math.PI) / 180),
+  turnAccel: { rcs: 0.8, noRcs: 0.15 }, // rad/s²
+  maxTurnRate: 0.6, // rad/s
+  throttleRate: 0.6, // per second while Q/E held
+  engineHeatPerSec: { S: 0.0015, M: 0.002, L: 0.004 }, // at 100% throttle: L overheats after ~250 s, M ~500 s
+  engineCoolPerSec: 0.01,
+  strandedGrace: 5, // s with no fuel on a trajectory that never comes back
+  coldSealFailWindow: [55, 75], // s after liftoff (Challenger broke up at T+73 s)
+  heatWarnFrac: 0.7,
+  nearMissDistance: 15, // m
+  collisionWarnTime: 20, // s: warn when a piece will pass closer than its danger radius within this time
+};
+
+// Convert a ShipSpec (contract units: kg, N) into internal physics params with safe defaults.
+export function shipParams(spec = {}) {
+  const s = spec.stats ?? {};
+  const pump = spec.engines?.[0]?.pump ?? 'M';
+  return {
+    // guards: a half-built ShipSpec must never divide by zero or go negative
+    dryMass: Math.max(100, Number(s.dryMass) || 6000),
+    fuelMass: Math.max(0, Number(s.fuelMass ?? 14000) || 0),
+    thrustVac: Math.max(0, Number(s.thrust ?? 300000) || 0),
+    ispSL: Math.max(1, Number(s.ispSL) || 300),
+    ispVac: Math.max(1, Number(s.ispVac) || 330),
+    // m² (drag coefficient × reference area). A heat shield is a wide aeroshell: Mars air is so thin
+    // that real landers need a big blunt shield + a supersonic parachute + engines.
+    cdA: s.cdA ?? ((s.hasHeatShield ?? true) ? 80 : 3),
+    ascentCdA: s.ascentCdA ?? 3, // on the way up the shield sits inside a slim fairing
+    chuteCdA: (s.hasParachute ?? true) ? (s.chuteCdA ?? 300) : 0,
+    noseRadius: s.noseRadius ?? 1.5, // m (blunt capsule)
+    hasRCS: s.hasRCS ?? true,
+    hasLegs: s.hasLegs ?? true,
+    hasHeatShield: s.hasHeatShield ?? true,
+    heatShieldDamaged: s.heatShieldDamaged ?? false,
+    coldRatedSeals: s.coldRatedSeals ?? true,
+    armorHits: s.armorHits ?? 0,
+    radius: s.radius ?? 2, // m, collision radius of the ship
+    // Real engines: most can't throttle below ~40 % and have a limited number of restarts.
+    // Defaults keep the arcade-friendly behaviour; Role 1's ShipSpec can set them per engine.
+    minThrottle: s.minThrottle ?? 0,
+    ignitions: s.ignitions ?? Infinity,
+    pump,
+  };
+}
+
+export class FlightController {
+  constructor({ bus, planets, g0, planetId = 'earth', shipSpec, start = 'pad', scenario, fuel, rng = Math.random } = {}) {
+    if (!planets?.[planetId]) throw new Error(`FlightController: unknown planet "${planetId}"`);
+    if (!(g0 > 0)) throw new Error('FlightController: pass g0 (standard gravity G0 from core)');
+    this.g0 = g0;
+    this.bus = bus ?? { emit() {} };
+    this.onNotice = null;
+    this.planetId = planetId;
+    this.planet = planets[planetId];
+    this.mu = this.planet.g * this.planet.radius ** 2; // GM = g·R²
+    this.ship = shipParams(shipSpec);
+    this.scenario = scenario ?? { tempC: shipSpec?.launch?.tempC ?? 15 }; // launch weather (Cold Morning ending)
+    this.rng = rng;
+
+    this.fuel = fuel ?? this.ship.fuelMass; // carry leftover fuel between scenes
+    this.throttle = 0;
+    this.engineLit = false;
+    this.holdDown = false; // launch clamps: while true the rocket stays on the pad whatever the thrust (countdown)
+    this.ignitionsLeft = this.ship.ignitions;
+    this.armorLeft = this.ship.armorHits;
+    this.obstacles = [];
+    this.engineTemp = 0; // 0..1, 1 = failure
+    this.omega = v3(); // world-frame angular velocity (rad/s)
+    this.t = 0; // mission time since controller start
+    this.liftoffT = null;
+    this.accumulator = 0;
+    this.failed = null;
+    this.chuteOpen = false;
+    this.landed = false;
+    this.onGround = false;
+    this.phase = null;
+    this._flags = {};
+    this._timers = { g: 0, heat: 0, stranded: 0 };
+    this._wasInAtmosphere = false;
+    this._coldSealFailAt = null;
+    this._lastAccel = v3();
+    this._lastNonGravAccel = 0;
+
+    this.setStart(start);
+  }
+
+  // --- start conditions -----------------------------------------------------
+  // 'pad': standing on the surface. {altitude, speed, flightPathDeg, facing?}: free flight (e.g. Mars entry).
+  setStart(start) {
+    const R = this.planet.radius;
+    const up = v3(0, 1, 0);
+    if (start === 'pad') {
+      this.pos = scale(up, R);
+      this.vel = v3();
+      this.orient = quat(); // nose (+Y local) = up
+      this.onGround = true;
+      this.inFairing = true;
+      this._setPhase('prelaunch');
+      return;
+    }
+    const alt = start.altitude ?? 50000;
+    const speed = start.speed ?? 0;
+    const fpa = ((start.flightPathDeg ?? 0) * Math.PI) / 180; // negative = descending
+    this.pos = scale(up, R + alt);
+    // horizontal direction = +X
+    this.vel = v3(Math.cos(fpa) * speed, Math.sin(fpa) * speed, 0);
+    // default: heat shield (tail) along velocity, nose retrograde (entry). start.facing = 'prograde' for orbits.
+    const along = start.facing === 'prograde' ? norm(this.vel) : norm(scale(this.vel, -1));
+    this.orient = qFromTo(LOCAL_FORWARD, speed > 0 ? along : up);
+    this.onGround = false;
+    this.inFairing = false;
+    this._setPhase(this._computePhase());
+  }
+
+  // --- derived quantities ---------------------------------------------------
+  get mass() { return this.ship.dryMass + this.fuel; }
+  get forward() { return qRotate(this.orient, LOCAL_FORWARD); }
+  get up() { return norm(this.pos); }
+  get altitude() { return len(this.pos) - this.planet.radius; }
+
+  isp(altitude = this.altitude) {
+    const p = pressureRatio(this.planet, altitude);
+    return this.ship.ispVac + (this.ship.ispSL - this.ship.ispVac) * p;
+  }
+
+  // Thrust at current conditions (N). Thrust scales with Isp at constant mass flow.
+  thrustNow(altitude = this.altitude) {
+    if (this.fuel <= 0) return 0;
+    return this.ship.thrustVac * (this.isp(altitude) / this.ship.ispVac);
+  }
+
+  deltaVLeft() {
+    return this.ship.ispVac * this.g0 * Math.log(this.mass / this.ship.dryMass);
+  }
+
+  orbit() {
+    const r = len(this.pos);
+    const v = len(this.vel);
+    const h = len(cross(this.pos, this.vel));
+    const energy = (v * v) / 2 - this.mu / r;
+    const e = Math.sqrt(Math.max(0, 1 + (2 * energy * h * h) / (this.mu * this.mu)));
+    const R = this.planet.radius;
+    if (Math.abs(energy) < 1e-9) return { a: Infinity, e: 1, periapsis: (h * h) / (2 * this.mu) - R, apoapsis: Infinity };
+    const a = -this.mu / (2 * energy);
+    if (energy < 0) {
+      const eb = Math.min(e, 1); // bound orbit (e can round to 1 for a straight up/down path)
+      return { a, e, periapsis: a * (1 - eb) - R, apoapsis: a * (1 + eb) - R };
+    }
+    return { a, e, periapsis: (h * h) / (this.mu * (1 + e)) - R, apoapsis: Infinity };
+  }
+
+  get telemetry() {
+    const alt = this.altitude;
+    const up = this.up;
+    const speed = len(this.vel);
+    const vVert = dot(this.vel, up);
+    const vHoriz = len(sub(this.vel, scale(up, vVert)));
+    const rho = airDensity(this.planet, alt);
+    const r = len(this.pos);
+    const orb = this.orbit();
+    const thrust = this.thrustNow(alt) * this.throttle;
+    const gLocal = this.mu / (r * r);
+    const hf = vVert < 0 ? heatFlux(this.planetId, rho, speed, this.ship.noseRadius) : 0;
+    return {
+      t: this.t,
+      phase: this.phase,
+      altitude: alt,
+      speed,
+      verticalSpeed: vVert,
+      horizontalSpeed: vHoriz,
+      throttle: this.throttle,
+      fuel: this.fuel,
+      fuelFrac: this.ship.fuelMass > 0 ? this.fuel / this.ship.fuelMass : 0,
+      mass: this.mass,
+      deltaVLeft: this.deltaVLeft(),
+      isp: this.isp(alt),
+      thrust,
+      twr: this.thrustNow(alt) / (this.mass * gLocal),
+      gravity: gLocal,
+      airDensity: rho,
+      dynamicPressure: dynamicPressure(rho, speed),
+      maxQ: TUNING.maxQ,
+      gLoad: this._lastNonGravAccel / this.g0,
+      heatFlux: hf,
+      heatFluxRealEq: hf * HEAT_REAL_SCALE,
+      heatLimit: this._heatLimit(),
+      engineTemp: this.engineTemp,
+      engineLit: this.engineLit,
+      ignitionsLeft: this.ignitionsLeft,
+      minThrottle: this.ship.minThrottle,
+      armorLeft: this.armorLeft,
+      obstacles: this.obstacles.length,
+      collisionWarning: this.obstacles.length ? this._collisionWarning() : null,
+      apoapsis: orb.apoapsis,
+      periapsis: orb.periapsis,
+      eccentricity: orb.e,
+      circularSpeed: Math.sqrt(this.mu / r),
+      escapeSpeed: Math.sqrt((2 * this.mu) / r),
+      onGround: this.onGround,
+      landed: this.landed,
+      failed: this.failed,
+    };
+  }
+
+  // --- main loop -------------------------------------------------------------
+  // input: { pitch, yaw, throttleUp, throttleDown, cutoff, brake } (see cockpitControls.js)
+  // opts.timeWarp: only honoured when coasting outside the atmosphere.
+  update(dt, input = {}, opts = {}) {
+    if (this.failed || dt <= 0) return;
+    let warp = opts.timeWarp ?? 1;
+    const coasting = this.throttle === 0 && !input.brake && !this.onGround;
+    if (!coasting || this.altitude < atmosphereTop(this.planet)) warp = 1;
+    this.accumulator += Math.min(dt, 0.25) * warp;
+    let steps = 0;
+    while (this.accumulator >= FIXED_DT && steps < 4000 && !this.failed) {
+      this._step(FIXED_DT, input);
+      this.accumulator -= FIXED_DT;
+      steps++;
+    }
+  }
+
+  _step(dt, input) {
+    this.t += dt;
+    const T = TUNING;
+
+    // throttle (min throttle + limited ignitions; X is the only way to shut down below min throttle)
+    const minT = this.ship.minThrottle;
+    if (input.cutoff) this.throttle = 0;
+    if (input.throttleUp) {
+      if (this.throttle === 0 && !this.engineLit && !this._ignite()) {
+        // no restart left: throttle stays at 0
+      } else {
+        this.throttle = Math.min(1, Math.max(minT, this.throttle + T.throttleRate * dt));
+      }
+    }
+    if (input.throttleDown && this.throttle > 0) this.throttle = Math.max(minT > 0 ? minT : 0, this.throttle - T.throttleRate * dt);
+
+    // rotation (brake = auto-point retrograde, then burn)
+    let throttle = this.throttle;
+    const speed = len(this.vel);
+    if (input.brake && !this.onGround && speed > 0.5) {
+      const retro = norm(scale(this.vel, -1));
+      this._steerToward(retro, dt);
+      const aligned = dot(this.forward, retro) > Math.cos((8 * Math.PI) / 180);
+      throttle = aligned && (this.engineLit || this._ignite()) ? 1 : 0;
+      this._braking = true;
+    } else {
+      this._steerInput(input.pitch ?? 0, input.yaw ?? 0, dt);
+      this._braking = false;
+    }
+    this._integrateRotation(dt);
+    // engine stays "lit" while the throttle is up or a brake burn is in progress
+    if (this.throttle === 0 && !this._braking) this.engineLit = false;
+    else if (this.throttle > 0) this.engineLit = this.engineLit || this._ignite();
+
+    // forces
+    const alt = this.altitude;
+    const up = this.up;
+    const r = len(this.pos);
+    const gravityAcc = scale(up, -this.mu / (r * r));
+    const thrustN = this.thrustNow(alt) * throttle;
+    const thrustAcc = scale(this.forward, thrustN / this.mass);
+    const rho = airDensity(this.planet, alt);
+    this._updateParachute(alt, speed);
+    if (this.inFairing && (this.phase === 'orbit' || (alt > atmosphereTop(this.planet) && dot(this.vel, up) < 0))) {
+      this.inFairing = false; // fairing jettisoned in space: the wide entry shield is exposed
+      this._event('fairing_sep');
+    }
+    const bodyCdA = this.inFairing ? this.ship.ascentCdA : this.ship.cdA;
+    const cdA = bodyCdA + (this.chuteOpen ? this.ship.chuteCdA : 0);
+    const dragN = 0.5 * rho * speed * speed * cdA;
+    const dragAcc = speed > 0 ? scale(norm(this.vel), -dragN / this.mass) : v3();
+    const nonGrav = add(thrustAcc, dragAcc);
+    let acc = add(gravityAcc, nonGrav);
+
+    // fuel burn: mdot = F / (Isp · g0)
+    if (thrustN > 0) {
+      this.fuel = Math.max(0, this.fuel - (thrustN / (this.isp(alt) * this.g0)) * dt);
+      if (this.fuel === 0) this._event('fuel_empty');
+    }
+
+    // ground contact
+    if (this.onGround) {
+      if (dot(acc, up) <= 0 || this.holdDown) {
+        // held by the ground (or by the launch clamps during the countdown)
+        this.vel = v3();
+        this.pos = scale(up, this.planet.radius);
+        this._lastNonGravAccel = this.mu / (r * r); // you feel 1 local g standing
+        this._updateEngineHeat(thrustN > 0 ? throttle : 0, dt);
+        return;
+      }
+      this.onGround = false;
+      this.landed = false;
+      if (this.liftoffT === null) {
+        this.liftoffT = this.t;
+        this._event('liftoff');
+        this._scheduleColdSealFailure();
+      }
+    }
+
+    // semi-implicit Euler
+    this.vel = add(this.vel, scale(acc, dt));
+    this.pos = add(this.pos, scale(this.vel, dt));
+    this._lastNonGravAccel = len(nonGrav);
+    this._lastAccel = acc;
+
+    this._updateEngineHeat(thrustN > 0 ? throttle : 0, dt);
+    this._checkLimits(dt, rho);
+    if (this.failed) return;
+    this._moveObstacles(dt);
+    if (this.failed) return;
+    this._checkTouchdown();
+    if (this.failed || this.onGround) return;
+    this._checkStranded(dt);
+    this._setPhase(this._computePhase());
+  }
+
+  // --- rotation ----------------------------------------------------------------
+  _turnAccel() { return this.ship.hasRCS ? TUNING.turnAccel.rcs : TUNING.turnAccel.noRcs; }
+
+  _steerInput(pitch, yaw, dt) {
+    const a = this._turnAccel();
+    // W (pitch -1) = nose down: rotation about local +X by a negative angle (Y → -Z).
+    const desired = add(
+      scale(qRotate(this.orient, LOCAL_RIGHT), pitch * TUNING.maxTurnRate),
+      scale(qRotate(this.orient, LOCAL_UP), -yaw * TUNING.maxTurnRate),
+    );
+    // No input → stability assist damps rotation to zero.
+    this._approachOmega(desired, a * dt);
+  }
+
+  _steerToward(dir, dt) {
+    const f = this.forward;
+    const axis = cross(f, dir);
+    const angle = Math.acos(Math.max(-1, Math.min(1, dot(f, dir))));
+    let desired;
+    if (len(axis) < 1e-6) {
+      desired = angle > 3 ? scale(qRotate(this.orient, LOCAL_RIGHT), TUNING.maxTurnRate) : v3();
+    } else {
+      desired = scale(norm(axis), Math.min(TUNING.maxTurnRate, 1.5 * angle));
+    }
+    this._approachOmega(desired, this._turnAccel() * dt);
+  }
+
+  _approachOmega(target, maxDelta) {
+    const diff = sub(target, this.omega);
+    const d = len(diff);
+    this.omega = d <= maxDelta ? target : add(this.omega, scale(diff, maxDelta / d));
+  }
+
+  _integrateRotation(dt) {
+    const w = len(this.omega);
+    if (w < 1e-9) return;
+    this.orient = qNorm(qMul(qFromAxisAngle(this.omega, w * dt), this.orient));
+  }
+
+  // Auto-deploys on descent below the chute's speed/altitude limits (Tier 0; a key/button later).
+  _updateParachute(alt, speed) {
+    if (this.chuteOpen || !this.ship.chuteCdA || this.inFairing) return;
+    if (this.onGround || dot(this.vel, this.up) >= 0) return;
+    if (alt < TUNING.chuteMaxAltitude && speed < TUNING.chuteMaxSpeed && airDensity(this.planet, alt) > 0) {
+      this.chuteOpen = true;
+      this._event('parachute', { altitude: alt, speed });
+    }
+  }
+
+  // --- engine ignitions -----------------------------------------------------------
+  _ignite() {
+    if (this.engineLit) return true;
+    if (this.fuel <= 0) return false;
+    if (this.ignitionsLeft <= 0) {
+      this._event('no_ignition');
+      return false;
+    }
+    this.ignitionsLeft -= 1;
+    this.engineLit = true;
+    this._flags.ignition = false; // every ignition is reported
+    this._event('ignition', { left: this.ignitionsLeft });
+    return true;
+  }
+
+  // --- obstacles (debris) ----------------------------------------------------------
+  setObstacles(list) {
+    this.obstacles = list.map((o) => ({ ...o, pos: { ...o.pos }, vel: { ...o.vel } }));
+  }
+
+  _moveObstacles(dt) {
+    if (!this.obstacles.length) return;
+    const keep = [];
+    for (const o of this.obstacles) {
+      // debris orbits too: same gravity as the ship (otherwise the "falling" ship drifts away from it)
+      const ro = len(o.pos);
+      o.vel = add(o.vel, scale(o.pos, (-this.mu / (ro * ro * ro)) * dt));
+      o.pos = add(o.pos, scale(o.vel, dt));
+      const d = len(sub(o.pos, this.pos));
+      if (d <= o.radius + this.ship.radius) {
+        if (this.armorLeft > 0) {
+          this.armorLeft -= 1;
+          this._flags.debris_hit = false;
+          this._event('debris_hit', { id: o.id, armorLeft: this.armorLeft, radius: o.radius });
+          continue; // absorbed: the piece is gone
+        }
+        this._fail('rud', 'debris_impact', { id: o.id, radius: o.radius });
+        return;
+      }
+      if (!o.nearMissed && d < TUNING.nearMissDistance + o.radius) {
+        o.nearMissed = true;
+        this._flags.debris_near_miss = false;
+        this._event('debris_near_miss', { id: o.id, distance: d });
+      }
+      if (d < 50000) keep.push(o); // forget pieces far behind
+    }
+    this.obstacles = keep;
+  }
+
+  // Most dangerous piece ahead: will pass inside its danger radius soonest.
+  _collisionWarning() {
+    let best = null;
+    for (const o of this.obstacles) {
+      const ca = closestApproach(this.pos, this.vel, o);
+      const danger = (o.radius + this.ship.radius) * 1.5;
+      if (ca.timeToClosest > 0 && ca.timeToClosest < TUNING.collisionWarnTime && ca.missDistance < danger) {
+        if (!best || ca.timeToClosest < best.timeToClosest) best = { id: o.id, ...ca };
+      }
+    }
+    return best;
+  }
+
+  // --- limits & failures -------------------------------------------------------
+  _heatLimit() {
+    const L = TUNING.heatLimit;
+    if (!this.ship.hasHeatShield) return L.none;
+    return this.ship.heatShieldDamaged ? L.damaged : L.shield;
+  }
+
+  _updateEngineHeat(throttle, dt) {
+    const T = TUNING;
+    if (throttle > 0.9) {
+      this.engineTemp += (T.engineHeatPerSec[this.ship.pump] ?? T.engineHeatPerSec.M) * (throttle - 0.9) * 10 * dt;
+    } else if (throttle < 0.8) {
+      this.engineTemp = Math.max(0, this.engineTemp - T.engineCoolPerSec * dt);
+    }
+    if (this.engineTemp > 0.8) this._event('engine_hot', { temp: this.engineTemp });
+    else if (this.engineTemp < 0.7) this._flags.engine_hot = false;
+    if (this.engineTemp >= 1) this._fail('rud', 'engine_overheat');
+  }
+
+  _checkLimits(dt, rho) {
+    const T = TUNING;
+    const speed = len(this.vel);
+    const q = dynamicPressure(rho, speed);
+    if (q > T.maxQ * T.maxQWarnFrac) this._event('maxq_warning', { q });
+    else if (q < T.maxQ * 0.6) this._flags.maxq_warning = false;
+    if (q > T.maxQ) return this._fail('rud', 'max_q_exceeded', { q });
+
+    const g = this._lastNonGravAccel / this.g0;
+    if (g > T.gWarn) this._event('g_high', { g });
+    else if (g < T.gWarn * 0.8) this._flags.g_high = false;
+    this._timers.g = g > T.gSustainedLimit ? this._timers.g + dt : 0;
+    if (g > T.gInstantLimit || this._timers.g > T.gSustainedTime) {
+      this._event('blackout', { g });
+      return this._fail('rud', 'g_force_blackout', { g });
+    }
+
+    // Entry heating: only while descending (the nose cone/fairing protects on ascent).
+    if (dot(this.vel, this.up) < 0) {
+      const hf = heatFlux(this.planetId, rho, speed, this.ship.noseRadius);
+      if (hf > this._heatLimit() * T.heatWarnFrac) this._event('heat_warning', { heatFlux: hf, limit: this._heatLimit() });
+      else if (hf < this._heatLimit() * 0.5) this._flags.heat_warning = false;
+      this._timers.heat = hf > this._heatLimit() ? this._timers.heat + dt : 0;
+      if (this._timers.heat > T.heatGrace) {
+        if (!this.ship.hasHeatShield) return this._fail('burnup', 'no_heat_shield');
+        if (this.ship.heatShieldDamaged) return this._fail('theFoam', 'heat_shield_damaged', {}, 'columbia');
+        return this._fail('burnup', 'heat_overload');
+      }
+    }
+
+    // Challenger demo: cheap seals + cold launch → failure a minute into flight.
+    if (this._coldSealFailAt !== null && this.t >= this._coldSealFailAt) {
+      return this._fail('coldMorning', 'seal_failure_cold', { tempC: this.scenario.tempC }, 'challenger');
+    }
+  }
+
+  _scheduleColdSealFailure() {
+    const cold = (this.scenario.tempC ?? 15) < 5;
+    if (cold && !this.ship.coldRatedSeals) {
+      const [a, b] = TUNING.coldSealFailWindow;
+      this._coldSealFailAt = this.t + a + (b - a) * this.rng();
+    }
+  }
+
+  _checkTouchdown() {
+    if (this.altitude > 0) return;
+    const up = this.up;
+    const speed = len(this.vel);
+    const limit = this.ship.hasLegs ? TUNING.touchdownLimit.legs : TUNING.touchdownLimit.noLegs;
+    const upright = dot(this.forward, up) >= TUNING.uprightCos;
+    this.pos = scale(up, this.planet.radius);
+    if (speed <= limit && upright) {
+      this.vel = v3();
+      this.omega = v3();
+      this.onGround = true;
+      this.landed = true;
+      this._setPhase('landed');
+      this.bus.emit('flight:landed', { touchdownSpeed: speed });
+    } else {
+      this._fail('rud', speed > limit ? 'crash_landing' : 'tipped_over', { touchdownSpeed: speed });
+    }
+  }
+
+  // No fuel + a trajectory that never re-enters the atmosphere = stranded → Adrift.
+  _checkStranded(dt) {
+    if (this.fuel > 0) { this._timers.stranded = 0; return; }
+    const orb = this.orbit();
+    const top = atmosphereTop(this.planet);
+    const escaping = orb.e >= 1 && dot(this.vel, this.up) > 0 && this.altitude > top;
+    const neverReturns = escaping || orb.periapsis > top;
+    this._timers.stranded = neverReturns ? this._timers.stranded + dt : 0;
+    if (this._timers.stranded > TUNING.strandedGrace) {
+      const skipped = this._wasInAtmosphere && orb.e >= 1;
+      if (skipped) this._event('skip_off');
+      this._fail('adrift', skipped ? 'skipped_off' : 'out_of_fuel');
+    }
+  }
+
+  _computePhase() {
+    if (this.landed) return 'landed';
+    if (this.onGround) return this.liftoffT === null ? 'prelaunch' : 'landed';
+    const top = atmosphereTop(this.planet);
+    const alt = this.altitude;
+    const inAtmo = alt < top;
+    if (inAtmo) this._wasInAtmosphere = true;
+    const orb = this.orbit();
+    if (orb.periapsis > top) {
+      if (!this._flags.orbit_achieved && this.liftoffT !== null) this._event('orbit_achieved', { apoapsis: orb.apoapsis, periapsis: orb.periapsis });
+      return 'orbit';
+    }
+    if (dot(this.vel, this.up) >= 0) return this.liftoffT !== null ? 'ascent' : 'coast';
+    return alt > Math.min(10000, top * 0.15) ? 'entry' : 'landing';
+  }
+
+  _setPhase(phase) {
+    if (phase === this.phase) return;
+    this.phase = phase;
+    this.bus.emit('flight:phase', { phase });
+  }
+
+  // one-shot events (re-armed by clearing the flag)
+  _event(type, data = {}) {
+    if (this._flags[type]) return;
+    this._flags[type] = true;
+    this.onNotice?.(type, data);
+    const busType = BUS_FLIGHT_EVENTS[type];
+    if (busType) this.bus.emit('flight:event', { type: busType, t: this.t, data });
+  }
+
+  _fail(endingId, causeId, data = {}, historyHint = null) {
+    if (this.failed) return;
+    const cause = CAUSES[causeId] ?? causeId;
+    this.failed = { endingId, cause, causeId, historyHint, t: this.t, ...data };
+    this.throttle = 0;
+    this.onNotice?.('failed', this.failed);
+    this.bus.emit('flight:failed', { endingId, cause, causeId, historyHint, t: this.t, ...data });
+  }
+
+  // Snapshot for the predicted trajectory / save / scene hand-over.
+  snapshot() {
+    return { pos: clone(this.pos), vel: clone(this.vel), orient: { ...this.orient }, fuel: this.fuel, t: this.t };
+  }
+}

@@ -1,0 +1,18 @@
+/* Role 4 Flight Report screen. */
+.role4-report { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; }
+.role4-report-card { width: min(940px, 100%); max-height: calc(100vh - 48px); overflow: auto; display: grid; gap: 14px; background: var(--hud-surface-strong); }
+.role4-report-head { display: grid; gap: 4px; }
+.role4-report-cause { color: var(--hud-red); font-size: var(--hud-text-md); }
+.role4-report-cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; }
+.role4-report-side { display: grid; gap: 12px; align-content: start; }
+.role4-report-box { border: 1px solid var(--hud-line); border-radius: var(--hud-radius); padding: 10px 12px; display: grid; gap: 8px; align-content: start; }
+.role4-report-stats { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: var(--hud-text-sm); }
+.role4-report-timeline { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; font-size: var(--hud-text-sm); }
+.role4-report-timeline li { display: grid; grid-template-columns: 76px 1fr; gap: 8px; }
+.role4-report-rec { display: flex; gap: 10px; align-items: center; justify-content: space-between; font-size: var(--hud-text-sm); line-height: 1.45; }
+.role4-report-rec .hud-button { flex: none; }
+.role4-report-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.role4-muted { color: var(--hud-muted); }
+@media (max-width: 720px) { .role4-report-cols { grid-template-columns: 1fr; } }
+.role4-report-card::before { top: 0; left: 0; }
+.role4-report-card::after { right: 0; bottom: 0; }

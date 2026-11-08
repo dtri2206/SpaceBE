@@ -1,0 +1,57 @@
+{
+  "gonogo": {
+    "consoles": [
+      { "id": "structure", "name": "STRUCTURE" },
+      { "id": "propulsion", "name": "PROPULSION" },
+      { "id": "guidance", "name": "GUIDANCE" },
+      { "id": "thermal", "name": "THERMAL" },
+      { "id": "recovery", "name": "RECOVERY" },
+      { "id": "life", "name": "LIFE SUPPORT" },
+      { "id": "comms", "name": "COMMS" },
+      { "id": "weather", "name": "WEATHER" },
+      { "id": "quality", "name": "QUALITY" },
+      { "id": "budget", "name": "BUDGET" }
+    ],
+    "go": {
+      "structure": "All parts connected. Capsule secured.",
+      "propulsion": "Engine lit on the stand. Δv {deltaV} m/s, TWR {twrEarth}.",
+      "guidance": "Centre of pressure behind the centre of mass. Thrusters answer.",
+      "thermal": "Heat shield installed and inspected.",
+      "recovery": "Landing legs locked.",
+      "life": "Spare oxygen {spareO2Tanks}, shelter stocked.",
+      "comms": "Antenna deployed. Earth is listening.",
+      "weather": "{tempC} °C at the pad. Seals within rating.",
+      "quality": "Reliability {reliability} %.",
+      "budget": "Ship {cost}. Funds {money}."
+    },
+    "problems": {
+      "NO_CAPSULE": { "console": "structure", "text": "No capsule. Nobody is flying this.", "guidebook": "crew-life" },
+      "NO_ENGINE": { "console": "propulsion", "text": "No engine. It is a very expensive tower.", "guidebook": "newtons-laws" },
+      "NO_FUEL": { "console": "propulsion", "text": "No fuel the engine can burn.", "guidebook": "specific-impulse" },
+      "NOT_CONNECTED": { "console": "structure", "text": "Some parts are not attached to the stack.", "guidebook": "newtons-laws" },
+      "OVER_BUDGET": { "console": "budget", "text": "Ship costs {cost}, the agency has {money}.", "guidebook": "getting-to-mars" },
+      "LOW_DV": { "console": "propulsion", "text": "Δv {deltaV} m/s is below the {needed} m/s this trip needs.", "guidebook": "rocket-equation" },
+      "LOW_TWR": { "console": "propulsion", "text": "TWR {twrEarth} is under 1.2. It will crawl off the pad, or never leave it.", "guidebook": "twr" },
+      "NO_HEAT_SHIELD": { "console": "thermal", "text": "No heat shield. Entry heating goes with speed cubed.", "guidebook": "atmospheric-entry" },
+      "NO_LEGS": { "console": "recovery", "text": "No landing legs. Any touchdown is a crash.", "guidebook": "getting-to-mars" },
+      "UNSTABLE": { "console": "guidance", "text": "Centre of pressure is ahead of the centre of mass. It will flip in thick air.", "guidebook": "center-of-mass" },
+      "LOW_O2": { "console": "life", "text": "No spare oxygen. One EVA tank, then nothing.", "guidebook": "crew-life" },
+      "NO_ANTENNA": { "console": "comms", "text": "No antenna. Nothing you find can be sent home.", "guidebook": "getting-to-mars" },
+      "NO_SHELTER": { "console": "life", "text": "No radiation shelter. A solar storm in cruise is a lethal dose.", "guidebook": "radiation" },
+      "COLD_SEALS": { "console": "weather", "text": "{tempC} °C at launch and the seals are not rated for cold.", "guidebook": "challenger" },
+      "LOW_RELIABILITY": { "console": "quality", "text": "Reliability {reliability} %. Cheap parts fail without warning.", "guidebook": "columbia" }
+    }
+  },
+  "formulas": {
+    "weight": { "title": "Weight", "formula": "W = m · g", "plain": "Mass is how much stuff the ship is made of; weight is how hard a planet pulls on that stuff. The ship weighs the same amount of stuff on Mars, but Mars pulls less than half as hard, so it is lighter to lift there.", "real": "Why you jump higher on Mars: same mass, 38 % of the weight.", "guidebook": "weight-vs-mass" },
+    "twr": { "title": "Newton's 2nd law & TWR", "formula": "a = F/m − g,  TWR = F/(m·g)", "plain": "The engine pushes up, gravity pulls down. If the push is bigger than the pull, the ship rises; the bigger the difference, the faster it picks up speed. TWR is simply push divided by pull: below 1 nothing happens, above 1.2 it climbs briskly.", "real": "Pushing a full shopping cart versus an empty one.", "guidebook": "twr" },
+    "rocketEquation": { "title": "Rocket equation", "formula": "Δv = Isp · g0 · ln(m_wet / m_dry)", "plain": "How much can the ship change its speed before the tank runs dry? It depends on two things: how fast the engine throws exhaust (Isp), and how much of the ship is fuel compared with everything else. Doubling the fuel does not double the result, because the extra fuel has to be carried too. That is the curve flattening.", "real": "Carrying more water on a hike makes you heavier, so you need even more water.", "guidebook": "rocket-equation" },
+    "centerOfMass": { "title": "Centre of mass & pressure", "formula": "x_cm = Σ(mᵢ·xᵢ) / Σmᵢ", "plain": "The centre of mass is where the ship would balance on a finger. The centre of pressure is where the air pushes on it. If the air pushes behind the balance point, any wobble straightens itself out. If it pushes ahead, the wobble grows and the ship swaps ends. Fins low on the stack move the air push back.", "real": "Arrows and shuttlecocks fly straight for the same reason: the heavy end leads, the feathers trail.", "guidebook": "center-of-mass" },
+    "deltaVBudget": { "title": "Δv budget", "formula": "Σ Δv_legs ≤ Δv_ship", "plain": "The trip is a list of speed changes: climb to orbit, push off toward Mars, slow down to land, and the same again to come home. Add them up and compare with what the ship can do. Reaching Mars needs the first three; coming home on your own fuel needs all four, or methane made on Mars.", "real": "A road-trip fuel budget, leg by leg.", "guidebook": "getting-to-mars" }
+  },
+  "hangar": {
+    "hint": "Select a glowing node on the rocket, then a part from the palette.",
+    "insolvent": "Funds are below the cheapest ship the agency can fly. The board is meeting.",
+    "snap": "Snapped."
+  }
+}

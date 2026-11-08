@@ -1,0 +1,24 @@
+{
+  "name": "Reliable",
+  "parts": [
+    { "id": "p1", "type": "capsule_m", "x": 0, "y": 6.0, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p2", "type": "heat_shield_m", "x": 0, "y": 5.2, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p3", "type": "tank_l", "x": 0, "y": 2.8, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p4", "type": "engine_m", "x": 0, "y": 0.0, "z": 0, "rotation": 0, "variant": "methalox" },
+    { "id": "p5", "type": "leg_s", "x": 1.4, "y": 0.4, "z": 0, "rotation": 0, "variant": null },
+    { "id": "p6", "type": "leg_s", "x": -1.4, "y": 0.4, "z": 0, "rotation": 180, "variant": null },
+    { "id": "p7", "type": "leg_s", "x": 0, "y": 0.4, "z": 1.4, "rotation": 90, "variant": null },
+    { "id": "p8", "type": "antenna_s", "x": 0, "y": 6.9, "z": 0, "rotation": 0, "variant": null }
+  ],
+  "engines": [{ "fuel": "methalox", "nozzle": "vac", "pump": "M" }],
+  "stats": {
+    "cost": 1850000, "wetMass": 42000, "dryMass": 9000, "fuelMass": 33000, "thrust": 600000,
+    "ispSL": 330, "ispVac": 380, "deltaV": 5741, "twrEarth": 1.46, "twrMars": 3.85,
+    "comOffset": 0.0, "copOffset": 0.0, "reliability": 0.93,
+    "hasHeatShield": true, "heatShieldDamaged": false, "hasLegs": true, "hasRCS": true,
+    "hasParachute": true, "hasAntenna": true, "hasShelter": true, "coldRatedSeals": true,
+    "armorHits": 1, "spareO2Tanks": 2, "power": 4000
+  },
+  "warnings": [],
+  "launch": { "tempC": 22 }
+}

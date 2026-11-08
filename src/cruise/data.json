@@ -1,0 +1,31 @@
+{
+  "tripDays": 259,
+  "marsLeadDeg": 44,
+  "daysPerSecond": [2, 5, 12],
+  "doseMsvPerDay": 1.8,
+  "solarStorm": {
+    "day": 70,
+    "seconds": 9,
+    "title": "Solar particle event",
+    "text": "The Sun just released a burst of high-energy protons. They will reach you in minutes. Get to the radiation shelter.",
+    "doseShelter": 4,
+    "doseImprovised": 40,
+    "doseIgnored": 150,
+    "resultShelter": "You wait it out in the shelter, behind the water and food stores. Dose from the storm: {dose} mSv.",
+    "resultImprovised": "There is no shelter on this ship. You huddle behind the water tanks. Dose from the storm: {dose} mSv.",
+    "resultIgnored": "You stayed where you were. The storm passes straight through the hull. Dose from the storm: {dose} mSv.",
+    "entry": "radiation"
+  },
+  "malfunction": {
+    "day": 160,
+    "title": "Master alarm: oxygen tank 2",
+    "text": "A bang, then the master alarm. The panel shows:",
+    "readings": ["O₂ tank 1: 62 bar, steady", "O₂ tank 2: 41 bar, falling fast", "Fuel cell 2: voltage dropping", "Cabin pressure: 101 kPa, normal"],
+    "options": [
+      { "label": "Isolate tank 2 and switch to tank 1", "correct": true, "result": "The pressure in tank 1 holds. You've lost tank 2, but you have enough oxygen to get there. Work the problem, one step at a time." },
+      { "label": "Vent the cabin to stop a fire", "correct": false, "result": "There was no fire. Cabin pressure drops and the tank keeps leaking. Look at the readings again." },
+      { "label": "Restart the flight computer", "correct": false, "result": "The computer comes back. The leak doesn't care. Look at the readings again." }
+    ],
+    "entry": "history-apollo13"
+  }
+}

@@ -1,0 +1,146 @@
+/* HUD theme. Every role builds its own panels with these tokens and classes. */
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+@import '@fontsource/ibm-plex-mono/600.css';
+
+:root {
+  --hud-font: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --hud-ink: #d9f4f7;
+  --hud-muted: #86a6ad;
+  --hud-line: rgb(103 232 249 / 0.34);
+  --hud-surface: rgb(4 15 20 / 0.72);
+  --hud-surface-strong: rgb(4 15 20 / 0.92);
+
+  --hud-cyan: #67e8f9;
+  --hud-amber: #fbbf24;
+  --hud-red: #f87171;
+  --hud-green: #4ade80;
+
+  --hud-accent: var(--hud-cyan);
+
+  --hud-text-xs: 11px;
+  --hud-text-sm: 13px;
+  --hud-text-md: 15px;
+  --hud-text-lg: 22px;
+  --hud-text-xl: 34px;
+
+  --hud-gap: 8px;
+  --hud-pad: 12px;
+  --hud-radius: 3px;
+}
+
+.hud {
+  font-family: var(--hud-font);
+  font-size: var(--hud-text-sm);
+  line-height: 1.4;
+  color: var(--hud-ink);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hud-panel {
+  position: relative;
+  padding: var(--hud-pad);
+  color: var(--hud-ink);
+  background: var(--hud-surface);
+  border: 1px solid var(--hud-line);
+  border-radius: var(--hud-radius);
+  backdrop-filter: blur(5px);
+}
+
+/* Corner ticks, the one decoration every panel shares. */
+.hud-panel::before,
+.hud-panel::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--hud-accent);
+  pointer-events: none;
+}
+.hud-panel::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.hud-panel::after { right: -1px; bottom: -1px; border-left: 0; border-top: 0; }
+
+.hud-label {
+  font-size: var(--hud-text-xs);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hud-muted);
+}
+
+.hud-value {
+  font-size: var(--hud-text-lg);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--hud-accent);
+  text-shadow: 0 0 9px color-mix(in srgb, var(--hud-accent) 45%, transparent);
+}
+.hud-value small { font-size: var(--hud-text-sm); font-weight: 400; color: var(--hud-muted); text-shadow: none; }
+
+.hud-bar {
+  --value: 1;
+  position: relative;
+  height: 6px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--hud-accent) 16%, transparent);
+}
+.hud-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--hud-accent);
+  box-shadow: 0 0 8px var(--hud-accent);
+  transform: scaleX(var(--value));
+  transform-origin: left;
+  transition: transform 180ms linear;
+}
+
+/* Put a state on any element and everything inside recolours. */
+.hud-ok { --hud-accent: var(--hud-cyan); }
+.hud-good { --hud-accent: var(--hud-green); }
+.hud-caution { --hud-accent: var(--hud-amber); --hud-line: rgb(251 191 36 / 0.5); }
+.hud-alert { --hud-accent: var(--hud-red); --hud-line: rgb(248 113 113 / 0.6); }
+.hud-alert .hud-value,
+.hud-value.hud-alert { animation: hud-pulse 700ms steps(2, jump-none) infinite; }
+
+.hud-button {
+  appearance: none;
+  padding: 7px 12px;
+  font: 500 var(--hud-text-sm) var(--hud-font);
+  letter-spacing: 0.04em;
+  color: var(--hud-accent);
+  cursor: pointer;
+  background: color-mix(in srgb, var(--hud-accent) 9%, var(--hud-surface));
+  border: 1px solid var(--hud-line);
+  border-radius: var(--hud-radius);
+  transition: background 120ms ease-out, box-shadow 120ms ease-out, transform 80ms ease-out;
+}
+.hud-button:hover {
+  background: color-mix(in srgb, var(--hud-accent) 24%, var(--hud-surface));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--hud-accent) 38%, transparent);
+}
+.hud-button:active { transform: translateY(1px); }
+.hud-button:focus-visible { outline: 2px solid var(--hud-accent); outline-offset: 2px; }
+.hud-button[aria-pressed='true'] { color: #03161b; background: var(--hud-accent); }
+.hud-button:disabled { color: var(--hud-muted); cursor: not-allowed; background: transparent; box-shadow: none; }
+
+/* A faint hologram flicker for readouts that should feel projected. */
+.hud-flicker { animation: hud-flicker 7s linear infinite; }
+
+@keyframes hud-pulse {
+  from { opacity: 1; }
+  to { opacity: 0.45; }
+}
+@keyframes hud-flicker {
+  0%, 94%, 100% { opacity: 1; }
+  95% { opacity: 0.82; }
+  96% { opacity: 1; }
+  97.5% { opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-flicker, .hud-alert .hud-value, .hud-value.hud-alert { animation: none; }
+  .hud-bar::after, .hud-button { transition: none; }
+}

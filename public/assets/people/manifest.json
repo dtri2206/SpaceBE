@@ -1,0 +1,16 @@
+{
+  "models": {
+    "cesium_man": {
+      "file": "cesium_man.glb",
+      "license": "CC-BY 4.0, Cesium (glTF Sample Assets)",
+      "source": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/CesiumMan/glTF-Binary/CesiumMan.glb",
+      "bytes": 438044
+    },
+    "rigged_figure": {
+      "file": "rigged_figure.glb",
+      "license": "CC-BY 4.0, Cesium (glTF Sample Assets)",
+      "source": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/RiggedFigure/glTF-Binary/RiggedFigure.glb",
+      "bytes": 50116
+    }
+  }
+}

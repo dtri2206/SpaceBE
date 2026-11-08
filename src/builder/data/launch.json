@@ -1,0 +1,7 @@
+{
+  "slots": [
+    { "id": "cold", "name": "Tomorrow 06:10", "tempC": 2, "fee": 0, "note": "Clear and cold. No waiting, no fees." },
+    { "id": "mild", "name": "In 3 days 11:40", "tempC": 18, "fee": 150000, "note": "Pad fees for the wait." },
+    { "id": "warm", "name": "In 6 days 14:00", "tempC": 27, "fee": 300000, "note": "Pad fees for the wait." }
+  ]
+}

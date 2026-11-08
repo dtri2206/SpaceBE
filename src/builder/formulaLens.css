@@ -1,0 +1,91 @@
+/* Formula Lens cards. Every class is prefixed lens-. Colours come from the HUD theme tokens. */
+.lens-root { display: flex; flex-direction: column; gap: 8px; --lens-fuel: var(--hud-green); --lens-engine: var(--hud-amber); --lens-mass: var(--hud-cyan); --lens-fins: #e879f9; }
+.lens-card { display: flex; flex-direction: column; gap: 5px; font-size: var(--hud-text-xs); }
+.lens-card[data-state='warn'] { --hud-accent: var(--hud-amber); }
+.lens-card[data-state='bad'] { --hud-accent: var(--hud-red); }
+.lens-card[data-state='ok'] { --hud-accent: var(--hud-cyan); }
+.lens-formula { color: var(--hud-ink); font-size: var(--hud-text-sm); letter-spacing: 0.02em; }
+.lens-numbers { color: var(--hud-muted); line-height: 1.7; }
+.lens-result { font-size: var(--hud-text-md); font-weight: 500; color: var(--hud-accent); text-shadow: 0 0 8px color-mix(in srgb, var(--hud-accent) 40%, transparent); }
+.lens-real { color: var(--hud-muted); font-style: italic; border-left: 2px solid var(--hud-line); padding-left: 8px; }
+.lens-plain { margin: 0; color: var(--hud-ink); line-height: 1.5; font-size: var(--hud-text-xs); }
+.lens-body { display: flex; flex-direction: column; gap: 6px; }
+.lens-body:empty { display: none; }
+
+.lens-var { display: inline-block; font: inherit; color: var(--lens-mass); cursor: pointer; background: color-mix(in srgb, var(--lens-mass) 10%, transparent); border: 1px solid color-mix(in srgb, var(--lens-mass) 40%, transparent); border-radius: 3px; padding: 0 5px; margin: 1px 1px; transition: background 120ms, box-shadow 120ms; }
+.lens-var[data-kind='fuel'] { color: var(--lens-fuel); background: color-mix(in srgb, var(--lens-fuel) 10%, transparent); border-color: color-mix(in srgb, var(--lens-fuel) 40%, transparent); }
+.lens-var[data-kind='engine'] { color: var(--lens-engine); background: color-mix(in srgb, var(--lens-engine) 10%, transparent); border-color: color-mix(in srgb, var(--lens-engine) 40%, transparent); }
+.lens-var[data-kind='fins'] { color: var(--lens-fins); background: color-mix(in srgb, var(--lens-fins) 10%, transparent); border-color: color-mix(in srgb, var(--lens-fins) 40%, transparent); }
+.lens-var:hover { background: color-mix(in srgb, currentColor 24%, transparent); box-shadow: 0 0 10px color-mix(in srgb, currentColor 40%, transparent); }
+.lens-var:active { transform: translateY(1px); }
+.lens-link { align-self: flex-start; font: 500 var(--hud-text-xs) var(--hud-font); letter-spacing: 0.06em; color: var(--hud-cyan); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.lens-link:hover { text-shadow: 0 0 8px var(--hud-cyan); }
+
+/* 1 weight */
+.lens-weight { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lens-weight-col { display: flex; flex-direction: column; gap: 4px; }
+.lens-bar { --value: 1; position: relative; height: 8px; background: color-mix(in srgb, var(--hud-cyan) 12%, transparent); overflow: hidden; }
+.lens-bar::after { content: ''; position: absolute; inset: 0; background: var(--hud-cyan); box-shadow: 0 0 8px var(--hud-cyan); transform: scaleX(var(--value)); transform-origin: left; transition: transform 300ms ease-out; }
+.lens-weight-value { color: var(--hud-ink); font-size: var(--hud-text-sm); }
+
+/* 2 twr */
+.lens-twr-row { display: grid; grid-template-columns: 1fr 64px; gap: 8px; align-items: center; }
+.lens-gauge { width: 100%; height: 46px; display: block; }
+.lens-zone { opacity: 0.75; }
+.lens-zone--bad { fill: var(--hud-red); }
+.lens-zone--warn { fill: var(--hud-amber); }
+.lens-zone--ok { fill: color-mix(in srgb, var(--hud-cyan) 55%, #0a2a33); }
+.lens-tick { stroke: var(--hud-ink); stroke-width: 1; opacity: 0.6; }
+.lens-tick-label { fill: var(--hud-muted); font: 500 10px var(--hud-font); }
+.lens-needle { fill: #fff; filter: drop-shadow(0 0 3px var(--hud-cyan)); transition: transform 350ms cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+.lens-ghost { display: flex; flex-direction: column; align-items: center; gap: 2px; height: 78px; justify-content: flex-end; }
+.lens-ghost-svg { width: 30px; height: 52px; transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.lens-ghost-body { fill: color-mix(in srgb, var(--hud-cyan) 35%, #0b1a20); stroke: var(--hud-cyan); stroke-width: 1; }
+.lens-ghost-fin { fill: color-mix(in srgb, var(--hud-cyan) 55%, #0b1a20); }
+.lens-ghost-flame { fill: var(--hud-amber); opacity: 0; transition: opacity 300ms; }
+.lens-ghost--lift .lens-ghost-svg { transform: translateY(-14px); }
+.lens-ghost--lift .lens-ghost-flame { opacity: 1; animation: lens-flame 160ms steps(2, jump-none) infinite; }
+.lens-ghost-label { font-size: 10px; color: var(--hud-muted); white-space: nowrap; }
+@keyframes lens-flame { from { transform: scaleY(1); } to { transform: scaleY(1.35); transform-origin: 50% 0; } }
+
+/* 3 rocket equation graph */
+.lens-graph { width: 100%; height: auto; display: block; background: rgb(0 0 0 / 0.25); border: 1px solid var(--hud-line); }
+.lens-axis { stroke: var(--hud-muted); stroke-width: 1; }
+.lens-curve { fill: none; stroke: var(--hud-cyan); stroke-width: 1.8; filter: drop-shadow(0 0 3px var(--hud-cyan)); }
+.lens-need { stroke: var(--hud-amber); stroke-width: 1; stroke-dasharray: 4 3; opacity: 0.9; }
+.lens-need--trip { stroke: var(--hud-green); }
+.lens-dot { fill: #fff; stroke: var(--hud-cyan); stroke-width: 2; filter: drop-shadow(0 0 4px var(--hud-cyan)); transition: cx 250ms, cy 250ms; }
+.lens-dot-label { fill: var(--hud-ink); font: 500 11px var(--hud-font); }
+
+/* 4 centre of mass */
+.lens-com-row { display: grid; grid-template-columns: 150px 1fr; gap: 8px; align-items: center; }
+.lens-silhouette { width: 150px; height: 180px; display: block; }
+.lens-sil--axial { fill: color-mix(in srgb, var(--hud-ink) 30%, #0b1a20); stroke: var(--hud-line); stroke-width: 1; }
+.lens-sil--fuel { fill: color-mix(in srgb, var(--hud-green) 30%, #0b1a20); }
+.lens-sil--radial { fill: color-mix(in srgb, var(--hud-muted) 35%, #0b1a20); }
+.lens-com circle { fill: color-mix(in srgb, var(--hud-cyan) 40%, transparent); stroke: var(--hud-cyan); stroke-width: 1.5; }
+.lens-com line { stroke: var(--hud-cyan); stroke-width: 1.5; }
+.lens-cop { fill: var(--hud-amber); }
+.lens-mark-label { font: 500 10px var(--hud-font); }
+.lens-mark-label--com { fill: var(--hud-cyan); }
+.lens-mark-label--cop { fill: var(--hud-amber); }
+.lens-stability-arrow { stroke-width: 2; }
+.lens-stability-arrow--ok { stroke: var(--hud-green); }
+.lens-stability-arrow--bad { stroke: var(--hud-red); }
+.lens-com-text { color: var(--hud-muted); }
+
+/* 5 budget */
+.lens-budget { display: flex; flex-direction: column; gap: 6px; }
+.lens-budget-track { position: relative; display: flex; height: 16px; background: rgb(0 0 0 / 0.3); border: 1px solid var(--hud-line); overflow: visible; }
+.lens-seg { height: 100%; transition: width 300ms ease-out; }
+.lens-seg--ascent { background: color-mix(in srgb, var(--hud-cyan) 70%, #0b1a20); }
+.lens-seg--transfer { background: color-mix(in srgb, var(--hud-cyan) 45%, #0b1a20); }
+.lens-seg--landing { background: color-mix(in srgb, var(--hud-amber) 60%, #0b1a20); }
+.lens-seg--return { background: color-mix(in srgb, var(--hud-green) 50%, #0b1a20); }
+.lens-have { position: absolute; top: -4px; bottom: -4px; width: 2px; background: #fff; box-shadow: 0 0 8px var(--hud-accent); transition: left 300ms ease-out; }
+.lens-have-label { position: absolute; top: -16px; left: 4px; white-space: nowrap; font-size: 10px; color: var(--hud-ink); }
+.lens-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 10px; margin-top: 10px; }
+.lens-legend-row { display: flex; align-items: center; gap: 6px; }
+.lens-swatch { width: 10px; height: 10px; }
+.lens-legend-name { color: var(--hud-muted); text-transform: capitalize; }
+.lens-legend-value { margin-left: auto; color: var(--hud-ink); }

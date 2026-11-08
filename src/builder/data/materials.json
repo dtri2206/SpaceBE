@@ -1,0 +1,28 @@
+{
+  "families": {
+    "structure": {
+      "name": "Structure",
+      "options": [
+        { "id": "al_li", "name": "Aluminium-lithium alloy", "mass": 1.0, "cost": 1.0, "reliability": 0, "note": "The standard for tanks and shells since the 1990s: light, well understood, easy to weld.", "pros": ["Light", "Proven on every modern launcher"], "cons": ["Softens above 150 °C"] },
+        { "id": "stainless", "name": "Stainless steel", "mass": 1.3, "cost": 0.7, "reliability": 0.004, "note": "Heavy but cheap, and it keeps its strength when hot and when cryogenic (Starship, Atlas).", "pros": ["Cheapest", "Takes heat and cold without complaint"], "cons": ["30 % heavier: every tonne costs propellant"] },
+        { "id": "carbon", "name": "Carbon-fibre composite", "mass": 0.78, "cost": 1.7, "reliability": -0.008, "note": "The lightest option; hand-laid and baked in an autoclave. It cracks instead of bending, and liquid oxygen can attack it.", "pros": ["Lightest by far"], "cons": ["Expensive", "Brittle: hidden cracks fail without warning"] },
+        { "id": "titanium", "name": "Titanium", "mass": 0.9, "cost": 2.1, "reliability": 0.006, "note": "Strong, light and corrosion-proof; hard to machine, so the bill is high.", "pros": ["Strong and light", "Shrugs off heat"], "cons": ["Most expensive"] }
+      ]
+    },
+    "engine": {
+      "name": "Combustion chamber",
+      "options": [
+        { "id": "copper", "name": "Copper-alloy chamber", "mass": 1.0, "cost": 1.0, "reliability": 0, "note": "Copper carries heat away from the chamber wall into the cooling channels. The classic choice.", "pros": ["Cools well", "Proven"], "cons": ["Heavy"] },
+        { "id": "inconel", "name": "Inconel chamber", "mass": 1.1, "cost": 1.4, "reliability": 0.01, "note": "A nickel superalloy that stays strong at glowing temperatures. Long life, many restarts.", "pros": ["Survives heat", "Most reliable"], "cons": ["Heavier and dearer"] },
+        { "id": "printed", "name": "3D-printed chamber", "mass": 0.85, "cost": 0.8, "reliability": -0.01, "note": "Laser-sintered in one piece with its channels (like Rocket Lab's Rutherford). Light and cheap, but porosity is hard to inspect.", "pros": ["Light", "Cheap"], "cons": ["Newer process: a little less reliable"] }
+      ]
+    },
+    "equipment": {
+      "name": "Housing",
+      "options": [
+        { "id": "aluminium", "name": "Aluminium housing", "mass": 1.0, "cost": 1.0, "reliability": 0, "note": "Machined aluminium box, gold-foil insulation on top.", "pros": ["Light", "Standard"], "cons": [] },
+        { "id": "rad_hard", "name": "Radiation-hardened housing", "mass": 1.2, "cost": 1.5, "reliability": 0.01, "note": "Thicker walls and shielded electronics that shrug off solar storms.", "pros": ["Survives radiation", "More reliable"], "cons": ["Heavier", "Dearer"] }
+      ]
+    }
+  }
+}

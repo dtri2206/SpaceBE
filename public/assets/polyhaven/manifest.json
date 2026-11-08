@@ -1,0 +1,49 @@
+{
+  "license": "CC0 1.0 (Poly Haven, https://polyhaven.com/license)",
+  "hdris": {
+    "small_hangar_01": "hdri/small_hangar_01_1k.hdr"
+  },
+  "textures": {
+    "hangar_concrete_floor": {
+      "diff": "textures/hangar_concrete_floor_diff_1k.jpg",
+      "nor_gl": "textures/hangar_concrete_floor_nor_gl_1k.jpg",
+      "arm": "textures/hangar_concrete_floor_arm_1k.jpg"
+    },
+    "metal_plate": {
+      "diff": "textures/metal_plate_diff_1k.jpg",
+      "nor_gl": "textures/metal_plate_nor_gl_1k.jpg",
+      "arm": "textures/metal_plate_arm_1k.jpg"
+    },
+    "blue_metal_plate": {
+      "diff": "textures/blue_metal_plate_diff_1k.jpg",
+      "nor_gl": "textures/blue_metal_plate_nor_gl_1k.jpg",
+      "arm": "textures/blue_metal_plate_arm_1k.jpg"
+    },
+    "rubber_tiles": {
+      "diff": "textures/rubber_tiles_diff_1k.jpg",
+      "nor_gl": "textures/rubber_tiles_nor_gl_1k.jpg",
+      "arm": "textures/rubber_tiles_arm_1k.jpg"
+    }
+  },
+  "models": {
+    "steel_frame_shelves_01": "models/steel_frame_shelves_01/steel_frame_shelves_01.gltf",
+    "metal_tool_chest": "models/metal_tool_chest/metal_tool_chest.gltf",
+    "old_military_crate": "models/old_military_crate/old_military_crate.gltf",
+    "korean_fire_extinguisher_01": "models/korean_fire_extinguisher_01/korean_fire_extinguisher_01.gltf",
+    "metal_office_desk": "models/metal_office_desk/metal_office_desk.gltf",
+    "portable_welding_cart": "models/portable_welding_cart/portable_welding_cart.gltf",
+    "portable_generator": "models/portable_generator/portable_generator.gltf",
+    "industrial_storage_cart": "models/industrial_storage_cart/industrial_storage_cart.gltf",
+    "tool_cart": "models/tool_cart/tool_cart.gltf",
+    "bench_vice_01": "models/bench_vice_01/bench_vice_01.gltf",
+    "ladder_sectioned_01": "models/ladder_sectioned_01/ladder_sectioned_01.gltf",
+    "propane_tank": "models/propane_tank/propane_tank.gltf",
+    "modular_industrial_pipes_01": "models/modular_industrial_pipes_01/modular_industrial_pipes_01.gltf",
+    "pipe_wrench": "models/pipe_wrench/pipe_wrench.gltf",
+    "drawer_cabinet": "models/drawer_cabinet/drawer_cabinet.gltf",
+    "plastic_crate_01": "models/plastic_crate_01/plastic_crate_01.gltf",
+    "barrel_03": "models/barrel_03/barrel_03.gltf",
+    "metal_stool_01": "models/metal_stool_01/metal_stool_01.gltf",
+    "industrial_pipe_lamp": "models/industrial_pipe_lamp/industrial_pipe_lamp.gltf"
+  }
+}

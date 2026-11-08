@@ -1,0 +1,18 @@
+/* Role 4 Guidebook: a corner card and a full index. */
+.role4-guide-card { position: absolute; right: 24px; top: 24px; width: min(380px, calc(100vw - 48px)); display: grid; gap: 10px; }
+.role4-guide-body { display: grid; gap: 10px; }
+.role4-guide-text { font-size: var(--hud-text-sm); line-height: 1.55; }
+.role4-guide-numbers { display: grid; gap: 4px; padding: 8px 10px; border: 1px solid var(--hud-line); border-radius: var(--hud-radius); font-size: var(--hud-text-sm); }
+.role4-guide-source { font-size: var(--hud-text-xs); color: var(--hud-muted); }
+.role4-guide-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.role4-guide-row .hud-value { margin-right: auto; }
+.role4-guide-index { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(900px, calc(100vw - 48px)); height: min(620px, calc(100vh - 48px)); display: grid; grid-template-rows: auto 1fr; gap: 12px; background: var(--hud-surface-strong); }
+.role4-guide-split { display: grid; grid-template-columns: 260px 1fr; gap: 16px; min-height: 0; }
+.role4-guide-list { overflow: auto; display: grid; align-content: start; gap: 2px; padding-right: 6px; }
+.role4-guide-list .hud-label { margin-top: 8px; }
+.role4-guide-link { all: unset; cursor: pointer; font-family: var(--hud-font); font-size: var(--hud-text-sm); color: var(--hud-ink); padding: 3px 6px; border-radius: var(--hud-radius); }
+.role4-guide-link:hover, .role4-guide-link.hud-ok { background: rgb(103 232 249 / 0.12); color: var(--hud-cyan); }
+.role4-guide-view { overflow: auto; }
+@media (max-width: 700px) { .role4-guide-split { grid-template-columns: 1fr; } .role4-guide-list { max-height: 30vh; } }
+.role4-guide-index::before { top: 0; left: 0; }
+.role4-guide-index::after { right: 0; bottom: 0; }
