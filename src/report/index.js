@@ -1,9 +1,11 @@
 // Role 4 report: the black box (blackbox.js) and the Flight Report screen (spec §8), shown after every mission.
 // A recommendation with a part opens the hangar and makes that part glow (builder:highlightPart, Role 1).
 import * as THREE from 'three';
+import * as flight from '/src/flight/index.js';
 import { assets, createSpaceScene, graphics } from '/src/graphics/index.js';
 import { PLANETS, events, input, requestState, ui } from '/src/core/index.js';
 import { getReport, startBlackBox } from './blackbox.js';
+import { formatPhases } from './phases.js';
 import './report.css';
 
 export { getReport };
@@ -106,6 +108,25 @@ function showReport() {
   ]));
   cols.append(side);
   card.append(cols);
+
+  // Phases: Role 2's per-phase ratings. Hidden when flight.getPhaseRatings is missing or has nothing.
+  let phases = [];
+  try { phases = formatPhases((window.__role4?.ratingsOverride ?? flight.getPhaseRatings)?.()); } catch { /* optional */ }
+  if (phases.length) {
+    const box = el('div', 'role4-report-box');
+    box.dataset.section = 'phases';
+    box.append(el('div', 'hud-label', 'Phases'));
+    for (const p of phases) {
+      const row = el('div', 'role4-report-phase');
+      const head = el('div', 'role4-report-phase-head');
+      head.append(el('span', null, p.name), el('span', p.starCount === 3 ? 'hud-good' : 'hud-caution', p.stars));
+      row.append(head);
+      if (p.text) row.append(el('div', 'role4-muted', p.text));
+      if (p.stats.length) row.append(el('div', 'role4-report-phase-stats', p.stats.map(([k, v]) => `${k} ${v}`).join(' · ')));
+      box.append(row);
+    }
+    card.append(box);
+  }
 
   const recs = el('div', 'role4-report-box');
   recs.append(el('div', 'hud-label', 'Engineering recommendations'));

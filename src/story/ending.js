@@ -5,12 +5,22 @@ import { audio } from '/src/audio/index.js';
 import { graphics } from '/src/graphics/index.js';
 import { contract, economy, events, requestState, save, ui } from '/src/core/index.js';
 import { getProgress } from '/src/missions/index.js';
+import * as surface from '/src/surface/index.js';
 import data from './data.json';
 import { button, el, fill, typeInto, wait } from './dom.js';
 import { showView } from './views.js';
 
 const money = (n) => `$${Math.round(n).toLocaleString('en-US')}`;
 const familyOf = () => data.photos.find((p) => p.id === save.load().familyPhoto) ?? data.photos[0];
+
+/** The player's first words on Mars (Role 2, getFirstWords), cleaned and capped, or null when missing or empty. */
+function firstWords() {
+  let w = null;
+  // window.__role4.firstWordsOverride exists only with ?debug=1 (test hook)
+  try { w = (window.__role4?.firstWordsOverride ?? surface.getFirstWords)?.(); } catch { /* optional */ }
+  w = typeof w === 'string' ? w.replace(/\s+/g, ' ').trim().slice(0, 200) : '';
+  return w || null;
+}
 
 /**
  * Shows the ending. `ending` is the last ending:show payload. Returns a dispose function (stops the Adrift sequence).
@@ -34,6 +44,14 @@ export function showEnding(ending) {
   if (ending.endingId === 'homecoming') {
     const progress = getProgress();
     if (progress.completed.includes('discovery')) card.append(el('div', 'role4-muted', 'Your data from the delta is now the most studied rock sample on Earth.'));
+    const words = firstWords();
+    if (words) {
+      const quote = el('div', 'role4-box role4-quote');
+      quote.dataset.block = 'first-words';
+      quote.append(el('div', 'hud-label', 'Your first words on Mars'), el('div', 'role4-text', `“${words}”`));
+      quote.lastChild.style.fontStyle = 'italic';
+      card.append(quote);
+    }
     const box = el('div', 'role4-box');
     box.append(el('div', 'hud-label', `Message from ${familyOf().from}`), el('div', 'role4-text', info.family));
     card.append(box);
@@ -41,6 +59,17 @@ export function showEnding(ending) {
     const box = el('div', 'role4-box');
     box.append(el('div', 'hud-label', 'What went wrong'), el('div', 'role4-text', ending.cause));
     card.append(box);
+  }
+
+  if (ending.endingId === contract.ENDINGS.outOfBreath) {
+    const words = firstWords();
+    if (words) {
+      const log = el('div', 'role4-box');
+      log.dataset.block = 'first-words';
+      log.append(el('div', 'hud-label', 'Final log'), el('div', 'role4-muted', `Your first words on Mars: “${words}”`));
+      log.lastChild.style.fontStyle = 'italic';
+      card.append(log);
+    }
   }
 
   const lesson = data.lessons[ending.historyLessonId];
@@ -162,6 +191,12 @@ function showAdrift(ending) {
     await wait(2500);
     if (!alive) return;
 
+    const words = firstWords();
+    if (words) {
+      const first = await say(`Your first words on Mars: “${words}”`, 'role4-muted');
+      first.style.fontStyle = 'italic';
+      await wait(2000);
+    }
     await say(A.logPrompt);
     const log = el('textarea');
     log.maxLength = 300;

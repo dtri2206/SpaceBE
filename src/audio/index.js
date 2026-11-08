@@ -56,6 +56,32 @@ function noiseLoop(ctx, out, { type = 'lowpass', frequency = 400, q = 0.7, volum
   return { nodes: parts, gain };
 }
 
+// One-shot filtered noise with an attack/decay envelope; `sweep` ramps the filter frequency, `attack` is in seconds.
+function noiseBurst(ctx, out, { type = 'bandpass', frequency = 2000, sweep, q = 1, time = 0, attack = 0.004, length = 0.1, volume = 0.2 }) {
+  const t = ctx.currentTime + time;
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuffer(ctx, Math.max(0.2, length + 0.05));
+  const filter = ctx.createBiquadFilter();
+  filter.type = type;
+  filter.Q.value = q;
+  filter.frequency.setValueAtTime(frequency, t);
+  if (sweep) filter.frequency.exponentialRampToValueAtTime(sweep, t + length);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(volume, t + attack);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + length);
+  src.connect(filter).connect(gain).connect(out);
+  src.start(t);
+  src.stop(t + length + 0.05);
+}
+
+// A short ringing metal "tick": a noise transient plus decaying sine partials.
+function click(ctx, out, { time = 0, pitch = 2400, volume = 0.2, ring = 0.05 }) {
+  noiseBurst(ctx, out, { type: 'highpass', frequency: pitch, q: 0.7, time, attack: 0.001, length: 0.012, volume });
+  tone(ctx, out, { frequency: pitch * 0.62, length: ring, time, volume: volume * 0.45, slide: pitch * 0.5 });
+  tone(ctx, out, { frequency: pitch * 1.55, length: ring * 0.6, time, volume: volume * 0.18 });
+}
+
 // Placeholder sounds, so every id works from the first hour. `bus` is 'ui' or 'world'.
 const SYNTHS = {
   'ui.hover': { bus: 'ui', play: (c, o) => tone(c, o, { frequency: 1500, length: 0.035, volume: 0.035 }) },
@@ -72,6 +98,45 @@ const SYNTHS = {
   'ambience.mars': { bus: 'ui', loop: (c, o) => noiseLoop(c, o, { type: 'bandpass', frequency: 420, q: 0.5, volume: 0.05, wobble: 0.025, wobbleRate: 0.13 }) },
   'suit.breath': { bus: 'ui', loop: (c, o) => noiseLoop(c, o, { type: 'bandpass', frequency: 1300, q: 0.8, volume: 0.05, wobble: 0.05, wobbleRate: 0.28 }) },
   'radio.static': { bus: 'ui', loop: (c, o) => noiseLoop(c, o, { type: 'highpass', frequency: 2600, volume: 0.016 }) },
+  // Phase 0 (strap-in) cockpit sounds, all on the 'ui' bus so thin air never muffles them.
+  // Harness buckle: a bright latch click, then a deeper seat-in clack and a short webbing rasp.
+  'crew.harness': { bus: 'ui', play: (c, o) => {
+    click(c, o, { pitch: 3200, volume: 0.22, ring: 0.045 });
+    click(c, o, { time: 0.07, pitch: 1700, volume: 0.28, ring: 0.07 });
+    tone(c, o, { frequency: 180, type: 'triangle', length: 0.07, time: 0.07, volume: 0.16, slide: 110 });
+    noiseBurst(c, o, { type: 'bandpass', frequency: 3500, q: 2, time: 0.16, attack: 0.02, length: 0.14, volume: 0.04 });
+  } },
+  // Heavy hatch: a thud, a low metal ring, then two latch bolts sliding home.
+  'cockpit.hatch': { bus: 'ui', play: (c, o) => {
+    tone(c, o, { frequency: 95, type: 'sine', length: 0.35, volume: 0.4, slide: 38 });
+    noiseBurst(c, o, { type: 'lowpass', frequency: 900, sweep: 150, q: 0.8, length: 0.22, volume: 0.25 });
+    tone(c, o, { frequency: 310, type: 'triangle', length: 0.5, time: 0.01, volume: 0.1, slide: 260 });
+    tone(c, o, { frequency: 487, type: 'sine', length: 0.4, time: 0.01, volume: 0.05 });
+    click(c, o, { time: 0.3, pitch: 1300, volume: 0.3, ring: 0.08 });
+    tone(c, o, { frequency: 120, type: 'triangle', length: 0.1, time: 0.3, volume: 0.25, slide: 70 });
+    click(c, o, { time: 0.46, pitch: 1000, volume: 0.34, ring: 0.1 });
+    tone(c, o, { frequency: 90, type: 'triangle', length: 0.14, time: 0.46, volume: 0.3, slide: 55 });
+  } },
+  // Pressurise: valve pop, air hiss rising in pitch for about 1.4 s, then fading away over 2.8 s in total.
+  'cockpit.pressurise': { bus: 'ui', play: (c, o) => {
+    click(c, o, { pitch: 1400, volume: 0.15, ring: 0.05 });
+    noiseBurst(c, o, { type: 'bandpass', frequency: 700, sweep: 4200, q: 0.9, time: 0.05, attack: 0.5, length: 1.4, volume: 0.22 });
+    noiseBurst(c, o, { type: 'bandpass', frequency: 4200, sweep: 1500, q: 0.7, time: 1.45, attack: 0.05, length: 1.4, volume: 0.2 });
+    noiseBurst(c, o, { type: 'lowpass', frequency: 300, q: 0.5, time: 0.05, attack: 0.9, length: 2.7, volume: 0.1 });
+    tone(c, o, { frequency: 120, type: 'sine', length: 2.6, time: 0.05, volume: 0.025, slide: 150 });
+  } },
+  // Suit O2 flow: soft airflow, loopable; low whoosh plus a quiet hiss, both slowly breathing.
+  'suit.o2flow': { bus: 'ui', loop: (c, o) => {
+    const a = noiseLoop(c, o, { type: 'bandpass', frequency: 1800, q: 0.6, volume: 0.035, wobble: 0.01, wobbleRate: 0.4 });
+    const b = noiseLoop(c, o, { type: 'highpass', frequency: 5200, volume: 0.012, wobble: 0.004, wobbleRate: 0.23 });
+    return { nodes: [...a.nodes, ...b.nodes] };
+  } },
+  // Toggle switch: crisp "tak" then a lower "tik" on the way over.
+  'cockpit.switch': { bus: 'ui', play: (c, o) => {
+    click(c, o, { pitch: 2600, volume: 0.26, ring: 0.04 });
+    click(c, o, { time: 0.045, pitch: 1900, volume: 0.16, ring: 0.03 });
+    tone(c, o, { frequency: 260, type: 'triangle', length: 0.04, volume: 0.1, slide: 150 });
+  } },
 };
 
 const FILE_BASE = `${import.meta.env?.BASE_URL ?? '/'}assets/audio/`;

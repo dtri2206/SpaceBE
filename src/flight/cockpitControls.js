@@ -30,3 +30,23 @@ export function createCockpitControls({ input, onToggleAssist, onStandUp, isLand
     dispose() { offs.forEach((off) => off?.()); },
   };
 }
+
+// Cockpit stick/lever values for Role 3's cockpit.userData.setControls: pitch/yaw -1..1 (W = nose down = -1, D = +1), throttle 0..1.
+export function cockpitStickValues(input, throttle, { assist = false, cutoff = input?.cutoff } = {}) {
+  const n = (v) => (Number.isFinite(v) ? Math.max(-1, Math.min(1, v)) : 0);
+  const th = Number.isFinite(throttle) ? Math.max(0, Math.min(1, throttle)) : 0;
+  return { pitch: n(input?.pitch), yaw: n(input?.yaw), throttle: th, cutoff: !!cutoff, brake: !!input?.brake, assist: !!assist };
+}
+
+// The guarded CUT-OFF animation needs a stable request, not a single physics-frame pulse.
+// This is presentation state only; it never changes throttle or controller inputs.
+export function createCockpitIndicators() {
+  let cutoff = false;
+  return {
+    update(input, throttle, { assist = false, brakeBurn = false } = {}) {
+      if (input?.cutoff) cutoff = true;
+      else if (throttle > 0 || brakeBurn) cutoff = false;
+      return cockpitStickValues(input, throttle, { assist, cutoff });
+    },
+  };
+}

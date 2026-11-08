@@ -1,10 +1,10 @@
-// Rover model (Role 2): Role 3's `assets.get('rover')` is the REAL rover (optional userData.eye = driver's eye).
-// The procedural LRV below (buildLrv) is a TEMPORARY placeholder, used only while `assets.has('rover')` is false.
+// Rover model (Role 2): createRoverModel('rover:lrv') = Apollo LRV, createRoverModel('rover') = MR-01 (Role 3 assets).
+// Optional userData.eye = driver's eye. The procedural LRV below (buildLrv) is a placeholder used only if the asset is missing.
 // It is shaped like the Apollo Lunar Roving Vehicle: aluminium chassis, wire-mesh wheels with chevron treads, fenders, two seats, the
 // T-handle hand controller and display console, the umbrella high-gain antenna, the TV camera and a rear tool pallet.
 // Origin on the ground at the middle of the wheelbase, forward = −Z (RoverController's heading convention).
 //
-// const model = createRoverModel();  scene.add(model.object);  each frame: model.update(rover, dt)
+// const model = createRoverModel('rover:lrv');  scene.add(model.object);  each frame: model.update(rover, dt)
 import * as THREE from 'three';
 import { assets } from '/src/graphics/index.js';
 import { ROVER } from './RoverController.js';
@@ -133,20 +133,26 @@ function buildLrv() {
   return root;
 }
 
-export function createRoverModel() {
-  const object = assets.has?.('rover') ? assets.get('rover') : buildLrv();
+// Driver's eye per asset when its userData.eye is missing (Role 3 README): LRV seat (-0.32, 1.48, 0.22), MR-01 (-0.32, 1.45, -0.45)
+const DEFAULT_EYE = { 'rover:lrv': [-0.32, 1.48, 0.22], rover: [-0.32, 1.45, -0.45] };
+
+export function createRoverModel(assetName = 'rover') {
+  const object = assets.has?.(assetName) ? assets.get(assetName) : buildLrv();
   const wheels = WHEELS.map((n) => object.getObjectByName(n)).filter(Boolean);
   let spinAngle = 0;
   return {
     object,
     // Driver's eye in rover coordinates (left seat), for the first-person camera.
     // Role 3's model may set userData.eye if its driver's seat is elsewhere
-    eye: object.userData.eye?.clone?.() ?? new THREE.Vector3(-0.32, ROVER.wheelRadius + 0.12 + 0.95, 0.22),
+    eye: object.userData.eye?.clone?.() ?? new THREE.Vector3(...(DEFAULT_EYE[assetName] ?? DEFAULT_EYE['rover:lrv'])),
     update(rover, dt) {
+      const dust = Math.min(1, (rover.odometer || 0) / 2000); // dustier with distance: full at 2 km
+      if (Math.abs(dust - (this._dust ?? -1)) > 0.01) { this._dust = dust; object.userData.setDust?.(dust); }
       object.position.set(rover.x, rover.y, rover.z);
       object.rotation.set(rover.pitch, rover.heading, -rover.roll, 'YXZ');
-      spinAngle -= (rover.speed / ROVER.wheelRadius) * dt;
-      const maxAngle = Math.atan(ROVER.wheelbase / (2 * ROVER.turnRadius));
+      const sp = rover.spec ?? ROVER;
+      spinAngle -= (rover.speed / sp.wheelRadius) * dt;
+      const maxAngle = Math.atan(sp.wheelbase / (2 * sp.turnRadius));
       for (const w of wheels) {
         const front = w.name.endsWith('FL') || w.name.endsWith('FR');
         w.rotation.y = rover.steer * maxAngle * (front ? 1 : -1); // four-wheel steering: rear wheels turn the other way

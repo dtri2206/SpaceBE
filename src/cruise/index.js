@@ -152,13 +152,40 @@ function buildHud() {
   if (new URLSearchParams(location.search).get('debug') === '1') controls.append(button('Skip to Mars', () => requestState('ENTRY'), 'Enter'));
   root.append(controls);
 
+  const note = el('div', 'hud hud-panel role4-cruise-note');
+  note.style.display = 'none';
+  root.append(note);
+
   const modal = el('div', 'hud hud-panel role4-cruise-modal');
   modal.style.display = 'none';
   root.append(modal);
 
   ui.mount(root, { layer: 'hud' });
   root.style.pointerEvents = 'none';
-  return { root, day, bar, delay, dist, speed, dose, map, warpButtons, modal };
+  return { root, day, bar, delay, dist, speed, dose, map, warpButtons, modal, note };
+}
+
+// Pacing rule: every minute has a decision, a sensation or a lesson. Between the two big encounters the cruise shows
+// short lesson notes (data.notes), drops the time warp to the default at every event, and never leaves more than
+// MAX_QUIET_SECONDS of real time empty: a slow warp over a long quiet stretch is raised once by itself.
+const DEFAULT_WARP = 1;
+const MAX_QUIET_SECONDS = 30;
+const NOTE_SECONDS = 9;
+
+/** Days of every upcoming event, in order: notes, storm, malfunction, arrival. */
+function eventDays() {
+  return [...data.notes.map((n) => n.day), data.solarStorm.day, data.malfunction.day, data.tripDays].sort((a, b) => a - b);
+}
+
+function showNote(n) {
+  s.hud.note.replaceChildren(el('div', 'hud-label', n.title), el('div', 'role4-cruise-text', n.text));
+  s.hud.note.style.display = '';
+  s.noteLeft = NOTE_SECONDS;
+}
+
+/** At an event: back to the default warp if the player was going faster. */
+function dropWarp() {
+  if (s.warp > DEFAULT_WARP) setWarp(DEFAULT_WARP);
 }
 
 function setWarp(i) {
@@ -258,7 +285,7 @@ export default {
     if (!scene) buildScene();
     graphics.setSunDirection(new THREE.Vector3(0.7, 0.3, 0.4));
     graphics.setView(scene, camera);
-    s = { day: 0, t: 0, warp: 1, dose: 0, sinceTelemetry: 0, encounter: null, stormDone: false, malfunctionDone: false, arrived: false, hud: buildHud() };
+    s = { day: 0, t: 0, warp: 1, dose: 0, sinceTelemetry: 0, encounter: null, stormDone: false, malfunctionDone: false, notesShown: new Set(), noteLeft: 0, autoFor: null, arrived: false, hud: buildHud() };
     setWarp(1);
     render();
   },
@@ -272,13 +299,25 @@ export default {
       enc.count.textContent = `${Math.max(0, enc.left).toFixed(0)} s`;
       if (enc.left <= 0) resolveStorm(false);
     }
+    if (s.noteLeft > 0 && (s.noteLeft -= dt) <= 0) s.hud.note.style.display = 'none';
     if (!enc) {
       const before = s.day;
       s.day = Math.min(data.tripDays, s.day + dt * data.daysPerSecond[s.warp]);
       s.dose += (s.day - before) * data.doseMsvPerDay;
-      if (!s.stormDone && s.day >= data.solarStorm.day) { s.stormDone = true; solarStorm(); }
-      else if (!s.malfunctionDone && s.day >= data.malfunction.day) { s.malfunctionDone = true; malfunction(); }
+      const note = data.notes.find((n) => !s.notesShown.has(n.day) && s.day >= n.day);
+      if (note) { s.notesShown.add(note.day); dropWarp(); showNote(note); }
+      if (!s.stormDone && s.day >= data.solarStorm.day) { s.stormDone = true; dropWarp(); solarStorm(); }
+      else if (!s.malfunctionDone && s.day >= data.malfunction.day) { s.malfunctionDone = true; dropWarp(); malfunction(); }
       else if (!s.arrived && s.day >= data.tripDays) { s.arrived = true; requestState('ENTRY'); return; }
+    }
+
+    // Auto-warp: a slow warp over a quiet stretch longer than MAX_QUIET_SECONDS goes up one step, once per stretch.
+    if (!s.encounter) {
+      const nextDay = eventDays().find((d) => d > s.day);
+      if (nextDay != null && nextDay !== s.autoFor && s.warp < DEFAULT_WARP && (nextDay - s.day) / data.daysPerSecond[s.warp] > MAX_QUIET_SECONDS) {
+        s.autoFor = nextDay;
+        setWarp(DEFAULT_WARP);
+      }
     }
 
     const { speedMs } = render();

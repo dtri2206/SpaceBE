@@ -1,7 +1,7 @@
 // Node tests for the Mars dusk / Pale Blue Dot logic and the debug oxygen shortcut. Run: node src/surface/tests/dusk.test.mjs
 import assert from 'node:assert/strict';
 import { createSolClock, sunAt, easeFov, angleToEarthDeg, isLookingAtEarth, createEarthCaption, EARTH_DIRECTION,
-  DAY_ELEVATION, DUSK_ELEVATION, DUSK_AFTER_S, NORMAL_FOV, ZOOM_FOV } from '../dusk.js';
+  DAY_ELEVATION, DUSK_ELEVATION, DUSK_AFTER_S, FAST_DUSK_S, FAST_DUSK_AFTER_S, shouldStartFastDusk, fastDuskMission, resetFastDusk, NORMAL_FOV, ZOOM_FOV } from '../dusk.js';
 import { createOxygen } from '../oxygen.js';
 
 const results = [];
@@ -88,6 +88,47 @@ test('debugSetPercent does not revive a depleted suit', () => {
   assert.equal(o2.depleted, true);
   o2.debugSetPercent(50);
   assert.equal(o2.percent, 0);
+});
+
+test('fast dusk trigger mirrors Role 4: 30 percent, 25 s outside, once, not at dusk', () => {
+  const ok = { percent: 30, secondsOutside: FAST_DUSK_AFTER_S };
+  assert.equal(shouldStartFastDusk(ok), true);
+  assert.equal(shouldStartFastDusk({ ...ok, percent: 29 }), false);
+  assert.equal(shouldStartFastDusk({ ...ok, secondsOutside: 24 }), false);
+  assert.equal(shouldStartFastDusk({ ...ok, started: true }), false);
+  assert.equal(shouldStartFastDusk({ ...ok, isDusk: true }), false);
+  assert.ok(FAST_DUSK_AFTER_S < 30);
+});
+
+test('fast dusk eases from the current sun to dusk in FAST_DUSK_S and then the clock stays at dusk', () => {
+  const seen = [];
+  const clock = createSolClock({ apply: (e) => seen.push(e) });
+  for (let t = 0; t < 100; t += 0.1) clock.update(0.1);
+  const before = clock.elevation;
+  assert.equal(clock.startFastDusk(), true);
+  assert.equal(clock.startFastDusk(), false);
+  assert.ok(Math.abs(clock.elevation - before) < 1e-9);
+  let prev = before;
+  for (let t = 0; t < FAST_DUSK_S / 2; t += 0.1) { clock.update(0.1); assert.ok(clock.elevation <= prev + 1e-9); prev = clock.elevation; }
+  assert.equal(clock.isDusk, false);
+  for (let t = 0; t < FAST_DUSK_S / 2 + 0.5; t += 0.1) clock.update(0.1);
+  assert.equal(clock.isDusk, true);
+  assert.ok(Math.abs(clock.elevation - DUSK_ELEVATION) < 1e-9);
+  assert.equal(clock.fastDusk, false);
+  assert.equal(clock.progress, 1);
+  assert.equal(clock.startFastDusk(), false);
+});
+
+test('fast dusk does nothing when it is already dusk', () => {
+  const clock = createSolClock({ apply() {} });
+  clock.jumpToDusk();
+  assert.equal(clock.startFastDusk(), false);
+});
+
+test('the once-per-mission flag resets', () => {
+  fastDuskMission.started = true;
+  resetFastDusk();
+  assert.equal(fastDuskMission.started, false);
 });
 
 let fails = 0;

@@ -1,5 +1,7 @@
 import { MAX_DUST_OPACITY } from '../visorDust.js';
 
+const WALK_HELP = 'CLICK mouse look · WASD walk · SHIFT run · SPACE jump · E interact / hold to scan';
+const DRIVE_HELP = 'MOUSE look around · W/S throttle / reverse · A/D steer · SPACE brake · E get out';
 const fmt = (value, digits = 0) => Number.isFinite(value) ? value.toFixed(digits) : '—';
 
 export function createSuitHUD({ parent = document.body, reducedMotion = false } = {}) {
@@ -22,6 +24,8 @@ export function createSuitHUD({ parent = document.body, reducedMotion = false } 
 .suit-presentation .oxygen { color:var(--signal); font-size:32px; display:block; }
 .suit-presentation meter { display:block; width:100%; height:7px; accent-color:var(--signal); }
 .suit-presentation .row { display:flex; justify-content:space-between; margin-top:9px; }
+.suit-presentation .reachrow { margin-top:11px; padding-top:8px; border-top:1px solid #a2d4d92a; font-size:10px; letter-spacing:.08em; color:#a1babe; white-space:nowrap; }
+.suit-presentation .reachrow[data-warn] { color:#ffc281; }
 .suit-presentation .navigation { position:absolute; right:48px; bottom:115px; text-align:right; padding:15px; background:#07171baa; }
 .suit-presentation .beacon { font-size:24px; color:#81e7df; display:inline-block; }
 .suit-presentation .crosshair { position:absolute; left:50%; top:50%; width:5px; height:5px; border:1px solid #d6eeeeaa; border-radius:50%; transform:translate(-50%,-50%); }
@@ -41,9 +45,10 @@ export function createSuitHUD({ parent = document.body, reducedMotion = false } 
 <div class="row"><span>SUPPLY / SPARES</span><span data-id="supply"></span></div>
 <div class="row"><span>HEART RATE</span><span data-id="heart"></span></div>
 <div class="row"><span>LOCAL GRAVITY</span><span data-id="gravity"></span></div>
-<div class="row body"><span>DOSE / PEAK G</span><span data-id="body"></span></div></div>
+<div class="row body"><span>DOSE / PEAK G</span><span data-id="body"></span></div>
+<div class="reachrow" hidden><span data-id="reach"></span></div></div>
 <div class="navigation"><small>SHIP RADIO BEACON</small><div><span class="beacon">↑</span> <span data-id="distance"></span></div><div data-id="motion"></div></div>
-<div class="help">CLICK mouse look · WASD walk · SHIFT run · SPACE jump · E interact / hold to scan</div>`;
+<div class="help" data-id="help">${WALK_HELP}</div>`;
   parent.append(root);
   const fields = Object.fromEntries([...root.querySelectorAll('[data-id]')].map(el => [el.dataset.id, el]));
   const helmet = root.querySelector('.helmet');
@@ -98,7 +103,7 @@ export function createSuitHUD({ parent = document.body, reducedMotion = false } 
 
   return {
     root,
-    update(dt, { telemetry: t, oxygen, suited, inside, focused, yaw, shipPosition, bodyStats, airlockProgress = 0, prebreathe = null, dust = 0 }) {
+    update(dt, { telemetry: t, oxygen, suited, inside, focused, yaw, shipPosition, bodyStats, airlockProgress = 0, prebreathe = null, dust = 0, driving = false, reach = null }) {
       elapsed += dt;
       const level = inside ? 'ok' : oxygen.level;
       root.dataset.level = level;
@@ -112,6 +117,14 @@ export function createSuitHUD({ parent = document.body, reducedMotion = false } 
       root.querySelector('.body').hidden = !bodyStats;
       if (bodyStats) fields.body.textContent = `${fmt(bodyStats.doseMSv, 3)} mSv / ${fmt(bodyStats.peakG, 1)} g`;
       meter.value = oxygen.percent;
+      const reachRow = root.querySelector('.reachrow');
+      reachRow.hidden = inside || !reach;
+      if (reach && !inside) {
+        if (fields.reach.textContent !== reach.text) fields.reach.textContent = reach.text;
+        if (reach.warn) reachRow.dataset.warn = '1'; else delete reachRow.dataset.warn;
+      }
+      const help = driving ? DRIVE_HELP : WALK_HELP;
+      if (fields.help.textContent !== help) fields.help.textContent = help;
       fields.prompt.textContent = focused?.prompt ?? '';
       progress.hidden = focused?.holdProgress == null;
       progress.value = focused?.holdProgress ?? 0;

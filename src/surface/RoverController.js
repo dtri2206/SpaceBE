@@ -6,11 +6,13 @@
 // silver-zinc batteries (≈ 8.7 kWh), designed for about 13 km/h (Apollo 17's Gene Cernan clocked about 18 km/h).
 // On Mars the same machine weighs 2.3× more than on the Moon: more grip, but more rolling resistance too.
 //
-// const rover = new RoverController({ gravity: PLANETS.mars.g, getGroundHeight, start: { x, z, heading } });
+// const rover = new RoverController({ gravity: PLANETS.mars.g, getGroundHeight, start: { x, z, heading }, spec? });
+// `spec` defaults to ROVER (the Apollo LRV); pass ROVER_MR01 for the SPACEB&E MR-01.
 // each frame: rover.update(dt, { throttle: -1..1, steer: -1..1, brake: bool });   (steer +1 = left)
 // heading 0 drives toward −Z (same convention as WalkController's yaw); forward = (−sin h, 0, −cos h).
 
 export const ROVER = {
+  name: 'LRV', // HUD name
   mass: 450, // kg: 210 kg rover + one suited astronaut (~180 kg) + tools and samples
   wheelbase: 2.29, // m
   track: 1.83, // m
@@ -32,11 +34,30 @@ export const ROVER = {
   crashLanding: 8, // m/s: the rover is wrecked/overturned
 };
 
+
+// MR-01: the futuristic SPACEB&E rover, a CONCEPT vehicle (not a real machine). Unlocked at 50 % Mars Exploration.
+// Same wheelbase and track as the LRV (Role 3 built both at 2.29 m x 1.83 m). Top speed ≈ 5.5 m/s (≈ 20 km/h), in line
+// with the ~15 km/h goal NASA has talked about for its Lunar Terrain Vehicle; a bigger battery and more motor power
+// let it hold that speed on loose regolith, and wide balloon tyres give slightly better grip.
+export const ROVER_MR01 = {
+  ...ROVER,
+  name: 'MR-01',
+  mass: 620, // kg: heavier chassis, 30 kWh battery pack, one suited astronaut (~180 kg) and tools
+  power: 2400, // W (concept in-wheel motors; ≈ 1.5 kW is needed to hold 5.5 m/s on regolith)
+  stallForce: 1400, // N
+  friction: 0.65, // wide balloon tyres
+  topSpeed: 5.5, // m/s ≈ 20 km/h (concept; speed governor)
+  reverseSpeed: 1.5,
+  turnRadius: 3.4, // m at full lock
+  batteryWh: 30000, // ≈ 30 kWh concept pack (3.4× the LRV's 8.7 kWh)
+};
+
 const deg = (r) => (r * 180) / Math.PI;
 
 export class RoverController {
-  constructor({ gravity, getGroundHeight = () => 0, start = {}, colliders = [], onNotice } = {}) {
+  constructor({ gravity, getGroundHeight = () => 0, start = {}, colliders = [], onNotice, spec = ROVER } = {}) {
     if (!(gravity > 0)) throw new Error('RoverController: pass gravity (PLANETS.<planet>.g from core)');
+    this.spec = spec; // ROVER (Apollo LRV, default) or ROVER_MR01
     this.g = gravity;
     this.getGroundHeight = getGroundHeight;
     this.colliders = colliders; // [{ x, z, r }] things the rover can't drive through (the lander)
@@ -52,7 +73,7 @@ export class RoverController {
     this.airTime = 0;
     this.pitch = 0; // rad, + nose up
     this.roll = 0; // rad, + right side down
-    this.batteryWh = ROVER.batteryWh;
+    this.batteryWh = this.spec.batteryWh;
     this.odometer = 0;
     this.overturned = false;
     this.slip = 0; // 0..1 how much the turn is sliding (grip exceeded)
@@ -60,12 +81,12 @@ export class RoverController {
 
   get forward() { return { x: -Math.sin(this.heading), z: -Math.cos(this.heading) }; }
   get right() { return { x: Math.cos(this.heading), z: -Math.sin(this.heading) }; }
-  get batteryFrac() { return this.batteryWh / ROVER.batteryWh; }
+  get batteryFrac() { return this.batteryWh / this.spec.batteryWh; }
 
   // Ground heights under the four wheels → centre height, pitch (front up +) and roll (right down +).
   _wheels() {
     const f = this.forward, r = this.right;
-    const hb = ROVER.wheelbase / 2, ht = ROVER.track / 2;
+    const hb = this.spec.wheelbase / 2, ht = this.spec.track / 2;
     const at = (a, b) => this.getGroundHeight(this.x + f.x * a + r.x * b, this.z + f.z * a + r.z * b);
     return { FL: at(hb, -ht), FR: at(hb, ht), RL: at(-hb, -ht), RR: at(-hb, ht) };
   }
@@ -76,8 +97,8 @@ export class RoverController {
     const left = (w.FL + w.RL) / 2, right = (w.FR + w.RR) / 2;
     return {
       y: (front + rear) / 2,
-      pitch: Math.atan2(front - rear, ROVER.wheelbase),
-      roll: Math.atan2(left - right, ROVER.track),
+      pitch: Math.atan2(front - rear, this.spec.wheelbase),
+      roll: Math.atan2(left - right, this.spec.track),
       wheels: w,
     };
   }
@@ -85,7 +106,7 @@ export class RoverController {
   update(dt, input = {}) {
     if (dt <= 0) return;
     dt = Math.min(dt, 0.05);
-    const R = ROVER;
+    const R = this.spec;
     const g = this.g;
     const ground = this._groundCentre();
     const throttle = this.overturned || this.batteryWh <= 0 ? 0 : Math.max(-1, Math.min(1, input.throttle ?? 0));
@@ -205,6 +226,7 @@ export class RoverController {
 
   get telemetry() {
     return {
+      name: this.spec.name,
       pos: { x: this.x, y: this.y, z: this.z },
       speed: Math.abs(this.speed),
       speedKmh: Math.abs(this.speed) * 3.6,

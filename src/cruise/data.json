@@ -3,6 +3,11 @@
   "marsLeadDeg": 44,
   "daysPerSecond": [2, 5, 12],
   "doseMsvPerDay": 1.8,
+  "notes": [
+    {"day": 30, "title": "Day 30 · The long fall", "text": "Your engines are off. The Sun's gravity is doing the flying now, bending your path out to Mars."},
+    {"day": 115, "title": "Day 115 · Earth is a star", "text": "Messages now take minutes each way. Mission Control can advise you, but it cannot answer in time to save you."},
+    {"day": 210, "title": "Day 210 · Mars ahead", "text": "Mars is a disc now. Soon you hit its air at about 5 km/s with a heat shield and a parachute. Nothing else."}
+  ],
   "solarStorm": {
     "day": 70,
     "seconds": 9,

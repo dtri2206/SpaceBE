@@ -1,0 +1,72 @@
+{
+  "timing": {
+    "board": 15,
+    "seatDark": 0.2,
+    "seatFade": 2.2,
+    "seatSettle": 1.4,
+    "pollStart": 0.8,
+    "pollEvery": 1,
+    "promptDelay": 0.9,
+    "cleared": 1.6,
+    "quickNoGo": 2
+  },
+  "steps": [
+    {
+      "id": "hatch",
+      "key": "1",
+      "label": "HATCH · close",
+      "button": "btn:hatch",
+      "sound": "cockpit.hatch",
+      "fact": "Hatch closed and latched. A sealed hatch keeps cabin air from escaping into the vacuum."
+    },
+    {
+      "id": "cabin",
+      "key": "2",
+      "label": "CABIN · pressurise",
+      "button": "btn:cabin",
+      "sound": "cockpit.pressurise",
+      "fact": "The cabin must hold its pressure before launch. In space, a leak can take your air away."
+    },
+    {
+      "id": "o2",
+      "key": "3",
+      "label": "O2 · open",
+      "button": "btn:o2",
+      "sound": "suit.o2flow",
+      "fact": "Oxygen is flowing. Up there there is no air at all: every breath comes from these tanks."
+    },
+    {
+      "id": "arm",
+      "key": "4",
+      "label": "ARM ENGINE",
+      "button": "btn:arm",
+      "sound": "cockpit.switch",
+      "fact": "Armed. From now on the engine can light."
+    }
+  ],
+  "copy": {
+    "seatFact": "Harness secured. Take a breath. Follow the checklist.",
+    "skip": "Enter · skip to countdown",
+    "boardNow": "Preparing the launch tower… Enter · board now",
+    "boardSkip": "Enter · skip boarding",
+    "captionTop": "STRAP IN",
+    "caption": "THE LAST QUIET MOMENTS ON EARTH",
+    "quickWarnings": "REVIEW · OVERRIDDEN NO-GO WARNINGS",
+    "quickHeading": "PRE-LAUNCH · QUICK START",
+    "quickWarningAnswer": "Warnings remain. Countdown follows in 2 seconds.",
+    "quickAnswer": "Checklist recalled. Countdown follows in 2 seconds.",
+    "cleared": "You are cleared for launch.",
+    "insufficientFunds": "Insufficient funds for the scrub fee.",
+    "checklistFact": "One item at a time. Verify before you commit.",
+    "checklistKeys": "1–4 · complete the highlighted item",
+    "warningFact": "A NO-GO is a warning, not a formality. Cold seals were a warning before Challenger in 1986.",
+    "goFact": "Challenger, 1986: cold-seal warnings went unheard. Every NO-GO deserves attention.",
+    "objectiveGo": "Give the GO",
+    "objectiveChecklist": "Complete the pre-launch checklist",
+    "checklistHeading": "PRE-LAUNCH CHECKLIST",
+    "pollHeading": "LAUNCH DIRECTOR · STATION POLL",
+    "ask": "Flight crew, are you GO?",
+    "goButton": "GO (Enter)",
+    "scrubButton": "SCRUB (S)"
+  }
+}

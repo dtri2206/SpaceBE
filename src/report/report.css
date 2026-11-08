@@ -16,3 +16,8 @@
 @media (max-width: 720px) { .role4-report-cols { grid-template-columns: 1fr; } }
 .role4-report-card::before { top: 0; left: 0; }
 .role4-report-card::after { right: 0; bottom: 0; }
+
+.role4-report-phase { display: grid; gap: 2px; padding: 4px 0; font-size: var(--hud-text-sm); }
+.role4-report-phase + .role4-report-phase { border-top: 1px solid var(--hud-line); }
+.role4-report-phase-head { display: flex; justify-content: space-between; gap: 12px; }
+.role4-report-phase-stats { font-size: var(--hud-text-xs); color: var(--hud-muted); }

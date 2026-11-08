@@ -30,6 +30,10 @@ import {
 import { closestApproach } from './debris.js';
 
 export const FIXED_DT = 1 / 120;
+export const WARP_IN_AIR = 4; // max time warp inside the atmosphere
+export const WARP_THIN_AIR = 10; // max time warp where the air is almost vacuum (density below WARP_THIN_DENSITY)
+export const WARP_THIN_DENSITY = 1e-4; // kg/m³
+export const TRIM_ACCEL = 6; // m/s²: RCS-style corridor trim before entry (W/S), costs real fuel
 
 // Local notice → contract flight:event type (contract.js FLIGHT_EVENT_TYPES). Others stay local.
 const BUS_FLIGHT_EVENTS = { maxq_warning: 'maxq', debris_hit: 'debris_hit', blackout: 'blackout', skip_off: 'skip_off' };
@@ -134,6 +138,8 @@ export class FlightController {
     this.t = 0; // mission time since controller start
     this.liftoffT = null;
     this.accumulator = 0;
+    this.warpEffective = 1;
+    this.trimmedDv = 0; // m/s spent on corridor trim
     this.failed = null;
     this.chuteOpen = false;
     this.landed = false;
@@ -269,19 +275,40 @@ export class FlightController {
 
   // --- main loop -------------------------------------------------------------
   // input: { pitch, yaw, throttleUp, throttleDown, cutoff, brake } (see cockpitControls.js)
-  // opts.timeWarp: only honoured when coasting outside the atmosphere.
+  // opts.timeWarp: requested warp. Honoured as follows (physics is ALWAYS sub-stepped at FIXED_DT, never a bigger dt):
+  //   on the ground: 1x · inside the atmosphere: up to WARP_IN_AIR (4x), up to WARP_THIN_AIR (10x) where the air is
+  //   almost vacuum · above the atmosphere with the engine off and no brake: whatever was asked (the pacer uses ≤ 100x).
+  // opts.stopOnNotice: end this call right after a flight notice fired while warping, so the HUD can slow down at once.
+  // opts.maxSteps: physics steps allowed per call (default 1500). When a slow machine would need more, the extra game
+  // time is dropped instead of spiralling, and the effective warp (this.warpEffective) goes down.
+  allowedWarp(requested, input = {}) {
+    const warp = Math.max(1, Number(requested) || 1);
+    if (this.onGround) return 1;
+    const alt = this.altitude;
+    if (alt < atmosphereTop(this.planet)) {
+      const thin = airDensity(this.planet, alt) < WARP_THIN_DENSITY;
+      return Math.min(warp, thin ? WARP_THIN_AIR : WARP_IN_AIR);
+    }
+    const coasting = this.throttle === 0 && !input.brake;
+    return coasting ? warp : Math.min(warp, WARP_IN_AIR);
+  }
+
   update(dt, input = {}, opts = {}) {
     if (this.failed || dt <= 0) return;
-    let warp = opts.timeWarp ?? 1;
-    const coasting = this.throttle === 0 && !input.brake && !this.onGround;
-    if (!coasting || this.altitude < atmosphereTop(this.planet)) warp = 1;
-    this.accumulator += Math.min(dt, 0.25) * warp;
+    const warp = this.allowedWarp(opts.timeWarp ?? 1, input);
+    const maxSteps = opts.maxSteps ?? 1500;
+    const frame = Math.min(dt, 0.25);
+    this.accumulator += frame * warp;
     let steps = 0;
-    while (this.accumulator >= FIXED_DT && steps < 4000 && !this.failed) {
+    this._noticeSeen = false;
+    while (this.accumulator >= FIXED_DT && steps < maxSteps && !this.failed) {
       this._step(FIXED_DT, input);
       this.accumulator -= FIXED_DT;
       steps++;
+      if (opts.stopOnNotice && this._noticeSeen && warp > 1) { this.accumulator = 0; break; } // a notice: let the pacer drop to 1× now
     }
+    if (steps >= maxSteps && this.accumulator >= FIXED_DT) this.accumulator = 0; // over budget: drop the rest
+    this.warpEffective = frame > 0 ? Math.max(1, Math.min(warp, (steps * FIXED_DT) / frame)) : 1;
   }
 
   _step(dt, input) {
@@ -314,6 +341,7 @@ export class FlightController {
       this._braking = false;
     }
     this._integrateRotation(dt);
+    if (input.trim) this._trimNudge(input.trim, dt);
     // engine stays "lit" while the throttle is up or a brake burn is in progress
     if (this.throttle === 0 && !this._braking) this.engineLit = false;
     else if (this.throttle > 0) this.engineLit = this.engineLit || this._ignite();
@@ -378,6 +406,22 @@ export class FlightController {
     if (this.failed || this.onGround) return;
     this._checkStranded(dt);
     this._setPhase(this._computePhase());
+  }
+
+  // Corridor trim (Mars approach, above the atmosphere, engine off): a small RCS-style push perpendicular to the
+  // velocity, in the orbit plane. dir +1 = toward 'up' (shallower entry), -1 = toward the planet (steeper).
+  // Costs real fuel through the rocket equation (dm = m · Δv / ve). Pure physics: velocity changes, nothing else.
+  _trimNudge(dir, dt) {
+    if (this.onGround || this.fuel <= 0 || !this.ship.hasRCS || this.throttle > 0 || !this.planet.seaLevelDensity) return;
+    if (this.altitude < atmosphereTop(this.planet)) return;
+    const vh = norm(this.vel);
+    const up = this.up;
+    const perp = sub(up, scale(vh, dot(up, vh)));
+    if (len(perp) < 1e-6) return;
+    const dv = TRIM_ACCEL * dt * Math.sign(dir);
+    this.vel = add(this.vel, scale(norm(perp), dv));
+    this.fuel = Math.max(0, this.fuel - this.mass * (Math.abs(dv) / (this.ship.ispVac * this.g0)));
+    this.trimmedDv = (this.trimmedDv ?? 0) + Math.abs(dv);
   }
 
   // --- rotation ----------------------------------------------------------------
@@ -562,6 +606,7 @@ export class FlightController {
     const upright = dot(this.forward, up) >= TUNING.uprightCos;
     this.pos = scale(up, this.planet.radius);
     if (speed <= limit && upright) {
+      this.landingSpeed = speed;
       this.vel = v3();
       this.omega = v3();
       this.onGround = true;
@@ -614,6 +659,7 @@ export class FlightController {
   _event(type, data = {}) {
     if (this._flags[type]) return;
     this._flags[type] = true;
+    this._noticeSeen = true;
     this.onNotice?.(type, data);
     const busType = BUS_FLIGHT_EVENTS[type];
     if (busType) this.bus.emit('flight:event', { type: busType, t: this.t, data });

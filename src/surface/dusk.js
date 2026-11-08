@@ -23,30 +23,62 @@ export function sunAt(progress) {
   return { elevation: DAY_ELEVATION + (DUSK_ELEVATION - DAY_ELEVATION) * t, azimuth: DAY_AZIMUTH + (DUSK_AZIMUTH - DAY_AZIMUTH) * t };
 }
 
+export const FAST_DUSK_PERCENT = 30; // mid-mission Mars Exploration percent at which dusk arrives quickly (Pale Blue Dot moment)...
+export const FAST_DUSK_AFTER_S = 25; // ...once the player has been outside this many seconds
+export const FAST_DUSK_S = 20; // real seconds of the fast dusk (ease from the current Sun to twilight)
+
+// Once per mission: set when the fast dusk starts, cleared by astronaut.reset() with the other per-mission state.
+export const fastDuskMission = { started: false };
+export const resetFastDusk = () => { fastDuskMission.started = false; };
+
+/** Mirror of Role 4's trigger (src/story/index.js): enough progress, long enough outside, not yet started, not already dusk. */
+export function shouldStartFastDusk({ percent = 0, secondsOutside = 0, started = false, isDusk = false } = {}) {
+  return !started && !isDusk && percent >= FAST_DUSK_PERCENT && secondsOutside >= FAST_DUSK_AFTER_S;
+}
+
 /** apply(elevation, azimuth) is called at most every `interval` seconds, and only when the Sun has moved. */
 export function createSolClock({ apply, duration = DUSK_AFTER_S, interval = SUN_UPDATE_INTERVAL_S } = {}) {
-  let elapsed = 0, sinceApply = interval, applied = -1;
+  let elapsed = 0, sinceApply = interval, applied = null;
+  let fast = null; // { t, duration, from: { elevation, azimuth } } while the fast dusk runs
+  const sun = () => {
+    if (!fast) return sunAt(elapsed / duration);
+    const p = Math.min(1, fast.t / fast.duration), e = p * p * (3 - 2 * p);
+    return {
+      elevation: fast.from.elevation + (DUSK_ELEVATION - fast.from.elevation) * e,
+      azimuth: fast.from.azimuth + (DUSK_AZIMUTH - fast.from.azimuth) * e,
+    };
+  };
   const flush = (force) => {
-    const p = Math.min(1, elapsed / duration);
-    if (!force && (p === applied || sinceApply < interval)) return false;
-    const { elevation, azimuth } = sunAt(p);
+    const { elevation, azimuth } = sun();
+    if (!force && (sinceApply < interval || (applied && applied.elevation === elevation && applied.azimuth === azimuth))) return false;
     apply?.(elevation, azimuth);
-    applied = p;
+    applied = { elevation, azimuth };
     sinceApply = 0;
     return true;
   };
   return {
     get elapsed() { return elapsed; },
     get progress() { return Math.min(1, elapsed / duration); },
-    get elevation() { return sunAt(elapsed / duration).elevation; },
-    get isDusk() { return sunAt(elapsed / duration).elevation <= EARTH_VISIBLE_ELEVATION; },
+    get elevation() { return sun().elevation; },
+    get isDusk() { return sun().elevation <= EARTH_VISIBLE_ELEVATION; },
+    get fastDusk() { return !!fast; },
     update(dt) {
       if (dt <= 0) return false;
       elapsed = Math.min(duration, elapsed + dt);
+      if (fast) {
+        fast.t = Math.min(fast.duration, fast.t + dt);
+        if (fast.t >= fast.duration) { elapsed = duration; fast = null; } // arrived: the normal clock is at dusk too
+      }
       sinceApply += dt;
       return flush(false);
     },
-    jumpToDusk() { elapsed = duration; flush(true); },
+    jumpToDusk() { fast = null; elapsed = duration; flush(true); },
+    /** Ease from the current Sun to twilight over `seconds`. No-op when already dusk or already fast. */
+    startFastDusk(seconds = FAST_DUSK_S) {
+      if (fast || this.isDusk) return false;
+      fast = { t: 0, duration: Math.max(0.001, seconds), from: sun() };
+      return true;
+    },
   };
 }
 

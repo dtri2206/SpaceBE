@@ -24,11 +24,24 @@ const once = new Set(); // radio lines already played this mission
 const family = () => (data.photos.find((p) => p.id === save.load().familyPhoto) ?? data.photos[0]).from;
 
 /** Play a radio line from data.json once per mission. */
-function say(id) {
+function say(id, extra = {}) {
   if (once.has(id)) return;
   once.add(id);
   const line = data.radio[id];
-  radio({ ...line, from: fill(line.from, { family: family() }) });
+  radio({ ...line, ...extra, from: fill(line.from, { family: family() }) });
+}
+
+// Entry blackout: hot plasma blocks the radio. Show NO SIGNAL, then the first line after it (chute out or 25 s).
+let blackoutTimer = null;
+function blackout() {
+  if (once.has('blackout')) return;
+  say('blackout', { urgent: true, holdMs: 60000 });
+  clearTimeout(blackoutTimer);
+  blackoutTimer = setTimeout(afterBlackout, 25000);
+}
+function afterBlackout() {
+  clearTimeout(blackoutTimer);
+  if (once.has('blackout') && getState() !== 'ENDING') say('afterBlackout', { urgent: true });
 }
 
 function listen() {
@@ -46,12 +59,32 @@ function listen() {
 
   events.on('ship:built', () => once.clear());
   events.on('flight:landed', () => say('landed'));
+  events.on('flight:event', ({ type }) => {
+    if (type === 'maxq') say('maxq');
+    else if (type === 'blackout') blackout();
+  });
+  events.on('flight:phase', ({ phase }) => {
+    if (phase === 'ascent' || phase === 'launch') say('liftoff');
+    else if (phase === 'orbit') say('orbit');
+    else if (phase === 'entry') say('entry');
+    else if (phase === 'landing') afterBlackout();
+  });
   events.on('state:changed', ({ to }) => {
-    if (to === 'PRELAUNCH') once.clear();
+    if (to === 'PRELAUNCH') {
+      once.clear();
+      clearTimeout(blackoutTimer);
+      // No radio on entering PRELAUNCH: Role 2's GO/NO-GO poll says "You are cleared for launch." itself.
+    }
+    if (to === 'ORBIT') say('orbit');
+    if (to === 'ENTRY') say('entry');
+    if (to === 'ENDING' || to === 'REPORT') clearTimeout(blackoutTimer);
     if (to === 'SURFACE') {
       say('firstEva');
     }
-    if (to === 'CRUISE') setTimeout(() => getState() === 'CRUISE' && say('family1'), 4000);
+    if (to === 'CRUISE') {
+      say('transfer');
+      setTimeout(() => getState() === 'CRUISE' && say('family1'), 4000);
+    }
   });
 
   // Halcyon-1 logs: shown when recovered (missions emits story:log), uploaded at the comms console later.
@@ -83,7 +116,7 @@ export default {
   enter(state) {
     if (state === 'PRELAUNCH') {
       showView('earth');
-      showPrelaunch();
+      dispose = showPrelaunch();
     } else if (state === 'RETURN') {
       clearRadio();
       dispose = showReturn();

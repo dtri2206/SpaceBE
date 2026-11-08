@@ -22,3 +22,5 @@
 .role4-cruise-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .role4-cruise-options { flex-direction: column; align-items: stretch; }
 @media (max-width: 800px) { .role4-cruise-left, .role4-cruise-right { display: none; } }
+
+.role4-cruise-note { left: 50%; bottom: 84px; transform: translateX(-50%); width: min(440px, calc(100vw - 48px)); display: grid; gap: 4px; }

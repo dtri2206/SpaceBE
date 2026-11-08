@@ -14,19 +14,33 @@ function createFlightHUD({ parent = document.body } = {}) {
 .flight-presentation .marker{position:absolute;display:none;color:var(--cyan);transform:translate(-50%,-50%);font-size:24px}.flight-presentation .retro{color:var(--amber)}.flight-presentation .collision{color:#ff6978}
 .flight-presentation .vignette{position:absolute;inset:0;background:radial-gradient(ellipse,transparent 25%,#000 100%);opacity:0}
 .flight-presentation .help{position:absolute;bottom:26px;left:32px;right:32px;border-top:1px solid #72e6e033;padding-top:14px;color:#8daeb8}
-@media(max-width:700px){.flight-presentation .panel{right:16px;width:185px}.flight-presentation .readings{left:16px;gap:12px}.flight-presentation strong{font-size:18px}.flight-presentation .formula{max-width:250px}.flight-presentation .help{font-size:9px}}
+.flight-presentation .objective:empty,.flight-presentation .warp:empty{display:none}.flight-presentation .objective{padding:5px 14px;background:#071419d9;border:1px solid #72e6e033;position:absolute;top:26px;left:50%;transform:translateX(-50%);max-width:56%;text-align:center;color:#d8eff1;letter-spacing:.08em;font-size:12px;white-space:normal}.flight-presentation .objective b{color:var(--cyan);font-weight:400;letter-spacing:.18em}
+.flight-presentation .warp{padding:3px 10px;background:#071419d9;position:absolute;left:32px;top:58px;color:var(--cyan);letter-spacing:.14em;font-size:13px}.flight-presentation .warp.auto{color:var(--amber)}
+.flight-presentation .checklist{position:absolute;right:32px;top:76px;width:218px;padding:10px 12px;border:1px solid #72e6e033;background:#071419bc;font-size:11px}.flight-presentation .checklist small{display:block;margin-bottom:4px}
+.flight-presentation .checklist div{padding:1px 0;color:#8daeb8}.flight-presentation .checklist .done{color:#7dffa8}.flight-presentation .checklist .current{color:#fff;background:#72e6e022;box-shadow:inset 2px 0 var(--cyan);padding-left:6px}
+.flight-presentation .card{position:absolute;left:50%;top:80px;transform:translateX(-50%);max-width:70%;padding:10px 18px;border:1px solid #ffbe7566;background:#071419e6;color:#ffe3b3;letter-spacing:.06em;font-size:14px;text-align:center;display:none}
+.flight-presentation .gauge{position:absolute;left:32px;top:214px;width:210px;display:none;font-size:11px}.flight-presentation .gauge .bar{position:relative;height:150px;width:16px;float:left;margin-right:10px;border:1px solid #72e6e055;background:linear-gradient(#ff697866 0 25%,#7dffa866 25% 75%,#ff697866 75%)}
+.flight-presentation .gauge .mark{position:absolute;left:-9px;width:0;height:0;border:6px solid transparent;border-left:9px solid #fff;transform:translateY(-6px)}
+.flight-presentation .gauge .lab{height:150px;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0;color:#8daeb8;letter-spacing:.1em}.flight-presentation .gauge .lab .mid{color:#7dffa8}
+.flight-presentation .gauge .hint{clear:both;padding-top:8px;color:var(--amber)}.flight-presentation .gauge.bad .hint{color:#ff6978}
+@media(max-width:700px){.flight-presentation .objective{top:56px;max-width:90%;font-size:10px}.flight-presentation .warp{top:30px;left:16px;font-size:10px}.flight-presentation .checklist{right:16px;width:150px;font-size:9px;top:90px}.flight-presentation .gauge{left:16px;top:170px;width:150px}.flight-presentation .card{top:130px;font-size:11px}.flight-presentation .panel{right:16px;width:185px}.flight-presentation .readings{left:16px;gap:12px}.flight-presentation strong{font-size:18px}.flight-presentation .formula{max-width:250px}.flight-presentation .help{font-size:9px}}
 </style><div class="vignette"></div><div class="top"><span>FLIGHT / <span data-id="phase"></span></span><span data-id="clock"></span></div>
-<div class="formula"></div><div class="reticle"></div><span class="marker pro">⊙</span><span class="marker retro">⊗</span><span class="marker collision">◇</span><div class="warnings" role="status"></div>
+<div class="objective" data-role="objective"></div><div class="warp" data-role="warp"></div><div class="checklist" data-role="checklist" style="display:none"></div><div class="card" data-role="card" role="status"></div>
+<div class="gauge" data-role="gauge"><div class="bar"><span class="mark"></span></div><div class="lab"><span>TOO SHALLOW</span><span class="mid">CORRIDOR</span><span>TOO STEEP</span></div><div class="hint"></div></div><div class="formula"></div><div class="reticle"></div><span class="marker pro">⊙</span><span class="marker retro">⊗</span><span class="marker collision">◇</span><div class="warnings" role="status"></div>
 <div class="readings"><div><small>ALTITUDE / km</small><strong data-id="alt"></strong></div><div><small>VELOCITY / m/s</small><strong data-id="speed"></strong></div><div><small>VERTICAL / m/s</small><strong data-id="vertical"></strong></div></div>
 <div class="panel"><small>PROPULSION & FLIGHT ENVELOPE</small><div class="row"><span>THROTTLE</span><span data-id="throttle"></span></div><meter min="0" max="1" data-id="throttleMeter"></meter><div class="row"><span>FUEL</span><span data-id="fuel"></span></div><meter min="0" max="1" data-id="fuelMeter"></meter><div class="row"><span>Δv REMAINING</span><span data-id="dv"></span></div><div class="row"><span>MAX-Q</span><span data-id="q"></span></div><meter min="0" max="1" data-id="qMeter"></meter><div class="row"><span>G LOAD</span><span data-id="g"></span></div><div class="row"><span>APO / PERI km</span><span data-id="orbit"></span></div><div class="row"><span>HEAT / LIMIT</span><span data-id="heat"></span></div></div>
 <div class="engine-state" style="position:absolute;right:32px;bottom:64px" data-id="engineState"></div>
-<div class="help">CLICK mouse look · W/S pitch · A/D yaw · Q/E throttle · X cut-off · SPACE brake · F assist · C camera</div>`;
+<div class="help">CLICK mouse look · W/S pitch · A/D yaw · Q/E throttle · X cut-off · SPACE brake · F assist · C outside view · mouse orbit · wheel zoom</div>`;
   parent.append(root);
   const fields = Object.fromEntries([...root.querySelectorAll("[data-id]")].map((el) => [el.dataset.id, el]));
   const formula = root.querySelector(".formula"), warnings = root.querySelector(".warnings");
+  const role = (name) => root.querySelector(`[data-role=${name}]`);
+  const objectiveEl = role("objective"), warpEl = role("warp"), checklistEl = role("checklist"), cardEl = role("card"), gaugeEl = role("gauge");
+  const gaugeMark = gaugeEl.querySelector(".mark"), gaugeHint = gaugeEl.querySelector(".hint");
   return {
     root,
-    update(t, a, assistOn) {
+    // extra (all optional): { objective, checklist:{title,steps}, warp:{value,label,auto}, card:{text}, gauge:{position,status,hint} }
+    update(t, a, assistOn, extra = {}) {
       const values = {
         phase: t.phase?.toUpperCase() ?? "PRELAUNCH",
         clock: `T+ ${number(t.t, 1)} s`,
@@ -72,7 +86,43 @@ function createFlightHUD({ parent = document.body } = {}) {
         title.textContent = card.formula;
         formula.append(title, document.createElement("br"), card.numbers, document.createElement("br"), card.result);
       }
+      const showGuides = assistOn !== false;
+      objectiveEl.replaceChildren();
+      if (showGuides && extra.objective) {
+        const tag = document.createElement("b");
+        tag.textContent = "OBJECTIVE";
+        objectiveEl.append(tag, ` · ${extra.objective}`);
+      }
+      const w = extra.warp;
+      warpEl.className = `warp${w?.auto ? " auto" : ""}`;
+      warpEl.textContent = w && w.value > 1 ? `WARP ${Math.round(w.value)}×${w.label ? ` · ${w.label}` : ""}` : "";
+      checklistEl.style.display = showGuides && extra.checklist ? "block" : "none";
+      if (showGuides && extra.checklist) {
+        const title = document.createElement("small");
+        title.textContent = `${extra.checklist.title} · STEPS`;
+        checklistEl.replaceChildren(title, ...extra.checklist.steps.map((st) => {
+          const el = document.createElement("div");
+          el.className = st.status;
+          el.textContent = `${st.status === "done" ? "✓" : st.status === "current" ? "▶" : "○"} ${st.label}`;
+          return el;
+        }));
+      }
+      cardEl.style.display = extra.card ? "block" : "none";
+      if (extra.card) cardEl.textContent = extra.card.text;
+      gaugeEl.style.display = showGuides && extra.gauge ? "block" : "none";
+      if (showGuides && extra.gauge) {
+        gaugeMark.style.top = `${extra.gauge.position * 100}%`;
+        gaugeHint.textContent = extra.gauge.hint;
+        gaugeEl.classList.toggle("bad", extra.gauge.status === "shallow" || extra.gauge.status === "steep");
+      }
       root.querySelector(".vignette").style.opacity = Math.min(0.85, Math.max(0, (t.gLoad - 3.5) / 4));
+    },
+    setSteeringVisible(visible) {
+      root.querySelector('.reticle').style.display = visible ? 'block' : 'none';
+      if (!visible) for (const kind of ['pro', 'retro', 'guide']) {
+        const el = root.querySelector(`.${kind}`);
+        if (el) el.style.display = 'none';
+      }
     },
     marker(kind, point) {
       const el = root.querySelector(`.${kind}`);

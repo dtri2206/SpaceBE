@@ -14,3 +14,16 @@
 .role4-arrow { display: inline-block; width: 14px; text-align: center; transition: transform 0.4s linear; }
 .role4-mission-hint { font-size: var(--hud-text-xs); color: var(--hud-amber); }
 .role4-mission-hint:empty { display: none; }
+
+.role4-reach { display: grid; gap: 3px; }
+.role4-reach-map { width: 100%; max-height: 150px; border: 1px solid var(--hud-line); border-radius: var(--hud-radius); background: rgba(0, 0, 0, 0.25); }
+.role4-reach-map .ring { fill: none; stroke-width: 1.5; }
+.role4-reach-map .ring.walk { stroke: var(--hud-green); }
+.role4-reach-map .ring.rover { stroke: var(--hud-amber); stroke-dasharray: 6 4; }
+.role4-reach-map .task.walk { fill: var(--hud-green); }
+.role4-reach-map .task.rover { fill: var(--hud-amber); }
+.role4-reach-map .task.out { fill: var(--hud-muted); }
+.role4-reach-map .ship { fill: #fff; }
+.role4-reach-map .you { fill: var(--hud-cyan); }
+.role4-reach-sum { font-size: var(--hud-text-xs); color: var(--hud-text); }
+.role4-reach-key { font-size: var(--hud-text-xs); color: var(--hud-muted); }

@@ -1,0 +1,33 @@
+{
+  "horizon": 12,
+  "referenceCatchupSeconds": 40,
+  "offTrackTolerance": 0.06,
+  "sampleSeconds": 0.1,
+  "refreshSeconds": 0.35,
+  "padding": 0.09,
+  "minimumSpanMetres": 100,
+  "angleToleranceDegrees": 3,
+  "hint": {
+    "up": "Hold S · match dashed path",
+    "down": "Hold W · match dashed path",
+    "left": "Hold A · turn left",
+    "right": "Hold D · turn right",
+    "aligned": "On track · hold steady",
+    "offTrack": "Off track · check Q/E, W/S",
+    "climb": "Hold Q · climb straight up",
+    "coast": "X · coast to apoapsis",
+    "circularise": "Hold Q · circularise",
+    "orbit": "Orbit · T for transfer burn",
+    "entry": "Entry · hold steady",
+    "steeper": "Hold W · steeper entry",
+    "shallower": "Hold S · shallower entry",
+    "burn": "Hold SPACE · retro burn",
+    "chute": "Chute · wait for BURN NOW",
+    "wait": "Coast · wait for BURN NOW",
+    "touchdown": "Q/E · touchdown under 3 m/s",
+    "landed": "Landed · E to stand up",
+    "countdown": "Stand by · launch countdown",
+    "failed": "Flight ended"
+  },
+  "turnText": "Gravity turn: tip {degrees}° toward the horizon"
+}

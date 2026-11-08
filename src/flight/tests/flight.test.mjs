@@ -65,7 +65,7 @@ test('circular orbit keeps its altitude for one full period (energy conserved)',
   assert.equal(fc.failed, null);
 });
 
-test('time warp is refused inside the atmosphere and honoured in orbit', () => {
+test('time warp: capped at 4x in the air (10x in near-vacuum air), honoured in orbit, sub-stepped at the fixed step', () => {
   const R = MOCK_PLANETS.earth.radius;
   const vc = Math.sqrt((PLANETS.earth.g * R * R) / (R + 150000));
   const fc = new FlightController({ planets: MOCK_PLANETS, shipSpec: MOCK_SHIPS.reliable, start: { altitude: 150000, speed: vc } });
@@ -73,7 +73,8 @@ test('time warp is refused inside the atmosphere and honoured in orbit', () => {
   assert.ok(Math.abs(fc.t - 5) < 0.02, `t=${fc.t}`);
   const low = new FlightController({ planets: MOCK_PLANETS, shipSpec: MOCK_SHIPS.reliable, start: { altitude: 20000, speed: 300 } });
   low.update(0.1, {}, { timeWarp: 50 });
-  assert.ok(Math.abs(low.t - 0.1) < 0.02);
+  assert.ok(Math.abs(low.t - 0.4) < 0.02, `low.t=${low.t}`); // 20 km: air thick enough → 4x
+  assert.ok(Math.abs(low.warpEffective - 4) < 0.1);
 });
 
 test('liftoff emits events; a sensible gravity turn reaches orbit', () => {
@@ -440,6 +441,27 @@ test('launch clamps (holdDown) keep a full-thrust rocket on the pad until releas
   assert.ok(fc.liftoffT !== null && fc.altitude > 1);
 });
 
+import { cockpitStickValues, createCockpitIndicators } from '../cockpitControls.js';
+test('cockpit stick values: W = -1 pitch, D = +1 yaw, clamped and NaN-safe', () => {
+  const a = cockpitStickValues({ pitch: -1, yaw: 1 }, 0.5);
+  assert.deepEqual(a, { pitch: -1, yaw: 1, throttle: 0.5, cutoff: false, brake: false, assist: false });
+  assert.deepEqual(cockpitStickValues({ pitch: NaN, yaw: 5 }, 7), { pitch: 0, yaw: 1, throttle: 1, cutoff: false, brake: false, assist: false });
+});
+
+test('cockpit switches receive X before it is consumed, latch the guard and follow Space/F without changing physics inputs', () => {
+  const indicators = createCockpitIndicators();
+  const pilot = { cutoff: true, brake: false, pitch: -.5, yaw: .2 };
+  const before = { ...pilot };
+  const cut = indicators.update(pilot, 0, { assist: true });
+  assert.equal(cut.cutoff, true); assert.equal(cut.assist, true); assert.equal(cut.brake, false);
+  assert.deepEqual(pilot, before);
+  for (let i = 0; i < 20; i++) assert.equal(indicators.update({}, 0).cutoff, true);
+  assert.equal(indicators.update({}, .4).cutoff, false);
+  indicators.update({ cutoff: true }, 0);
+  const retro = indicators.update({ brake: true }, 0, { brakeBurn: true, assist: false });
+  assert.equal(retro.cutoff, false); assert.equal(retro.brake, true); assert.equal(retro.assist, false);
+});
+
 let fails = 0;
 for (const [s, name, e] of results) {
   console.log(`${s === 'ok' ? '  ✓' : '  ✗'} ${name}`);
@@ -447,3 +469,4 @@ for (const [s, name, e] of results) {
 }
 console.log(`\n${results.length - fails}/${results.length} flight tests passed`);
 process.exit(fails ? 1 : 0);
+

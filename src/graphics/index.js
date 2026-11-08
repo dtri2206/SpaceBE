@@ -18,7 +18,7 @@
  */
 import * as THREE from 'three';
 import {
-  BlendFunction, BloomEffect, ChromaticAberrationEffect, EffectComposer, EffectPass, NoiseEffect,
+  BlendFunction, BloomEffect, ChromaticAberrationEffect, Effect, EffectComposer, EffectPass, NoiseEffect,
   RenderPass, SMAAEffect, SMAAPreset, ToneMappingEffect, ToneMappingMode, VignetteEffect,
 } from 'postprocessing';
 import { QUALITY, sharedUniforms, state } from './shared.js';
@@ -32,6 +32,17 @@ import { startWarmup } from './warmup.js';
 export { assets, cinematic, createLaunchSite, createMarsScene, DELTA, getTerrainHeight };
 
 const REST_VIGNETTE = { offset: 0.36, darkness: 0.5 };
+// A stray NaN/Inf pixel (the cockpit on the pad produced some at certain look angles) is spread over the whole frame by the
+// bloom blur and the frame goes black. This pass runs before bloom and turns such pixels into a finite colour.
+class FiniteGuardEffect extends Effect {
+  constructor() {
+    super('FiniteGuardEffect', `void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+      vec3 c = inputColor.rgb;
+      if (any(isnan(c)) || any(isinf(c))) c = vec3(0.0);
+      outputColor = vec4(min(c, vec3(1000.0)), inputColor.a);
+    }`, { blendFunction: BlendFunction.SET });
+  }
+}
 const shakeRotation = new THREE.Quaternion();
 const shakeEuler = new THREE.Euler();
 const savedRotation = new THREE.Quaternion();
@@ -82,6 +93,7 @@ class Graphics {
 
     this.#passes = {
       render: new RenderPass(this.scene, camera),
+      guard: new EffectPass(camera, new FiniteGuardEffect()),
       hdr: new EffectPass(camera, bloom, tone),
       smaa: new EffectPass(camera, new SMAAEffect({ preset: SMAAPreset.HIGH })),
       lens: new EffectPass(camera, aberration),

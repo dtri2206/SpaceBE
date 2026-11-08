@@ -5,7 +5,9 @@
 import * as THREE from 'three';
 import { contract, economy, events, getState, ui } from '/src/core/index.js';
 import { assets, getTerrainHeight, graphics } from '/src/graphics/index.js';
+import * as surface from '/src/surface/index.js';
 import { registerInteractable } from '/src/surface/index.js';
+import { classifyTasks, summarise } from './reach.js';
 import placement from './tasks.json';
 import './missions.css';
 
@@ -149,6 +151,8 @@ function mountHud(state) {
   hud.target = hud.appendChild(el('div', 'role4-mission-target'));
   hud.arrow = hud.target.appendChild(el('span', 'role4-arrow', '▲'));
   hud.targetText = hud.target.appendChild(el('span'));
+  hud.reach = hud.appendChild(el('div', 'role4-reach'));
+  hud.reach.style.display = 'none';
   hud.hint = hud.appendChild(el('div', 'role4-mission-hint'));
   hud.state = state;
   ui.mount(hud, { layer: 'hud' });
@@ -184,6 +188,50 @@ function renderHud() {
   updateBearing();
 }
 
+// ---------- reach rings (Role 2's surface.getReach, optional) ----------
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs) {
+  const node = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, String(v));
+  return node;
+}
+
+/** Remaining tasks with their reach class, or [] when getReach is missing or returns nothing. */
+function remainingWithReach() {
+  let reach = null;
+  try { reach = (window.__role4?.reachOverride ?? surface.getReach)?.() ?? null; } catch { /* optional */ } // reachOverride: debug=1 test hook only
+  if (!reach) return { reach: null, list: [] };
+  const todo = spots.filter((s) => !spotDone(s)).map((s) => ({ label: s.def.label, x: s.def.x, z: s.def.z, locked: s.def.taskId === 'discovery' && logsFound() < 2 }));
+  return { reach, list: classifyTasks(todo, reach) };
+}
+
+function renderReach() {
+  if (!hud?.isConnected || hud.state !== 'SURFACE') return;
+  const { reach, list } = remainingWithReach();
+  if (!reach || !list.length) { hud.reach.style.display = 'none'; return; }
+  const n = summarise(list);
+  const roverName = reach.roverName ?? 'rover';
+  hud.reach.replaceChildren();
+  hud.reach.style.display = '';
+  // A small top-down map: lander at the ship mark, rings around the player, one dot per remaining task.
+  const map = svgEl('svg', { viewBox: '-130 -165 350 335', class: 'role4-reach-map' });
+  const rr = (r) => svgEl('circle', { cx: reach.origin.x, cy: reach.origin.z, r, class: 'ring' });
+  const rover = rr(reach.roverMetres); rover.classList.add('rover');
+  const walk = rr(reach.walkMetres); walk.classList.add('walk');
+  map.append(rover, walk);
+  for (const t of list) map.append(svgEl('circle', { cx: t.x, cy: t.z, r: 7, class: `task ${t.reachClass}` }));
+  map.append(svgEl('rect', { x: reach.ship.x - 6, y: reach.ship.z - 6, width: 12, height: 12, class: 'ship' }));
+  map.append(svgEl('circle', { cx: reach.origin.x, cy: reach.origin.z, r: 6, class: 'you' }));
+  hud.reach.append(map);
+  const sum = el('div', 'role4-reach-sum', `${n.walk} on foot · ${n.rover} by ${roverName} · ${n.out} too far`);
+  hud.reach.append(sum);
+  hud.reach.append(el('div', 'role4-reach-key', `Rings: walk ${Math.round(reach.walkMetres)} m · ${roverName} ${Math.round(reach.roverMetres)} m (out and back)`));
+  const next = nextObjective();
+  const nextInfo = next && list.find((t) => t.label === next.def.label);
+  if (nextInfo) hud.targetText.textContent += ` · ${nextInfo.reachLabel}`;
+}
+
 const forward = new THREE.Vector3();
 function updateBearing() {
   if (!hud?.isConnected || hud.state !== 'SURFACE') return;
@@ -197,6 +245,7 @@ function updateBearing() {
   const angle = Math.atan2(dx, -dz) - Math.atan2(forward.x, -forward.z); // 0 = straight ahead, + = to the right
   hud.arrow.style.transform = `rotate(${angle}rad)`;
   hud.targetText.textContent = `${target.def.label} · ${Math.round(dist)} m`;
+  renderReach();
 }
 
 export default {
@@ -238,7 +287,7 @@ export default {
     });
 
     if (new URLSearchParams(location.search).get('debug') === '1') {
-      window.__role4 = { ...(window.__role4 ?? {}), missions: { spots, done, carried, complete, use, getProgress } };
+      window.__role4 = { ...(window.__role4 ?? {}), missions: { spots, done, carried, complete, use, getProgress, renderReach } };
     }
   },
 };

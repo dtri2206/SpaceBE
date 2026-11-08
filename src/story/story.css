@@ -68,3 +68,37 @@
 /* Scrolling cards: keep the theme's corner ticks inside, or their 1px overhang adds scrollbars. */
 .role4-card::before { top: 0; left: 0; }
 .role4-card::after { right: 0; bottom: 0; }
+
+.role4-radio-static { --hud-accent: var(--hud-alert, #f87171); }
+.role4-radio-nosignal { font-size: var(--hud-text-md); letter-spacing: 0.25em; text-align: center; color: var(--hud-muted); animation: role4-flicker 0.9s steps(2) infinite; }
+@keyframes role4-flicker { 50% { opacity: 0.45; } }
+
+/* PRELAUNCH ritual: calm, dark, centred. Slow fade-ins; skipped when the player prefers reduced motion. */
+.role4-prelaunch { justify-content: center; background: radial-gradient(ellipse at center, rgb(2 6 10 / 0.72) 0%, rgb(0 0 0 / 0.93) 100%); animation: role4-pl-in 1.6s ease both; }
+.role4-pl { width: min(620px, 100%); max-height: 100%; overflow: auto; }
+.role4-pl-step { display: grid; gap: 16px; justify-items: center; text-align: center; animation: role4-pl-in 0.9s ease both; }
+.role4-pl-title { font-size: var(--hud-text-lg); letter-spacing: 0.04em; color: var(--hud-ink); }
+.role4-pl-lead { font-size: var(--hud-text-lg); line-height: 1.5; max-width: 30em; color: var(--hud-ink); }
+.role4-pl-quiet { font-size: var(--hud-text-sm); line-height: 1.6; color: var(--hud-muted); max-width: 36em; }
+.role4-pl-patch svg { width: 84px; height: 84px; display: block; }
+.role4-pl-crewbox, .role4-pl-dest, .role4-pl-carry { display: grid; gap: 6px; justify-items: center; }
+.role4-pl-crew { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 26px; }
+.role4-pl-crew li { display: grid; font-size: var(--hud-text-sm); }
+.role4-pl-crew span { color: var(--hud-muted); font-size: var(--hud-text-xs); }
+.role4-pl-dest b, .role4-pl-carry b { color: var(--hud-accent); font-weight: 500; letter-spacing: 0.06em; }
+.role4-pl-actions { justify-content: center; margin-top: 6px; }
+.role4-pl-actions .hud-button { padding: 10px 18px; }
+.role4-pl-actions .role4-primary { box-shadow: 0 0 18px rgb(103 232 249 / 0.25); }
+.role4-pl-brief .role4-pl-patch { animation: role4-pl-in 1.4s ease 0.2s both; }
+.role4-pl-brief .role4-pl-label { animation: role4-pl-in 1.2s ease 0.7s both; }
+.role4-pl-brief .role4-pl-lead { animation: role4-pl-in 1.6s ease 1.2s both; }
+.role4-pl-crewbox { animation: role4-pl-in 1.4s ease 2.6s both; }
+.role4-pl-dest { animation: role4-pl-in 1.4s ease 3.4s both; }
+.role4-pl-carry { animation: role4-pl-in 1.2s ease 3.8s both; }
+.role4-pl-brief .role4-pl-quiet { animation: role4-pl-in 1.4s ease 4.2s both; }
+.role4-pl-brief .role4-pl-actions { animation: role4-pl-in 1s ease 4.4s both; }
+.role4-prelaunch .role4-photos { width: 100%; }
+.role4-prelaunch textarea { min-height: 120px; text-align: left; font-size: var(--hud-text-md); line-height: 1.5; }
+.role4-prelaunch textarea:focus { outline: 1px solid var(--hud-accent); }
+@keyframes role4-pl-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .role4-prelaunch, .role4-pl-step, .role4-pl-step * { animation: none !important; } }
