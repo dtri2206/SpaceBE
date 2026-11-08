@@ -78,6 +78,8 @@
   },
 
   "returnChoice": { "prompt": "Earth entry in 2 hours. After seven months, the pressure suits feel hot, cramped and pointless. Suit up for entry?", "suitUp": "Suit up", "skip": "Skip it" },
+  "lastDescent": { "coincidence": "Coincidentally, history has seen an astronaut die exactly like this.", "closing": "In a game, we lose a pretend life and press Try again. Some people gave their real lives to teach the next generation these lessons. They deserve to be known, and remembered." },
+
   "returnTrip": [
     { "caption": "Liftoff from Jezero Crater", "planet": "mars", "duration": 6 },
     { "caption": "Trans-Earth injection: the engine burns for home", "planet": "mars", "duration": 5 },
@@ -87,6 +89,7 @@
   ],
 
   "endings": {
+    "lastDescent": { "title": "The Last Descent", "tone": "heartbreaking", "scene": "earth", "text": "The parachute that should have brought the crew home had never been proven." },
     "homecoming": { "title": "Homecoming", "tone": "hopeful", "scene": "earth", "text": "You were away 2 years, 7 months. The world saw what you found in the delta, and the names of the Halcyon-1 crew were read out at the start of the evening news.", "family": "You came home. That's the whole message. You came home." },
     "adrift": { "title": "Adrift: The Last Message", "tone": "heartbreaking", "scene": "space", "text": "There was not enough fuel to come back." },
     "rud": { "title": "Rapid Unscheduled Disassembly", "tone": "dark-humor", "scene": "earth", "text": "Engineers have a polite phrase for when a rocket explodes. This was a very rapid, very unscheduled disassembly. The good news: the black box survived." },

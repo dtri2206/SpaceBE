@@ -7,6 +7,23 @@
     "dateText": "28 January 1986",
     "place": "over the Atlantic Ocean, off Cape Canaveral, Florida",
     "opening": "On 28 January 1986, this happened to seven real people.",
+    "images": {
+      "crew": "/assets/tributes/challenger-crew.jpg"
+    },
+    "highlights": [
+      {
+        "big": "73 s",
+        "small": "after liftoff"
+      },
+      {
+        "big": "7",
+        "small": "crew"
+      },
+      {
+        "big": "11,000+",
+        "small": "teachers applied; Christa McAuliffe was chosen"
+      }
+    ],
     "crew": [
       {
         "name": "Francis R. (Dick) Scobee",
@@ -95,6 +112,23 @@
     "dateText": "1 February 2003",
     "place": "over Texas and Louisiana, during re-entry, about 16 minutes before the planned landing in Florida",
     "opening": "On 1 February 2003, this happened to seven real people.",
+    "images": {
+      "crew": "/assets/tributes/columbia-crew.jpg"
+    },
+    "highlights": [
+      {
+        "big": "16 days",
+        "small": "in space"
+      },
+      {
+        "big": "82 s",
+        "small": "foam strike after launch"
+      },
+      {
+        "big": "7",
+        "small": "crew"
+      }
+    ],
     "crew": [
       {
         "name": "Rick D. Husband",
@@ -191,6 +225,19 @@
     "dateText": "27 January 1967",
     "place": "Launch Complex 34, Cape Kennedy, Florida, during a ground test",
     "opening": "On 27 January 1967, this happened to three real people.",
+    "images": {
+      "crew": "/assets/tributes/apollo1-crew.jpg"
+    },
+    "highlights": [
+      {
+        "big": "3",
+        "small": "crew"
+      },
+      {
+        "big": "ground test",
+        "small": "25 days before launch"
+      }
+    ],
     "crew": [
       {
         "name": "Virgil I. \"Gus\" Grissom",
@@ -259,6 +306,23 @@
     "dateText": "30 June 1971",
     "place": "high above the Earth, during the return from the Salyut 1 space station",
     "opening": "On 30 June 1971, this happened to three real people.",
+    "images": {
+      "crew": "/assets/tributes/soyuz11-crew.jpg"
+    },
+    "highlights": [
+      {
+        "big": "23 days",
+        "small": "aboard Salyut 1, the first space station"
+      },
+      {
+        "big": "3",
+        "small": "crew"
+      },
+      {
+        "big": "the only people",
+        "small": "known to have died in space"
+      }
+    ],
     "crew": [
       {
         "name": "Georgy Dobrovolsky",
@@ -313,5 +377,75 @@
   "closing": {
     "text": "In August 1971 the crew of Apollo 15 left a small aluminium figure, 'Fallen Astronaut', on the Moon beside a plaque bearing the names of 14 astronauts and cosmonauts who had died. The exploration continues because of them.",
     "source": "https://science.nasa.gov/resource/memorial-to-fallen-astronauts-on-the-moon"
+  },
+  "soyuz1": {
+    "fatal": true,
+    "mission": "Soyuz 1",
+    "vehicle": "Soyuz 7K-OK No. 4",
+    "date": "1967-04-24",
+    "dateText": "24 April 1967",
+    "place": "near Orsk, Orenburg region, USSR",
+    "opening": "On 24 April 1967, this happened to a real person.",
+    "crew": [
+      {
+        "name": "Vladimir Mikhaylovich Komarov",
+        "role": "Commander, flying alone",
+        "line": "Engineer and test pilot. He commanded Voskhod 1 in 1964, the first spaceflight with more than one person aboard. Soyuz 1 made him the first person to fly in space twice. He left his wife, Valentina, and their children, Yevgeny and Irina.",
+        "source": "https://www.russianspaceweb.com/soyuz1.html"
+      }
+    ],
+    "happened": [
+      "In orbit one solar panel did not open and the orientation sensors failed, so he steered by hand while the batteries drained.",
+      "The launch of Soyuz 2 was cancelled and he was ordered home; attitude control then failed and the capsule fell into a steep re-entry.",
+      "The drogue parachute could not pull the main parachute out of its container, and the reserve tangled with the drogue. The capsule struck the ground and Komarov became the first person to die during a spaceflight."
+    ],
+    "changed": [
+      "The parachute container was redesigned: a cone instead of a cylinder, larger, with polished walls.",
+      "An emergency release was added so a fouled drogue can be cut away.",
+      "Every step of parachute packing was photographed and checked.",
+      "Soyuz did not carry a crew again for about 18 months."
+    ],
+    "lesson": "A spacecraft that is not ready should not fly because of a deadline. The systems you rely on last must be tested until you trust them.",
+    "quote": {
+      "text": "",
+      "by": "",
+      "source": ""
+    },
+    "highlights": [
+      {
+        "big": "1st",
+        "small": "person to die during a spaceflight"
+      },
+      {
+        "big": "2",
+        "small": "spaceflights: the first person to fly in space twice"
+      },
+      {
+        "big": "0",
+        "small": "main parachutes opened"
+      },
+      {
+        "big": "18 months",
+        "small": "before Soyuz flew a crew again"
+      }
+    ],
+    "images": {
+      "portrait": "/assets/tributes/soyuz1-komarov.jpg",
+      "vehicle": "/assets/tributes/soyuz1-vehicle.jpg"
+    },
+    "sources": [
+      {
+        "title": "RussianSpaceWeb: Soyuz 1",
+        "url": "https://www.russianspaceweb.com/soyuz1.html"
+      },
+      {
+        "title": "RussianSpaceWeb: Soyuz 1 re-entry",
+        "url": "https://www.russianspaceweb.com/soyuz1-reentry.html"
+      },
+      {
+        "title": "RussianSpaceWeb: Soyuz 1 accident investigation",
+        "url": "https://www.russianspaceweb.com/soyuz1-accident.html"
+      }
+    ]
   }
 }

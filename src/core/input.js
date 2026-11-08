@@ -3,6 +3,7 @@
 const down = new Set();
 const pressHandlers = new Map(); // code -> Set<fn>
 let escapeHandler = null;
+let keyInterceptor = null; // debug skip (skip.js): returns true when it took the key press
 let mouseX = 0;
 let mouseY = 0;
 let wheelY = 0;
@@ -29,6 +30,10 @@ export const input = {
     if (!pressHandlers.has(code)) pressHandlers.set(code, new Set());
     pressHandlers.get(code).add(fn);
     return () => pressHandlers.get(code)?.delete(fn);
+  },
+  /** Core only (skip.js): fn(event) runs before the press handlers; if it returns true they are not called. */
+  setKeyInterceptor(fn) {
+    keyInterceptor = fn;
   },
   /** Called when Esc is pressed in the current state. Esc itself always releases pointer lock. */
   onEscape(fn) {
@@ -82,6 +87,7 @@ window.addEventListener('keydown', (event) => {
     input.unlockPointer();
     runSafely(escapeHandler);
   }
+  if (keyInterceptor && keyInterceptor(event) === true) return;
   for (const fn of [...(pressHandlers.get(event.code) ?? [])]) runSafely(fn);
 });
 

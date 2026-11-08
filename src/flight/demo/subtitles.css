@@ -1,0 +1,13 @@
+/* Pitch demo subtitles (subtitles.js): above every demo overlay, including the memorial scroll (z 100000-100001). */
+.dsub-root { position: fixed; left: 0; right: 0; bottom: 3.2vh; z-index: 100002; display: flex; justify-content: center; padding: 0 16px; pointer-events: none; opacity: 0; transition: opacity .25s ease; }
+.dsub-root.on { opacity: 1; }
+.dsub { max-width: min(86vw, 1180px); padding: .38em .9em .48em; border-radius: 6px; background: rgba(0, 0, 0, .62); color: #fff; text-align: center; box-shadow: 0 2px 18px rgba(0, 0, 0, .35); }
+.dsub-who { font: 600 13px/1.2 system-ui, 'Segoe UI', Roboto, Arial, sans-serif; font-variant-caps: all-small-caps; letter-spacing: .16em; font-size: 15px; color: rgba(255, 255, 255, .72); margin-bottom: .15em; }
+.dsub-text { font: 500 clamp(26px, 2.25vw, 40px)/1.28 system-ui, 'Segoe UI', Roboto, Arial, sans-serif; text-shadow: 0 1px 3px rgba(0, 0, 0, .6); }
+.dsub-home .dsub-who { color: #f3d9a6; }
+.dsub-root.dsub-small .dsub { background: rgba(0, 0, 0, .45); padding: .25em .7em .32em; }
+.dsub-root.dsub-small .dsub-text { font-size: 18px; }
+.dsub-root.dsub-small .dsub-who { font-size: 12px; }
+.dsub-card { position: fixed; left: 50%; top: 9vh; z-index: 100002; transform: translate(-50%, -8px); padding: .55em 1.2em; border: 1px solid rgba(243, 217, 166, .55); border-radius: 4px; background: rgba(10, 10, 14, .78); color: #f3d9a6; font: 600 15px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .24em; pointer-events: none; opacity: 0; transition: opacity .4s ease, transform .4s ease; }
+.dsub-card.on { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) { .dsub-root, .dsub-card { transition: none; } }

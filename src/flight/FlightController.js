@@ -156,6 +156,7 @@ export class FlightController {
     this.holdDown = false; // launch clamps: while true the rocket stays on the pad whatever the thrust (countdown)
     this.ignitionsLeft = this.ship.ignitions;
     this.armorLeft = this.ship.armorHits;
+    this.demoSafe = false; // pitch demo (set by index.js): debris never kills or gouges the shield, only planned endings may fail the flight
     this.obstacles = [];
     this.engineTemp = 0; // 0..1, 1 = failure
     this.omega = v3(); // world-frame angular velocity (rad/s)
@@ -313,7 +314,7 @@ export class FlightController {
     const alt = this.altitude;
     if (alt < atmosphereTop(this.planet)) {
       const thin = airDensity(this.planet, alt) < WARP_THIN_DENSITY;
-      return Math.min(warp, thin ? WARP_THIN_AIR : WARP_IN_AIR);
+      return Math.min(warp, (thin ? WARP_THIN_AIR : WARP_IN_AIR) * (this.capBoost ?? 1)); // capBoost: pitch demo only
     }
     const coasting = this.throttle === 0 && !input.brake;
     return coasting ? warp : Math.min(warp, WARP_IN_AIR);
@@ -568,17 +569,17 @@ export class FlightController {
       if (d <= o.radius + this.ship.radius) {
         // what the hit does depends on the armour, the skin and the shield the player chose (./effects/structure.js)
         const hit = this.fx.value('debrisHit', { absorbed: this.armorLeft > 0, armorUsed: this.armorLeft > 0 ? 1 : 0, damage: 0 }, { fc: this, obstacle: o });
-        if (hit.absorbed) {
+        if (hit.absorbed || this.demoSafe) {
           this.armorLeft = Math.max(0, this.armorLeft - (hit.armorUsed ?? 0));
           this._flags.debris_hit = false;
           // An Earth-orbit strike also gouges the heat shield, on the side the crew cannot see (Columbia, 2003).
           let shield = false;
-          if (this.planetId === 'earth' && this.ship.hasHeatShield && !this.ship.heatShieldDamaged) {
+          if (!this.demoSafe && this.planetId === 'earth' && this.ship.hasHeatShield && !this.ship.heatShieldDamaged) {
             this.ship.heatShieldDamaged = true;
             this.ship.heatShieldUnseen = true;
             shield = true;
           }
-          this._event('debris_hit', { id: o.id, armorLeft: this.armorLeft, radius: o.radius, armorUsed: hit.armorUsed ?? 0, ...(shield && { heatShieldDamaged: true }) }); // armorUsed 0: the skin or wall took it
+          this._event('debris_hit', { id: o.id, armorLeft: this.armorLeft, radius: o.radius, armorUsed: hit.absorbed ? (hit.armorUsed ?? 0) : 0, ...(shield && { heatShieldDamaged: true }) }); // armorUsed 0: the skin or wall took it
           continue; // absorbed: the piece is gone
         }
         this._fail('rud', 'debris_impact', { id: o.id, radius: o.radius });
@@ -762,6 +763,7 @@ export class FlightController {
 
   _fail(endingId, causeId, data = {}, historyHint = null) {
     if (this.failed) return;
+    if (this.demoSafe && endingId !== 'lastDescent') return; // pitch demo: only the planned ending may end the flight
     const cause = CAUSES[causeId] ?? causeId;
     this.failed = { endingId, cause, causeId, historyHint, t: this.t, ...data };
     this.throttle = 0;

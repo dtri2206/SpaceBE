@@ -6,7 +6,7 @@ from cc_core import *
 import cc_core as C
 
 PX = 1600                       # texture pixels per metre on the plate
-PANEL_X = 0.15                  # the console is centred this far to the commander's right: in the Apollo hull the left wall closes in on the console's upper left corner, so a centred console sank into it
+PANEL_X = 0.27                  # the console is centred this far to the commander's right: in the Apollo hull the left wall closes in on the console's upper left corner, so a centred console sank into it
 PANEL_C = Vector((PANEL_X, -0.20, -0.52))
 BTN_A = [('hatch', '1 HATCH'), ('cabin', '2 CABIN'), ('o2', '3 O2'), ('arm', '4 ARM|ENGINE')]
 BTN_B = [('fire', 'FIRE'), ('dump', 'DUMP'), ('rcs-a', 'RCS-A'), ('rcs-b', 'RCS-B'), ('main', 'MAIN'), ('apu', 'APU'),
@@ -178,6 +178,10 @@ def build(ctx, root, mats):
     FX, FY, FS = 1500, 8, 32
     atlas.col[FY:FY + FS, FX:FX + FS] = plate_cv.col[plate_cv.h // 2, 10]
     ctx.flat_uv = ((FX + FS / 2) / SZ, 1 - (FY + FS / 2) / SZ)
+    # a second, lighter swatch of the same blue-grey for the cabin liner (the console stays the darkest thing in the room)
+    FX2 = FX + FS + 8
+    atlas.col[FY:FY + FS, FX2:FX2 + FS] = (0.078, 0.092, 0.108)
+    ctx.flat_uv2 = ((FX2 + FS / 2) / SZ, 1 - (FY + FS / 2) / SZ)
     img = make_image('panel_atlas', atlas.col)
     material('plate', (1, 1, 1), 0.7, image=img)
     # emissive-looking lamps and displays

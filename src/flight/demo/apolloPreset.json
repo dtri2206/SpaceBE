@@ -1,0 +1,391 @@
+{
+  "name": "Apollo",
+  "symmetry": 1,
+  "launch": {
+    "slot": "mild",
+    "site": "slc40",
+    "day": 0,
+    "pad": {}
+  },
+  "hull": {},
+  "parts": [
+    {
+      "id": "p33",
+      "type": "les_tower_apollo",
+      "parent": null,
+      "node": null,
+      "angle": 0,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "nose"
+    },
+    {
+      "id": "p34",
+      "type": "bpc_apollo",
+      "parent": "p33",
+      "node": "bottom",
+      "angle": 0,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "nose"
+    },
+    {
+      "id": "p35",
+      "type": "capsule_apollo",
+      "parent": "p34",
+      "node": "bottom",
+      "angle": 0,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "nose",
+      "options": {
+        "atmosphere": "pad_mix",
+        "suits": "pressure",
+        "docking": "probe_drogue",
+        "couches": "shock"
+      }
+    },
+    {
+      "id": "p36",
+      "type": "heat_shield_l",
+      "parent": "p35",
+      "node": "bottom",
+      "angle": 0,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "nose",
+      "options": {
+        "ablator": "avcoat"
+      }
+    },
+    {
+      "id": "p37",
+      "type": "apollo_sm",
+      "parent": "p36",
+      "node": "bottom",
+      "angle": 0,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "nose",
+      "options": {
+        "power": "fuel_cells"
+      }
+    },
+    {
+      "id": "p43",
+      "type": "tank_l_kerolox",
+      "parent": "p37",
+      "node": "bottom",
+      "angle": 0,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "player"
+    },
+    {
+      "id": "p24",
+      "type": "tank_m_storable_titan",
+      "parent": "p43",
+      "node": "bottom",
+      "angle": 0,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "body",
+      "options": {
+        "feedline": "pogo"
+      }
+    },
+    {
+      "id": "p26",
+      "type": "thrust_single_m",
+      "parent": "p24",
+      "node": "bottom",
+      "angle": 0,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "tail"
+    },
+    {
+      "id": "p27",
+      "type": "engine_l",
+      "parent": "p26",
+      "node": "bottom",
+      "angle": 0,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "tail",
+      "engine": {
+        "nozzle": "sl",
+        "fuel": "kerolox",
+        "pump": "L"
+      }
+    },
+    {
+      "id": "p5",
+      "type": "legs_m",
+      "parent": "p27",
+      "node": "radial",
+      "angle": 45,
+      "yFrac": 0.35,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p12",
+      "type": "rcs_pack",
+      "parent": "p35",
+      "node": "radial",
+      "angle": 0,
+      "yFrac": 0.3,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p13",
+      "type": "o2_bottle",
+      "parent": "p35",
+      "node": "radial",
+      "angle": 30,
+      "yFrac": 0.75,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p14",
+      "type": "o2_bottle",
+      "parent": "p35",
+      "node": "radial",
+      "angle": 150,
+      "yFrac": 0.75,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p15",
+      "type": "radiation_shelter",
+      "parent": "p35",
+      "node": "radial",
+      "angle": 270,
+      "yFrac": 0.8,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p16",
+      "type": "solar_panel",
+      "parent": "p24",
+      "node": "radial",
+      "angle": 60,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p17",
+      "type": "battery",
+      "parent": "p24",
+      "node": "radial",
+      "angle": 240,
+      "yFrac": 0.45,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p18",
+      "type": "spectrometer",
+      "parent": "p24",
+      "node": "radial",
+      "angle": 120,
+      "yFrac": 0.6,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p19",
+      "type": "ground_radar",
+      "parent": "p24",
+      "node": "radial",
+      "angle": 200,
+      "yFrac": 0.6,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p20",
+      "type": "drill",
+      "parent": "p24",
+      "node": "radial",
+      "angle": 330,
+      "yFrac": 0.35,
+      "variant": null,
+      "group": null,
+      "material": null
+    },
+    {
+      "id": "p25",
+      "type": "wiring_tunnel",
+      "parent": "p24",
+      "node": "radial",
+      "angle": 90,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "body"
+    },
+    {
+      "id": "p28",
+      "type": "fin_m",
+      "parent": "p26",
+      "node": "radial",
+      "angle": 0,
+      "yFrac": 0.25,
+      "variant": null,
+      "group": "g2",
+      "material": null,
+      "origin": "tail"
+    },
+    {
+      "id": "p29",
+      "type": "fin_m",
+      "parent": "p26",
+      "node": "radial",
+      "angle": 90,
+      "yFrac": 0.25,
+      "variant": null,
+      "group": "g2",
+      "material": null,
+      "origin": "tail"
+    },
+    {
+      "id": "p30",
+      "type": "fin_m",
+      "parent": "p26",
+      "node": "radial",
+      "angle": 180,
+      "yFrac": 0.25,
+      "variant": null,
+      "group": "g2",
+      "material": null,
+      "origin": "tail"
+    },
+    {
+      "id": "p31",
+      "type": "fin_m",
+      "parent": "p26",
+      "node": "radial",
+      "angle": 270,
+      "yFrac": 0.25,
+      "variant": null,
+      "group": "g2",
+      "material": null,
+      "origin": "tail"
+    },
+    {
+      "id": "p32",
+      "type": "jet_vanes",
+      "parent": "p27",
+      "node": "radial",
+      "angle": 0,
+      "yFrac": 0.02,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "tail"
+    },
+    {
+      "id": "p39",
+      "type": "chute_cluster_3",
+      "parent": "p35",
+      "node": "radial",
+      "angle": 200,
+      "yFrac": 0.75,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "nose"
+    },
+    {
+      "id": "p40",
+      "type": "drogue_chute",
+      "parent": "p35",
+      "node": "radial",
+      "angle": 110,
+      "yFrac": 0.8,
+      "variant": null,
+      "group": "g3",
+      "material": null,
+      "origin": "nose"
+    },
+    {
+      "id": "p41",
+      "type": "drogue_chute",
+      "parent": "p35",
+      "node": "radial",
+      "angle": 290,
+      "yFrac": 0.8,
+      "variant": null,
+      "group": "g3",
+      "material": null,
+      "origin": "nose"
+    },
+    {
+      "id": "p42",
+      "type": "antenna_low",
+      "parent": "p35",
+      "node": "radial",
+      "angle": 45,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": null,
+      "material": null,
+      "origin": "nose"
+    },
+    {
+      "id": "p44",
+      "type": "srb_s",
+      "parent": "p26",
+      "node": "radial",
+      "angle": 210,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": "g4"
+    },
+    {
+      "id": "p45",
+      "type": "srb_s",
+      "parent": "p26",
+      "node": "radial",
+      "angle": 30,
+      "yFrac": 0.5,
+      "variant": null,
+      "group": "g4"
+    }
+  ]
+}

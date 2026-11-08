@@ -47,7 +47,7 @@ export function createChecklist(steps = CHECKLIST_STEPS) {
 
 const BASE_STATIONS = ['Booster', 'Guidance', 'Propulsion', 'Life support', 'Weather', 'Range'];
 // extra stations appear (before Weather) only when the ship has the matching warning
-const EXTRA_STATIONS = { NO_HEAT_SHIELD: 'Thermal', NO_LEGS: 'Recovery', NO_SHELTER: 'Surface ops' };
+const EXTRA_STATIONS = { NO_HEAT_SHIELD: 'Thermal', NO_LEGS: 'Recovery', NO_SHELTER: 'Surface ops', CHUTE_UNTESTED: 'Recovery' };
 
 const num = (v, d = 0) => (Number.isFinite(v) ? v.toFixed(d) : null);
 
@@ -74,6 +74,7 @@ function reasonFor(warning, ship, needDv) {
     case 'NO_ANTENNA': return ['Range', 'no antenna: Mission Control could not track or talk to you'];
     case 'NO_HEAT_SHIELD': return ['Thermal', 'no heat shield'];
     case 'NO_LEGS': return ['Recovery', 'no landing legs'];
+    case 'CHUTE_UNTESTED': return ['Recovery', 'parachute not proven'];
     case 'NO_SHELTER': return ['Surface ops', 'no shelter for the crew on Mars'];
     case 'PURE_O2_WIRING': return [phase0Data.copy.eclssStation, phase0Data.copy.eclssReason]; // Apollo 1: added by the ritual, never a ShipSpec warning
     default: return ['Flight director', String(warning).toLowerCase().replace(/_/g, ' ')];
@@ -89,7 +90,7 @@ export function buildPoll(ship, { needDv = 5400, pureOxygenFault = false } = {})
     if (!reasons.has(station)) reasons.set(station, []);
     reasons.get(station).push(reason);
   }
-  const extras = warnings.map((w) => EXTRA_STATIONS[w]).filter(Boolean);
+  const extras = [...new Set(warnings.map((w) => EXTRA_STATIONS[w]).filter(Boolean))];
   const stray = [...reasons.keys()].filter((k) => !BASE_STATIONS.includes(k) && !extras.includes(k));
   const order = [...BASE_STATIONS.slice(0, 4), ...extras, ...stray, ...BASE_STATIONS.slice(4)];
   return order.map((station) => {

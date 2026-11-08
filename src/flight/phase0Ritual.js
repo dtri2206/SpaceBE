@@ -190,7 +190,7 @@ export function createPhase0Ritual({ parent, hud, input, audio, graphics, cinema
           panel.showAsk({ scrub: scrubAvailable(contract), onGo: go, onScrub: scrub });
         }
       } else if (stage === 'cleared' && elapsed >= T.cleared) finish();
-      else if (stage === 'quick' && elapsed >= T.quickNoGo) finish();
+      else if (stage === 'quick' && elapsed >= (globalThis.__demo?.active ? 4 : T.quickNoGo)) finish();
     },
     dispose() { if (disposed) return; stopBoarding(); stopO2Flow(); disposed = true; offs.forEach((off) => off?.()); panel.dispose(); graphics.fade({ to: 0, duration: 0 }); },
   };

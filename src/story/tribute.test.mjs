@@ -4,7 +4,7 @@ import data from './data.json' with { type: 'json' };
 import tributes from './tributes.json' with { type: 'json' };
 import {
   CLOSING_MS, CONTINUE_HOLD_MS, CREW_STEP_MS, RETRY_LABEL, canContinue, choiceFromKey, failureForChoice,
-  fatalTributes, retryLabel, tributeFor, tributeSchedule, visibleHappened,
+  fatalTributes, retryLabel, shortLine, splitSentences, tributeFor, tributeSchedule, visibleHappened,
 } from './tributeFlow.js';
 
 // Same map as src/story/index.js (kept in sync by the check below that every mapped lesson exists in data.lessons)
@@ -98,4 +98,36 @@ test('Silent Return choice: keys 1/2 only, Enter never decides, skip fails with 
   assert.equal(f.endingId, 'silentReturn');
   assert.ok(f.cause.length > 10);
   assert.equal(data.returnTrip.filter((x) => x.choice === 'suitUp').length, 1);
+});
+
+test('highlights: 2-4 per fatal mission, images optional and well-formed', () => {
+  for (const [id, t] of fatalTributes(tributes)) {
+    assert.ok(t.highlights.length >= 2 && t.highlights.length <= 4, id);
+    for (const h of t.highlights) assert.ok(h.big && h.small, id);
+    for (const [k, v] of Object.entries(t.images ?? {})) {
+      assert.ok(['portrait', 'crew', 'family', 'vehicle'].includes(k), `${id}.${k}`);
+      assert.ok(!v || v.startsWith('/assets/tributes/'), `${id}.${k}`);
+    }
+  }
+});
+
+test('schedule works without highlights/images and still gates Continue; images add steps', () => {
+  const bare = { ...tributes.challenger, highlights: undefined, images: undefined };
+  const ids = tributeSchedule(bare).steps.map((x) => x.id);
+  assert.ok(!ids.includes('highlights') && !ids.includes('family') && !ids.includes('vehicle'));
+  const s = tributeSchedule({ ...tributes.challenger, images: { family: '/assets/tributes/f.jpg', vehicle: '/assets/tributes/v.jpg' } });
+  const withIds = s.steps.map((x) => x.id);
+  assert.ok(withIds.includes('highlights') && withIds.includes('family') && withIds.includes('vehicle'));
+  assert.equal(canContinue(s.continueAt - 1, s), false);
+  assert.equal(canContinue(s.continueAt, s), true);
+});
+
+test('text helpers: first two sentences, one-line subtitle', () => {
+  const { head, rest } = splitSentences('One. Two! Three? Four.', 2);
+  assert.equal(head, 'One. Two!');
+  assert.equal(rest, 'Three? Four.');
+  assert.equal(splitSentences('Only one.').rest, '');
+  assert.equal(shortLine('short').truncated, false);
+  const long = shortLine(tributes.challenger.crew[0].line);
+  assert.ok(long.truncated && long.short.length <= 110 && long.short.endsWith('…'));
 });

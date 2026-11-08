@@ -4,7 +4,7 @@ import { audio } from '/src/audio/index.js';
 import { input, save, ui } from '/src/core/index.js';
 import tributes from './tributes.json';
 import { button, el, wait } from './dom.js';
-import { CLOSING_MS, canContinue, tributeSchedule, visibleHappened } from './tributeFlow.js';
+import { CLOSING_MS, canContinue, shortLine, splitSentences, tributeSchedule, visibleHappened } from './tributeFlow.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
 
@@ -28,6 +28,33 @@ export function emblem(name) {
   return svg;
 }
 
+let creditsPromise = null;
+/** /assets/tributes/credits.json, fetched once ({ file: { caption, author, licence, sourceUrl } }); {} when missing. */
+function loadCredits() {
+  creditsPromise ??= (typeof fetch === 'function' ? fetch('/assets/tributes/credits.json').then((r) => (r.ok ? r.json() : {})).catch(() => ({})) : Promise.resolve({}));
+  return creditsPromise;
+}
+
+/** A real photograph with its tiny credit line. onError runs (and the figure is removed) if the file is missing. */
+function photo(src, kind, alt, onError) {
+  const fig = el('figure', `role4-photo role4-photo-${kind}`);
+  const img = el('img');
+  img.src = src;
+  img.alt = alt;
+  img.decoding = 'async';
+  img.addEventListener('error', () => { fig.remove(); onError?.(); });
+  const cap = el('figcaption', 'role4-photo-cap');
+  fig.append(img, cap);
+  loadCredits().then((all) => {
+    const c = all?.[src.split('/').pop()] ?? all?.[src];
+    if (!c) return;
+    const credit = [c.author, c.licence].filter(Boolean).join(' · ');
+    if (c.caption) cap.append(el('span', 'role4-photo-text', c.caption));
+    if (credit) cap.append(el('span', 'role4-photo-credit', credit));
+  });
+  return fig;
+}
+
 function paragraph(className, text) { return el('p', className, text); }
 
 function section(label) {
@@ -44,41 +71,96 @@ export function buildBlocks(t, { skipSensitive = false } = {}) {
   const blocks = {};
   if (t.opening) blocks.opening = el('p', 'role4-tribute-opening', t.opening);
 
+  const img = t.images ?? {};
+  const heroSrc = img.portrait || img.crew;
   const card = el('section', 'role4-tribute-block role4-tribute-card');
-  card.append(emblem(t.mission));
   const facts = el('div', 'role4-tribute-facts');
-  facts.append(el('div', 'role4-tribute-mission', t.mission));
-  for (const text of [t.vehicle, t.dateText, t.place]) if (text) facts.append(el('div', 'role4-tribute-fact', text));
+  const mark = emblem(t.mission);
+  const useEmblemLarge = () => { card.classList.add('role4-tribute-noimg'); };
+  if (heroSrc) {
+    card.classList.add('role4-tribute-hasimg');
+    card.append(photo(heroSrc, 'hero', img.portrait ? `${t.mission}: portrait` : `${t.mission} crew`, useEmblemLarge));
+    mark.classList.add('role4-emblem-small');
+  } else useEmblemLarge();
+  facts.append(mark, el('div', 'role4-tribute-mission', t.mission));
+  if (t.dateText) facts.append(el('div', 'role4-tribute-date', t.dateText));
+  for (const text of [t.vehicle, t.place]) if (text) facts.append(el('div', 'role4-tribute-fact', text));
   card.append(facts);
   blocks.mission = card;
 
   blocks.crew = (t.crew ?? []).map((c) => {
     const row = el('div', 'role4-tribute-crew');
     row.append(el('span', 'role4-flame'));
-    const text = el('div');
+    const text = el('div', 'role4-tribute-who');
     text.append(el('div', 'role4-tribute-name', c.name), el('div', 'role4-tribute-role', c.role));
-    if (c.line) text.append(el('div', 'role4-tribute-line', c.line));
+    if (c.line) {
+      const { short, truncated } = shortLine(c.line);
+      const line = el('div', 'role4-tribute-line', short);
+      text.append(line);
+      if (truncated) {
+        const more = el('button', 'role4-tribute-more', 'more');
+        more.type = 'button';
+        more.setAttribute('aria-expanded', 'false');
+        more.addEventListener('click', () => {
+          const open = more.getAttribute('aria-expanded') !== 'true';
+          more.setAttribute('aria-expanded', String(open));
+          line.textContent = open ? c.line : short;
+          more.textContent = open ? 'less' : 'more';
+          line.append(' ', more);
+        });
+        line.append(' ', more);
+      }
+    }
     row.append(text);
     return row;
   });
 
+  if (t.highlights?.length) {
+    const row = el('section', 'role4-tribute-block role4-tribute-highlights');
+    for (const h of t.highlights.slice(0, 4)) {
+      if (!h?.big) continue;
+      const c = el('div', 'role4-stat');
+      c.append(el('div', 'role4-stat-big', h.big), el('div', 'role4-stat-small', h.small ?? ''));
+      row.append(c);
+    }
+    if (row.children.length) blocks.highlights = row;
+  }
+
   const happened = visibleHappened(t.happened, skipSensitive);
   if (happened.length) {
     const s = section('What happened');
-    happened.forEach((x) => s.append(paragraph('role4-tribute-text', x)));
+    const { head, rest } = splitSentences(happened.join(' '), 2);
+    s.append(paragraph('role4-tribute-text', head));
+    if (rest) {
+      const d = el('details', 'role4-tribute-readmore');
+      d.append(el('summary', null, 'Read more'), paragraph('role4-tribute-text role4-tribute-text-more', rest));
+      s.append(d);
+    }
     blocks.happened = s;
   }
   if (t.changed?.length) {
     const s = section('What their loss changed');
-    const ul = el('ul', 'role4-tribute-list');
-    t.changed.forEach((x) => ul.append(el('li', null, x)));
+    const ul = el('ul', 'role4-tribute-list role4-chips');
+    t.changed.slice(0, 4).forEach((x) => ul.append(el('li', 'role4-chip', x)));
     s.append(ul);
     blocks.changed = s;
   }
   if (t.lesson) {
     const s = section('The lesson they left us');
-    s.append(paragraph('role4-tribute-lesson', t.lesson));
+    s.classList.add('role4-tribute-lessonblock');
+    s.append(el('blockquote', 'role4-tribute-lesson', t.lesson));
     blocks.lesson = s;
+  }
+  if (img.family) {
+    const s = el('section', 'role4-tribute-block role4-tribute-familyblock');
+    const f = photo(img.family, 'family', `${t.mission}: family photograph`, () => s.remove());
+    s.append(el('h3', 'role4-tribute-label', 'Their families'), f);
+    blocks.family = s;
+  }
+  if (img.vehicle) {
+    const s = el('section', 'role4-tribute-block role4-tribute-vehicleblock');
+    s.append(photo(img.vehicle, 'vehicle', t.vehicle || `${t.mission} spacecraft`, () => s.remove()));
+    blocks.vehicle = s;
   }
   if (t.quote?.text) {
     const s = el('section', 'role4-tribute-block');
@@ -87,8 +169,8 @@ export function buildBlocks(t, { skipSensitive = false } = {}) {
     blocks.quote = s;
   }
   if (t.sources?.length) {
-    const s = el('section', 'role4-tribute-block role4-tribute-sources');
-    s.append(el('h3', 'role4-tribute-label', 'Sources'));
+    const s = el('details', 'role4-tribute-block role4-tribute-sources');
+    s.append(el('summary', null, 'Sources'));
     for (const src of t.sources) {
       if (!src?.url) continue;
       const a = el('a', null, src.title || src.url);

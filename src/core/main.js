@@ -13,6 +13,7 @@ import report from '/src/report/index.js';
 import { STATES, STATE_OWNERS } from './contract.js';
 import * as events from './events.js';
 import { getState, requestState, debugJump } from './state.js';
+import { startSkip } from './skip.js';
 import { input } from './input.js';
 import { ui } from './ui.js';
 import { save } from './save.js';
@@ -72,6 +73,7 @@ async function boot() {
     window.__game.audio = audio; // lets tests read audio.playing()
     window.__game.graphics = graphics; // and graphics.pixelRatioNow
     startDebug();
+    startSkip();
     const wanted = params.get('state');
     if (wanted && wanted !== STATES.MENU) debugJump(wanted);
   }

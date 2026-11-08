@@ -7,7 +7,7 @@ import { fill } from './dom.js';
 import { showEnding } from './ending.js';
 import { showPrelaunch } from './prelaunch.js';
 import { clearRadio, radio } from './radio.js';
-import { showReturn, showSilentReturnChoice } from './returnTrip.js';
+import { playLastDescentFlow, showReturn, showSilentReturnChoice } from './returnTrip.js';
 import { showTribute } from './tribute.js';
 import tributes from './tributes.json';
 import { fatalTributes as fatalTributeList, tributeFor } from './tributeFlow.js';
@@ -127,6 +127,8 @@ export default {
         ...(window.__role4 ?? {}),
         tribute: (id = 'challenger') => { off?.(); off = showTribute(tributes[id], { onDone: () => {} }); },
         silentReturnChoice: () => { off?.(); off = showSilentReturnChoice(); },
+        lastDescent: () => { off?.(); off = playLastDescentFlow({ onDone: () => {} }); },
+        lastDescentNoTribute: () => { off?.(); off = playLastDescentFlow({ withTribute: false, onDone: () => {} }); },
       };
     }
   },

@@ -1,0 +1,18 @@
+/* Pitch demo overlays: hold ring, "N · next" hint, title card, caption card. Above the game (ui 10-20, fades 29-30). */
+.demo-ring { position: fixed; left: 50%; bottom: 28px; width: 48px; height: 48px; margin-left: -24px; z-index: 900; pointer-events: none; opacity: 0; transition: opacity .15s; }
+.demo-ring.on { opacity: 1; }
+.demo-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.demo-ring circle { fill: rgba(0, 0, 0, .35); stroke-width: 3; }
+.demo-ring .track { stroke: rgba(255, 255, 255, .25); }
+.demo-ring .bar { stroke: #e9e4d6; stroke-linecap: round; fill: none; }
+
+.demo-hint { position: fixed; right: 14px; bottom: 10px; z-index: 900; pointer-events: none; font: 11px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .14em; color: rgba(233, 228, 214, .55); text-shadow: 0 0 6px rgba(0, 0, 0, .9); }
+.demo-hint[hidden] { display: none; }
+
+.demo-card { position: fixed; inset: 0; z-index: 950; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #e9e4d6; font-family: 'Cormorant Garamond', 'EB Garamond', Georgia, 'Times New Roman', serif; opacity: 1; transition: opacity .9s ease; pointer-events: none; }
+.demo-card.fading { opacity: 0; }
+.demo-card canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.demo-card .big { position: relative; font-size: clamp(44px, 9vw, 120px); font-weight: 600; letter-spacing: .12em; opacity: 0; transition: opacity 1.3s ease; }
+.demo-card .sub { position: relative; margin-top: 1.1em; font-size: clamp(16px, 2.4vw, 30px); font-style: italic; letter-spacing: .2em; color: rgba(233, 228, 214, .8); opacity: 0; transition: opacity 1.3s ease; }
+.demo-card .cap { position: relative; font-size: clamp(30px, 5.5vw, 76px); font-style: italic; font-weight: 500; letter-spacing: .06em; opacity: 0; transition: opacity .8s ease; }
+.demo-card .show { opacity: 1; }

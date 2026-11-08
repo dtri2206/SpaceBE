@@ -34,13 +34,30 @@ export function tributeSchedule(t, { skipSensitive = false, readOnly = false } =
   add('mission');
   (t.crew ?? []).forEach((_, index) => add('crew', { index }, CREW_STEP_MS));
   at += SECTION_STEP_MS - CREW_STEP_MS;
+  if (t.highlights?.length) add('highlights');
   if (visibleHappened(t.happened, skipSensitive).length) add('happened');
   if (t.changed?.length) add('changed');
   if (t.lesson) add('lesson');
+  if (t.images?.family) add('family');
+  if (t.images?.vehicle) add('vehicle');
   if (t.quote?.text) add('quote');
   if (t.sources?.length) add('sources', {}, 0);
   const completeAt = at;
   return { steps, completeAt, continueAt: completeAt + (readOnly ? READ_ONLY_HOLD_MS : CONTINUE_HOLD_MS) };
+}
+
+/** Splits text into its first `n` sentences and the rest. */
+export function splitSentences(text, n = 2) {
+  const parts = String(text ?? '').split(/(?<=[.!?])\s+/).filter(Boolean);
+  return { head: parts.slice(0, n).join(' '), rest: parts.slice(n).join(' ') };
+}
+
+/** A one-line subtitle: the text itself when short, else truncated at a word boundary with an ellipsis. */
+export function shortLine(text, max = 110) {
+  const s = String(text ?? '');
+  if (s.length <= max) return { short: s, truncated: false };
+  const cut = s.slice(0, max - 1);
+  return { short: `${cut.slice(0, cut.lastIndexOf(' ') > 40 ? cut.lastIndexOf(' ') : cut.length).replace(/[\s,;:.]+$/, '')}…`, truncated: true };
 }
 
 /** Continue is shown only once the quiet hold is over. */

@@ -1,0 +1,50 @@
+{
+  "soyuz1-komarov.jpg": {
+    "title": "Vladimir Komarov, 1965 (portrait)",
+    "author": "Valentin Cheredintsev / TASS (via Russian Ministry of Defence, 60cosmonauts.mil.ru)",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9A%D0%BE%D0%BC%D0%B0%D1%80%D0%BE%D0%B2.jpg",
+    "caption": "Vladimir Komarov, 1965"
+  },
+  "soyuz1-vehicle.jpg": {
+    "title": "Soyuz 7K-OK(A) capsule, National Space Centre, Leicester",
+    "author": "Alan Saunders (Kaptain Kobold)",
+    "licence": "CC BY 2.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/2.0/",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Soyuz_7K-OK(A)_at_Space_Center.jpg",
+    "caption": "A Soyuz 7K-OK(A) capsule, the spacecraft family Soyuz 1 belonged to. Display model at the National Space Centre, Leicester."
+  },
+  "challenger-crew.jpg": {
+    "title": "STS-51-L official crew portrait, 15 November 1985",
+    "author": "NASA",
+    "licence": "Public domain (NASA)",
+    "licenceUrl": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Challenger_flight_51-l_crew.jpg",
+    "caption": "The crew of Space Shuttle Challenger mission STS-51-L, official portrait, 15 November 1985."
+  },
+  "columbia-crew.jpg": {
+    "title": "STS-107 official crew photograph, 2001",
+    "author": "NASA",
+    "licence": "Public domain (NASA)",
+    "licenceUrl": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Crew_of_STS-107,_official_photo.jpg",
+    "caption": "The crew of Space Shuttle Columbia mission STS-107, official photograph, 2001."
+  },
+  "apollo1-crew.jpg": {
+    "title": "Apollo 1 crew in front of Launch Complex 34",
+    "author": "NASA",
+    "licence": "Public domain (NASA)",
+    "licenceUrl": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Apollo1-Crew_01.jpg",
+    "caption": "Gus Grissom, Ed White and Roger Chaffee (left to right) in front of Launch Complex 34, 1966."
+  },
+  "soyuz11-crew.jpg": {
+    "title": "Soyuz 11 cosmonauts, USSR memorial stamp 1971 (cropped)",
+    "author": "USSR Post",
+    "licence": "Public domain (PD-RU-exempt, cropped stamp)",
+    "licenceUrl": "https://commons.wikimedia.org/wiki/Template:PD-RU-exempt",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Soyuz_11_crew.jpg",
+    "caption": "Georgy Dobrovolsky, Vladislav Volkov and Viktor Patsayev, Soyuz 11 crew (1971 memorial stamp portrait)."
+  }
+}

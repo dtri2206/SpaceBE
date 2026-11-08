@@ -29,6 +29,7 @@ import { RoverController, ROVER, ROVER_MR01 } from './RoverController.js';
 import { mr01Unlock, MR01_LOCKED_PROMPT, MR01_UNLOCKED_NOTICE } from './rovers.js';
 import { createRoverModel } from './roverModel.js';
 import { createGroundMarks } from './groundMarks.js';
+import { createFirstHumans, FH_BASE_Z } from './firstHumans.js';
 import {
   exploration, createFirstStepSequence, FIRST_STEP_LINE, MAX_FIRST_WORDS,
   walkReachMetres, roverReachMetres, reachLine, parseTargetDistance, targetBeyondReach,
@@ -258,7 +259,50 @@ function createFirstStepUI(hudLayer) {
   return { line, box, field };
 }
 
+// Demo mode (window.__demo.active, set by the pitch director): "First humans on Mars" replaces the first-step moment.
+const isDemo = () => { try { return window.__demo?.active === true; } catch { return false; } };
+
+function startFirstHumans() {
+  const { walker, hudLayer } = s;
+  exploration.setFirstWords(''); // no words prompt in demo mode
+  const cap = document.createElement('div');
+  cap.style.cssText = 'position:absolute;left:50%;bottom:11%;transform:translateX(-50%);width:min(900px,86vw);text-align:center;color:#fff;font:italic 24px/1.4 Georgia,"Times New Roman",serif;text-shadow:0 2px 10px rgba(0,0,0,.85);opacity:0;transition:opacity .4s ease;z-index:5';
+  const fade = document.createElement('div');
+  fade.style.cssText = 'position:absolute;inset:0;background:#000;opacity:0;z-index:6';
+  hudLayer.append(cap, fade);
+  const boot = (x, z, side) => getMarks().stamp({ x, z, dirX: 0, dirZ: 1, side });
+  const seq = createFirstHumans({
+    scene: getMars().scene,
+    terrain: getTerrainHeight,
+    onEvent: (name, pose) => {
+      if (name === 'touch') { boot(-0.15, FH_BASE_Z, -1); boot(0.15, FH_BASE_Z + 0.1, 1); audio.play('impact.small'); }
+      else if (name.startsWith('land')) { boot(0, pose.z, Number(name.slice(4)) % 2 ? 1 : -1); audio.play('impact.small'); }
+    },
+  });
+  s.fh = { seq, cap, fade, text: '', done: false, handled: false };
+  walker.pos.z = FH_BASE_Z;
+  try { audio.fadeTo('suit.breath', 1.7, 1.5); } catch { /* the breath stays at normal volume */ }
+}
+
+function updateFirstHumans(dt) {
+  const fh = s.fh;
+  const r = fh.seq.update(dt, s.camera);
+  if (r.caption && r.caption !== fh.text) { fh.text = r.caption; fh.cap.textContent = r.caption; }
+  fh.cap.style.opacity = r.caption ? '1' : '0';
+  fh.fade.style.opacity = String(r.fade);
+  if (r.done && !fh.done) {
+    fh.done = true;
+    const end = fh.seq.endPosition();
+    s.walker.pos.x = end.x; s.walker.pos.z = end.z; s.walker.yaw = end.yaw; s.walker.pitch = 0;
+    try { audio.fadeTo('suit.breath', 1, 1.5); } catch { /* ignore */ }
+    const hook = window.__demo?.onFirstHumansDone;
+    if (typeof hook === 'function') { try { hook(); } catch (e) { console.warn('[surface] onFirstHumansDone failed', e); } }
+    else { fh.fade.style.opacity = '0'; fh.cap.style.opacity = '0'; fh.seq.dispose(); } // no director: give control back
+  }
+}
+
 function startFirstStep() {
+  if (isDemo()) { startFirstHumans(); return; }
   const ui_ = createFirstStepUI(s.hudLayer);
   s.fs = { seq: createFirstStepSequence(), ...ui_ };
   try { audio.fadeTo('suit.breath', 2.2, 1.2); } catch { /* the breath stays at normal volume */ }
@@ -446,9 +490,9 @@ export default {
       audio.play('suit.breath', { loop: true });
     }
 
-    if (!inside && exploration.claimFirstStep(previous === 'INTERIOR')) startFirstStep(); // only when you really step out of the airlock
-    input.onPress('KeyE', () => (s?.fs?.seq.phase === 'scene' ? skipFirstStep() : s?.driving ? leaveRover() : registry.press()));
-    input.onPress('Space', () => { if (s?.fs?.seq.phase === 'scene') skipFirstStep(); });
+    if (!inside && exploration.claimFirstStep(isDemo() || previous === 'INTERIOR')) startFirstStep(); // only when you really step out of the airlock
+    input.onPress('KeyE', () => (s?.fh && !s.fh.done ? s.fh.seq.skip() : s?.fs?.seq.phase === 'scene' ? skipFirstStep() : s?.driving ? leaveRover() : registry.press()));
+    input.onPress('Space', () => { if (s?.fh && !s.fh.done) s.fh.seq.skip(); else if (s?.fs?.seq.phase === 'scene') skipFirstStep(); });
     s.lockOnClick = () => { if (s?.fs?.seq.phase !== 'words') input.lockPointer(); }; // while typing, leave the mouse alone
     window.addEventListener('click', s.lockOnClick);
 
@@ -523,6 +567,14 @@ export default {
       hudYaw = walker.yaw;
       s.roverPanelText = '';
       if (s.arrival.done) { const a = s.arrival; s.arrival = null; setTimeout(() => a.dispose(), 600); } // caption fades out first
+    } else if (s.fh && !(s.fh.done && !window.__demo?.onFirstHumansDone)) {
+      // ---- demo mode: "First humans on Mars" (firstHumans.js drives the camera) ----
+      walker.update(dt, {});
+      if (!s.fh.done) updateFirstHumans(dt);
+      astronaut.body.update(dt, { env: 'mars', heartRate: walker.heartRate });
+      hudTelemetry = walker.telemetry;
+      hudYaw = walker.yaw;
+      s.roverPanelText = '';
     } else if (s.fs && s.fs.seq.phase !== 'done') {
       // ---- first step on Mars: the player is a spectator for a few seconds ----
       const seq = s.fs.seq;
@@ -613,6 +665,7 @@ export default {
   exit() {
     if (!s) return;
     previous = s.state;
+    if (s.fh) { s.fh.seq.dispose(); s.fh = null; }
     if (s.fs) finishFirstStep(s.fs.field.value, true); // left mid-moment: keep what was typed (or the default)
     if (!s.inside) { for (const e of fleetList) e.model?.object.removeFromParent(); marks?.object.removeFromParent(); }
     if (s.driving) { syncSpot(active); active = null; }

@@ -1,0 +1,24 @@
+.role4-ld { position: fixed; inset: 0; z-index: 40; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; color: #e8d9b0; pointer-events: none; }
+.role4-ld-panel { position: absolute; left: 24px; bottom: 24px; display: flex; gap: 16px; align-items: flex-end; padding: 12px 14px; background: rgb(8 8 6 / 0.82); border: 1px solid #4a4128; border-radius: 4px; }
+.role4-ld-gauge { width: 26px; height: 120px; border: 1px solid #4a4128; position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
+.role4-ld-bar { width: 100%; height: 100%; background: #c9a24a; }
+.role4-ld-label { position: absolute; top: -16px; left: 0; font-size: 10px; letter-spacing: 0.12em; color: #8a7d55; }
+.role4-ld-lamps { display: flex; flex-direction: column; gap: 6px; min-width: 300px; }
+.role4-ld-lamp { font-size: 12px; letter-spacing: 0.1em; padding: 5px 10px 5px 26px; position: relative; border: 1px solid #3a3320; background: #12110c; }
+.role4-ld-lamp::before { content: ''; position: absolute; left: 9px; top: 50%; width: 9px; height: 9px; margin-top: -5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+.role4-ld-calm { color: #9fb7c9; }
+.role4-ld-green { color: #6fd08c; }
+.role4-ld-amber { color: #ffb12b; }
+.role4-ld-red { color: #ff4636; animation: role4-ld-blink 0.5s steps(2) infinite; }
+.role4-ld-caption { position: absolute; left: 50%; top: 14%; transform: translateX(-50%); max-width: 80vw; text-align: center; font-size: 18px; letter-spacing: 0.04em; text-shadow: 0 2px 12px #000; opacity: 0; transition: opacity 0.6s; }
+.role4-ld-black { position: absolute; inset: 0; background: #000; opacity: 0; }
+.role4-ld-cut .role4-ld-black, .role4-ld-cut { background: #000; }
+.role4-ld-cut .role4-ld-black { opacity: 1; }
+.role4-ld-line { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(720px, 86vw); text-align: center; font-size: 22px; line-height: 1.5; color: #fff; opacity: 0; transition: opacity 1.2s; }
+.role4-ld-line.role4-ld-show { opacity: 1; }
+.role4-ld-actions { position: absolute; left: 0; right: 0; bottom: 12%; display: flex; justify-content: center; pointer-events: auto; }
+.role4-ld:not(.role4-ld-cut) { animation: role4-ld-shake 0.12s linear infinite; }
+.role4-ld-tilt .role4-ld-panel { transform: rotate(-6deg); transition: transform 3s ease-in; }
+@keyframes role4-ld-blink { 50% { opacity: 0.35; } }
+@keyframes role4-ld-shake { 0% { transform: translate(0, 0); } 25% { transform: translate(1px, -1px); } 50% { transform: translate(-1px, 1px); } 75% { transform: translate(1px, 1px); } }
+@media (max-width: 640px) { .role4-ld-lamps { min-width: 0; } .role4-ld-panel { left: 8px; right: 8px; } }

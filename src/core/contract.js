@@ -103,13 +103,13 @@ export const ENDINGS = Object.freeze({
   adrift: 'adrift', rud: 'rud', burnup: 'burnup', outOfBreath: 'outOfBreath', bankrupt: 'bankrupt',
   homecoming: 'homecoming', coldMorning: 'coldMorning', theFoam: 'theFoam', pureOxygen: 'pureOxygen',
   successfulFailure: 'successfulFailure', silentReturn: 'silentReturn', unitError: 'unitError',
-  falseTouchdown: 'falseTouchdown', spin: 'spin', beagle: 'beagle',
+  falseTouchdown: 'falseTouchdown', spin: 'spin', beagle: 'beagle', lastDescent: 'lastDescent',
 });
 
 // Lessons from real history, shown on ending screens (historyLessonId of ending:show).
 export const HISTORY_LESSONS = Object.freeze({
   challenger: 'challenger', columbia: 'columbia', apollo1: 'apollo1', apollo13: 'apollo13', soyuz11: 'soyuz11',
-  marsClimateOrbiter: 'marsClimateOrbiter', marsPolarLander: 'marsPolarLander', gemini8: 'gemini8', beagle2: 'beagle2',
+  marsClimateOrbiter: 'marsClimateOrbiter', marsPolarLander: 'marsPolarLander', gemini8: 'gemini8', beagle2: 'beagle2', soyuz1: 'soyuz1',
 });
 
 // Mars tasks (spec section 9). weight = share of Mars Exploration % (all weights sum to 100), reward in dollars.
@@ -132,7 +132,7 @@ export const STATIONS = Object.freeze(['pilotSeat', 'o2Station', 'suitLocker', '
 export const HARD_BLOCKS = Object.freeze(['NO_CAPSULE', 'NO_ENGINE', 'NO_FUEL', 'NOT_CONNECTED', 'OVER_BUDGET']);
 
 // Go/No-Go warnings the player may override. Overriding is where many endings come from.
-export const WARNINGS = Object.freeze(['LOW_DV', 'LOW_TWR', 'NO_HEAT_SHIELD', 'NO_LEGS', 'UNSTABLE', 'LOW_O2', 'NO_ANTENNA', 'NO_SHELTER', 'COLD_SEALS', 'LOW_RELIABILITY']);
+export const WARNINGS = Object.freeze(['LOW_DV', 'LOW_TWR', 'NO_HEAT_SHIELD', 'NO_LEGS', 'UNSTABLE', 'LOW_O2', 'NO_ANTENNA', 'NO_SHELTER', 'COLD_SEALS', 'LOW_RELIABILITY', 'CHUTE_UNTESTED']);
 
 // Engine options.
 export const FUELS = Object.freeze(['kerolox', 'methalox', 'hydrolox']); // propellant chemistry

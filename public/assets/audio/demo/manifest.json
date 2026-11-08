@@ -1,0 +1,445 @@
+{
+  "n_open": {
+    "file": "n_open.mp3",
+    "voice": "narrator",
+    "subtitle": "Twenty forty-one. Three years ago, the crew of Halcyon-1 went silent on Mars. Today, we go back.",
+    "beat": "intro",
+    "durationSec": 6.22
+  },
+  "fd_poll_open": {
+    "file": "fd_poll_open.mp3",
+    "voice": "flight_director",
+    "subtitle": "All stations, this is Flight. GO/NO-GO for launch.",
+    "beat": "go_nogo_poll",
+    "durationSec": 3.66
+  },
+  "fd_poll_go": {
+    "file": "fd_poll_go.mp3",
+    "voice": "flight_director",
+    "subtitle": "Booster: GO. Guidance: GO. Life support: GO.",
+    "beat": "go_nogo_poll",
+    "durationSec": 4.39
+  },
+  "fd_poll_recovery": {
+    "file": "fd_poll_recovery.mp3",
+    "voice": "flight_director",
+    "subtitle": "Recovery is NO-GO. The parachute is not proven.",
+    "beat": "go_nogo_poll",
+    "durationSec": 3.58
+  },
+  "fd_override": {
+    "file": "fd_override.mp3",
+    "voice": "flight_director",
+    "subtitle": "Copy. Override accepted. We are GO for launch.",
+    "beat": "go_nogo_poll",
+    "durationSec": 3.66
+  },
+  "fd_said_go": {
+    "file": "fd_said_go.mp3",
+    "voice": "flight_director",
+    "subtitle": "You said GO.",
+    "beat": "aftermath",
+    "durationSec": 1.1
+  },
+  "c_countdown": {
+    "file": "c_countdown.mp3",
+    "voice": "capcom",
+    "subtitle": "T-minus ten, nine, eight, seven, six, five, four, three… main engine start… two, one… Liftoff!",
+    "beat": "launch",
+    "durationSec": 9.59
+  },
+  "a_herewego": {
+    "file": "a_herewego.mp3",
+    "voice": "astronaut",
+    "subtitle": "Here we go!",
+    "beat": "launch",
+    "durationSec": 1.75
+  },
+  "c_maxq": {
+    "file": "c_maxq.mp3",
+    "voice": "capcom",
+    "subtitle": "Max-Q. Throttling down.",
+    "beat": "ascent",
+    "durationSec": 1.91
+  },
+  "c_gravity": {
+    "file": "c_gravity.mp3",
+    "voice": "capcom",
+    "subtitle": "Gravity turn. The stick is yours.",
+    "beat": "ascent",
+    "durationSec": 2.14
+  },
+  "c_debris": {
+    "file": "c_debris.mp3",
+    "voice": "capcom",
+    "subtitle": "Debris conjunction, forty seconds! Take the stick and dodge!",
+    "beat": "debris",
+    "durationSec": 3.27
+  },
+  "c_clear": {
+    "file": "c_clear.mp3",
+    "voice": "capcom",
+    "subtitle": "Clear of the debris. Nice flying.",
+    "beat": "debris",
+    "durationSec": 1.83
+  },
+  "n_days": {
+    "file": "n_days.mp3",
+    "voice": "narrator",
+    "subtitle": "Two hundred and fifty-nine days.",
+    "beat": "cruise_to_mars",
+    "durationSec": 1.99
+  },
+  "n_delay": {
+    "file": "n_delay.mp3",
+    "voice": "narrator",
+    "subtitle": "At Mars, a radio message takes fourteen minutes to reach Earth. For the landing, you are on your own.",
+    "beat": "mars_landing",
+    "durationSec": 6.22
+  },
+  "a_touchdown": {
+    "file": "a_touchdown.mp3",
+    "voice": "astronaut",
+    "subtitle": "Chute out… engines on… contact. We're down.",
+    "beat": "mars_landing",
+    "durationSec": 6.3
+  },
+  "a_jezero": {
+    "file": "a_jezero.mp3",
+    "voice": "astronaut",
+    "subtitle": "Jezero. We're here.",
+    "beat": "mars_surface",
+    "durationSec": 2.38
+  },
+  "a_gohome": {
+    "file": "a_gohome.mp3",
+    "voice": "astronaut",
+    "subtitle": "Okay. Time to go home.",
+    "beat": "mars_surface",
+    "durationSec": 2.53
+  },
+  "a_hello_earth": {
+    "file": "a_hello_earth.mp3",
+    "voice": "astronaut",
+    "subtitle": "Oh… there it is. Hello, Earth.",
+    "beat": "return_cruise",
+    "durationSec": 4.23
+  },
+  "c_welcome": {
+    "file": "c_welcome.mp3",
+    "voice": "capcom",
+    "subtitle": "Capsule, Control. We have you on radar. Welcome home.",
+    "beat": "earth_approach",
+    "durationSec": 3.42
+  },
+  "a_lily": {
+    "file": "a_lily.mp3",
+    "voice": "astronaut",
+    "subtitle": "Seven months. Tell Lily I kept her drawing on the dash the whole way.",
+    "beat": "earth_approach",
+    "durationSec": 5.02
+  },
+  "c_entry": {
+    "file": "c_entry.mp3",
+    "voice": "capcom",
+    "subtitle": "Entry interface. You'll lose us for a few minutes in the plasma.",
+    "beat": "earth_entry",
+    "durationSec": 3.27
+  },
+  "a_rollercoaster": {
+    "file": "a_rollercoaster.mp3",
+    "voice": "astronaut",
+    "subtitle": "Woo! Best roller coaster in the solar system!",
+    "beat": "earth_entry",
+    "durationSec": 3.27
+  },
+  "a_coffee": {
+    "file": "a_coffee.mp3",
+    "voice": "astronaut",
+    "subtitle": "Someone put the coffee on. I'm coming home!",
+    "beat": "earth_entry",
+    "durationSec": 3.19
+  },
+  "pc_deploy": {
+    "file": "pc_deploy.mp3",
+    "voice": "computer",
+    "subtitle": "Deploy parachute.",
+    "beat": "parachute",
+    "durationSec": 1.18
+  },
+  "a_main_now": {
+    "file": "a_main_now.mp3",
+    "voice": "astronaut",
+    "subtitle": "Copy. Main chute… now.",
+    "beat": "parachute",
+    "durationSec": 2.3
+  },
+  "pc_drogue": {
+    "file": "pc_drogue.mp3",
+    "voice": "computer",
+    "subtitle": "Drogue open.",
+    "beat": "parachute",
+    "durationSec": 1.02
+  },
+  "pc_nodeploy": {
+    "file": "pc_nodeploy.mp3",
+    "voice": "computer",
+    "subtitle": "Main chute: no deploy.",
+    "beat": "parachute_failure",
+    "durationSec": 1.75
+  },
+  "a_huh": {
+    "file": "a_huh.mp3",
+    "voice": "astronaut",
+    "subtitle": "Huh. Come on. Come on.",
+    "beat": "parachute_failure",
+    "durationSec": 3.27
+  },
+  "pc_failure": {
+    "file": "pc_failure.mp3",
+    "voice": "computer",
+    "subtitle": "Parachute failure. Parachute failure.",
+    "beat": "parachute_failure",
+    "durationSec": 2.38
+  },
+  "a_mayday1": {
+    "file": "a_mayday1.mp3",
+    "voice": "astronaut",
+    "subtitle": "Control, Capsule! Main chute failed! Do you copy?!",
+    "beat": "parachute_failure",
+    "durationSec": 2.95
+  },
+  "c_breaking": {
+    "file": "c_breaking.mp3",
+    "voice": "capcom",
+    "subtitle": "Capsule, Control, say again, you're breaking up—",
+    "beat": "parachute_failure",
+    "durationSec": 2.72
+  },
+  "a_mayday2": {
+    "file": "a_mayday2.mp3",
+    "voice": "astronaut",
+    "subtitle": "Mayday, mayday! Main chute failed! Deploying reserve!",
+    "beat": "parachute_failure",
+    "durationSec": 3.42
+  },
+  "pc_reserve": {
+    "file": "pc_reserve.mp3",
+    "voice": "computer",
+    "subtitle": "Reserve deployed.",
+    "beat": "parachute_failure",
+    "durationSec": 1.25
+  },
+  "pc_tangled": {
+    "file": "pc_tangled.mp3",
+    "voice": "computer",
+    "subtitle": "Reserve tangled.",
+    "beat": "parachute_failure",
+    "durationSec": 1.18
+  },
+  "a_please": {
+    "file": "a_please.mp3",
+    "voice": "astronaut",
+    "subtitle": "Come on… come on… please…",
+    "beat": "parachute_failure",
+    "durationSec": 4.23
+  },
+  "c_withyou": {
+    "file": "c_withyou.mp3",
+    "voice": "capcom",
+    "subtitle": "Capsule, we're with you. Keep trying. We're with you—",
+    "beat": "parachute_failure",
+    "durationSec": 3.11
+  },
+  "c_doyoucopy": {
+    "file": "c_doyoucopy.mp3",
+    "voice": "capcom",
+    "subtitle": "Capsule, Control. Do you copy?",
+    "beat": "silence",
+    "durationSec": 1.99
+  },
+  "c_capsule": {
+    "file": "c_capsule.mp3",
+    "voice": "capcom",
+    "subtitle": "Capsule?",
+    "beat": "silence",
+    "durationSec": 0.94
+  },
+  "n_komarov": {
+    "file": "n_komarov.mp3",
+    "voice": "narrator",
+    "subtitle": "Vladimir Komarov. Soyuz 1. April twenty-fourth, nineteen sixty-seven.",
+    "beat": "komarov_epilogue",
+    "durationSec": 6.06
+  },
+  "n_family": {
+    "file": "n_family.mp3",
+    "voice": "narrator",
+    "subtitle": "He left behind his wife, Valentina, and their children, Yevgeny and Irina.",
+    "beat": "komarov_epilogue",
+    "durationSec": 4.94
+  },
+  "n_testflight": {
+    "file": "n_testflight.mp3",
+    "voice": "narrator",
+    "subtitle": "Engineers wanted one more test flight. Soyuz 1 flew without it.",
+    "beat": "komarov_epilogue",
+    "durationSec": 4.39
+  },
+  "n_tryagain": {
+    "file": "n_tryagain.mp3",
+    "voice": "narrator",
+    "subtitle": "In this game, you can press Try again. He could not.",
+    "beat": "komarov_epilogue",
+    "durationSec": 5.36
+  },
+  "w_message": {
+    "file": "w_message.mp3",
+    "voice": "wife",
+    "subtitle": "Hey, it's me! Lily drew you a picture of Mars. It's on the fridge. We're so proud of you. Go do your thing, and come home safe, okay? We'll be right here.",
+    "beat": "go_nogo_poll",
+    "durationSec": 9.9
+  },
+  "w_echo": {
+    "file": "w_echo.mp3",
+    "voice": "wife",
+    "subtitle": "Come home safe, okay?",
+    "beat": "silence",
+    "durationSec": 2.38
+  },
+  "sfx_control_room": {
+    "file": "sfx_control_room.mp3",
+    "kind": "sfx",
+    "durationSec": 10.06,
+    "loop": true
+  },
+  "sfx_launch_rumble": {
+    "file": "sfx_launch_rumble.mp3",
+    "kind": "sfx",
+    "durationSec": 8.07,
+    "loop": false
+  },
+  "sfx_liftoff_roar": {
+    "file": "sfx_liftoff_roar.mp3",
+    "kind": "sfx",
+    "durationSec": 6.06,
+    "loop": false
+  },
+  "sfx_maxq_buffet": {
+    "file": "sfx_maxq_buffet.mp3",
+    "kind": "sfx",
+    "durationSec": 5.07,
+    "loop": false
+  },
+  "sfx_master_alarm": {
+    "file": "sfx_master_alarm.mp3",
+    "kind": "sfx",
+    "durationSec": 3.06,
+    "loop": true
+  },
+  "sfx_alarm_rapid": {
+    "file": "sfx_alarm_rapid.mp3",
+    "kind": "sfx",
+    "durationSec": 4.08,
+    "loop": true
+  },
+  "sfx_rcs_puff": {
+    "file": "sfx_rcs_puff.mp3",
+    "kind": "sfx",
+    "durationSec": 1.07,
+    "loop": false
+  },
+  "sfx_debris_whoosh": {
+    "file": "sfx_debris_whoosh.mp3",
+    "kind": "sfx",
+    "durationSec": 2.06,
+    "loop": false
+  },
+  "sfx_mars_entry_roar": {
+    "file": "sfx_mars_entry_roar.mp3",
+    "kind": "sfx",
+    "durationSec": 8.07,
+    "loop": false
+  },
+  "sfx_earth_entry_roar": {
+    "file": "sfx_earth_entry_roar.mp3",
+    "kind": "sfx",
+    "durationSec": 12.07,
+    "loop": false
+  },
+  "sfx_chute_deploy": {
+    "file": "sfx_chute_deploy.mp3",
+    "kind": "sfx",
+    "durationSec": 2.06,
+    "loop": false
+  },
+  "sfx_landing_engine": {
+    "file": "sfx_landing_engine.mp3",
+    "kind": "sfx",
+    "durationSec": 5.07,
+    "loop": false
+  },
+  "sfx_suit_breath": {
+    "file": "sfx_suit_breath.mp3",
+    "kind": "sfx",
+    "durationSec": 6.06,
+    "loop": true
+  },
+  "sfx_footsteps_gravel": {
+    "file": "sfx_footsteps_gravel.mp3",
+    "kind": "sfx",
+    "durationSec": 4.08,
+    "loop": false
+  },
+  "sfx_flag_fabric": {
+    "file": "sfx_flag_fabric.mp3",
+    "kind": "sfx",
+    "durationSec": 2.06,
+    "loop": false
+  },
+  "sfx_button_click": {
+    "file": "sfx_button_click.mp3",
+    "kind": "sfx",
+    "durationSec": 0.55,
+    "loop": false
+  },
+  "sfx_radio_static": {
+    "file": "sfx_radio_static.mp3",
+    "kind": "sfx",
+    "durationSec": 2.06,
+    "loop": false
+  },
+  "sfx_explosion": {
+    "file": "sfx_explosion.mp3",
+    "kind": "sfx",
+    "durationSec": 5.07,
+    "loop": false
+  },
+  "sfx_wind_steppe": {
+    "file": "sfx_wind_steppe.mp3",
+    "kind": "sfx",
+    "durationSec": 10.06,
+    "loop": true
+  },
+  "sfx_data_printer": {
+    "file": "sfx_data_printer.mp3",
+    "kind": "sfx",
+    "durationSec": 6.06,
+    "loop": false
+  },
+  "mus_opening": {
+    "file": "mus_opening.mp3",
+    "kind": "music",
+    "durationSec": 45.04
+  },
+  "mus_earth": {
+    "file": "mus_earth.mp3",
+    "kind": "music",
+    "durationSec": 40.02
+  },
+  "mus_memorial": {
+    "file": "mus_memorial.mp3",
+    "kind": "music",
+    "durationSec": 60.08
+  }
+}

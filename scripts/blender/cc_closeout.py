@@ -63,7 +63,7 @@ def clip_plane(ctx, origin, ey, s0, s1, ds=0.03, sink=SINK):
     return ey, rows
 
 
-def plane_mesh(part, mat, origin, ey, rows, eye=Vector((0, 0, 0)), tile=0.5):
+def plane_mesh(part, mat, origin, ey, rows, eye=Vector((0, 0, 0)), tile=0.5, uvc=None):
     """quad strip between consecutive rows, wound toward the eye, planar UVs (seams are continuous across a plane)"""
     ex = Vector((1, 0, 0))
     nrm = ex.cross(ey).normalized()
@@ -82,7 +82,7 @@ def plane_mesh(part, mat, origin, ey, rows, eye=Vector((0, 0, 0)), tile=0.5):
         if fn.dot(nrm) < 0:
             f = f[::-1]
         faces.append(tuple(f))
-        uvs.append([FLAT] * 4)
+        uvs.append([uvc or FLAT] * 4)
     part.add(mat, (verts, faces), uvs)
     return nrm
 
@@ -143,58 +143,89 @@ def bis(f, a, b, n=30):
     return (a + b) / 2
 
 
-def liner(ctx, part, wall, ncol=96, rows=6):
-    """conformal faceted skin on the shell between the LIM rim and the front wall, in the console colour"""
+INSET = 0.06          # the full liner sits this far inside the inner skin (the room is a little smaller than the shell)
+
+
+def liner(ctx, part, wall, ncol=96, nrows=24):
+    """ONE continuous faceted skin: the whole cone wall all the way round from the aft bulkhead to the front wall, plus a floor disc with a round hole at the aft hatch"""
+    import cc_aft
+    uv2 = ctx.flat_uv2
+    gz_aft = ctx.e.z - 0.052
     cols = []
     for k in range(ncol):
         phi = 2 * math.pi * k / ncol
-        # rim: first depth (from the eye plane forward) where the skin leaves the LIM cone of view
-        zs = np.linspace(0.25, -0.9, 60)
-        rim = None
-        for a_, b_ in zip(zs[:-1], zs[1:]):
-            if _ang(shell_pt(ctx, phi, a_)) >= LIM > _ang(shell_pt(ctx, phi, b_)):
-                rim = bis(lambda g: _ang(shell_pt(ctx, phi, g)) - LIM, a_, b_)
-                break
-        if rim is None:
-            C.log('liner col', k, 'no rim'); cols.append(None); continue
         c = lambda g: shell_pt(ctx, phi, g).z - wall.z(shell_pt(ctx, phi, g).y)
-        if c(rim) <= 0.0:
-            C.log('liner col', k, 'rim behind wall', round(rim, 3)); cols.append(None); continue          # the rim is already behind the wall here
         end = None
-        for g in np.linspace(rim, rim - 1.6, 80):
+        for g in np.linspace(gz_aft, gz_aft - 3.0, 150):
             if c(g) <= -0.03:
                 end = g; break
         if end is None:
-            C.log('liner col', k, 'no end', round(rim, 3)); cols.append(None); continue
-        col = []
-        # chamfered rim: a lip from the wall (embedded) to the liner over 4 cm of depth
-        col.append(shell_pt(ctx, phi, rim, -0.012))
-        col.append(shell_pt(ctx, phi, rim - 0.035, LINER))
-        for j in range(1, rows + 1):
-            col.append(shell_pt(ctx, phi, (rim - 0.035) + (end - rim + 0.035) * j / rows, LINER))
-        cols.append(col)
+            cols.append(None); continue
+        cols.append([shell_pt(ctx, phi, gz_aft + (end - gz_aft) * j / nrows, INSET) for j in range(nrows + 1)])
     axis = Vector((AX, ctx.g((0, 0, ctx.e.z)).y, 0))
-    verts, faces, uvs = [], [], []
-    def uv(p):
-        return (math.atan2(p.y - axis.y, p.x - axis.x) * 0.9 / 0.5, p.z / 0.5)
+    verts, faces = [], []
+    vid = {}
+    for k in range(ncol):                      # shared vertices so the smooth shading runs round the whole cone
+        if cols[k] is not None:
+            for j in range(nrows + 1):
+                vid[(k, j)] = len(verts); verts.append(tuple(cols[k][j]))
     for k in range(ncol):
         A, Bc = cols[k], cols[(k + 1) % ncol]
         if A is None or Bc is None:
             continue
-        for j in range(min(len(A), len(Bc)) - 1):
+        k2 = (k + 1) % ncol
+        for j in range(nrows):
             q = [A[j], Bc[j], Bc[j + 1], A[j + 1]]
             cen = sum(q, Vector()) / 4
             fn = (q[1] - q[0]).cross(q[3] - q[0])
-            to_eye = Vector((AX, cen.y * 0 + axis.y, cen.z)) - cen
-            o = len(verts)
-            idx = [0, 1, 2, 3]
-            if fn.dot(to_eye) < 0:
-                idx = idx[::-1]
-            verts += [tuple(v) for v in q]
-            faces.append(tuple(o + i for i in idx))
-            uvs.append([FLAT] * 4)
-    part.add('plate', (verts, faces), uvs)
-    return len(faces)
+            to_ax = Vector((AX, axis.y, cen.z)) - cen
+            ids = [vid[(k, j)], vid[(k2, j)], vid[(k2, j + 1)], vid[(k, j + 1)]]
+            faces.append(tuple(ids) if fn.dot(to_ax) > 0 else tuple(ids[::-1]))
+    # floor disc at the aft bulkhead, round hole flush with the aft hatch flange
+    hc = cc_aft.hatch_centre(ctx)
+    R_out = ctx.rin(0.052) - INSET
+    ax = Vector((AX, axis.y))
+    n = 64
+    ring = []
+    for i in range(n):
+        a_ = 2 * math.pi * i / n
+        d = Vector((math.cos(a_), math.sin(a_)))
+        h0 = Vector((hc.x, hc.y)) - ax
+        bq = h0.dot(d); cq = h0.dot(h0) - R_out * R_out
+        t = -bq + math.sqrt(max(bq * bq - cq, 0.0))
+        ring.append((Vector((hc.x, hc.y)) + d * 0.466, Vector((hc.x, hc.y)) + d * t))
+    for i in range(n):
+        (i0, o0), (i1, o1) = ring[i], ring[(i + 1) % n]
+        q = [Vector((i0.x, i0.y, gz_aft)), Vector((o0.x, o0.y, gz_aft)), Vector((o1.x, o1.y, gz_aft)), Vector((i1.x, i1.y, gz_aft))]
+        o = len(verts)
+        # faces look toward the cabin (-Z in game)
+        fn = (q[1] - q[0]).cross(q[3] - q[0])
+        idx = [0, 1, 2, 3] if fn.z < 0 else [3, 2, 1, 0]
+        verts += [tuple(v) for v in q]
+        faces.append(tuple(o + i for i in idx))
+    part.add('plate', (verts, faces), [[uv2] * 4] * len(faces))
+    # panel seams following the cone: a vertical seam every 15 degrees and rings every 0.32 m, each a thin line
+    nseam = 0
+    for k in range(0, ncol, 4):
+        col = cols[k]
+        if col is None:
+            continue
+        for p0, p1 in zip(col[1:-1], col[2:-1]):
+            part.strut('trimdark', p0, p1, 0.0016, n=4); nseam += 1
+    for gzr in (0.20, -0.12, -0.44, -0.76):
+        pts = []
+        for k in range(ncol):
+            phi = 2 * math.pi * k / ncol
+            col = cols[k]
+            if col is None:
+                pts.append(None); continue
+            c = lambda g: shell_pt(ctx, phi, g).z - wall.z(shell_pt(ctx, phi, g).y)
+            pts.append(shell_pt(ctx, phi, gzr, INSET - 0.001) if c(gzr) > 0.06 else None)
+        for k in range(ncol):
+            a_, b_ = pts[k], pts[(k + 1) % ncol]
+            if a_ is not None and b_ is not None:
+                part.strut('trimdark', a_, b_, 0.0016, n=4); nseam += 1
+    return len(faces) + nseam
 
 
 def _islands(d):
@@ -311,6 +342,73 @@ def placard(part, text, o, ex, ey, nrm, x, s, w, h, seed):
             part.sphere('trimdark', 0.0045, c.x, c.y, c.z, n=6, m=3)
 
 
+def access_panel(part, c, ex, ey, nrm, w, h, rows_of_screws=True):
+    """a shallow access panel: a thin raised frame, a fastener every 4 cm round it, one captive-screw pair"""
+    t = 0.0035
+    for (cx, cy, sw, sh) in ((0, h / 2 - t / 2, w, t), (0, -h / 2 + t / 2, w, t), (-w / 2 + t / 2, 0, t, h), (w / 2 - t / 2, 0, t, h)):
+        q = [c + ex * (cx - sw / 2) + ey * (cy - sh / 2), c + ex * (cx + sw / 2) + ey * (cy - sh / 2), c + ex * (cx + sw / 2) + ey * (cy + sh / 2), c + ex * (cx - sw / 2) + ey * (cy + sh / 2)]
+        q = [v + nrm * 0.0012 for v in q]
+        fn = (q[1] - q[0]).cross(q[3] - q[0])
+        idx = (0, 1, 2, 3) if fn.dot(nrm) > 0 else (3, 2, 1, 0)
+        part.add('rubber', ([tuple(v) for v in q], [idx]), [[(0, 0)] * 4])
+    n = 0
+    if rows_of_screws:
+        for sx in np.arange(-w / 2 + 0.014, w / 2 - 0.01, 0.04):
+            for sy in (-1, 1):
+                v = c + ex * sx + ey * (sy * (h / 2 - 0.012)) + nrm * 0.0012
+                part.sphere('rubber', 0.0035, v.x, v.y, v.z, n=6, m=3); n += 1
+        for sy in np.arange(-h / 2 + 0.05, h / 2 - 0.03, 0.04):
+            for sx in (-1, 1):
+                v = c + ex * (sx * (w / 2 - 0.012)) + ey * sy + nrm * 0.0012
+                part.sphere('rubber', 0.0035, v.x, v.y, v.z, n=6, m=3); n += 1
+    return n
+
+
+def vent(part, c, ex, ey, nrm, w, h):
+    q = [c + ex * (-w / 2) + ey * (-h / 2), c + ex * (w / 2) + ey * (-h / 2), c + ex * (w / 2) + ey * (h / 2), c + ex * (-w / 2) + ey * (h / 2)]
+    q = [v + nrm * 0.0012 for v in q]
+    fn = (q[1] - q[0]).cross(q[3] - q[0])
+    idx = (0, 1, 2, 3) if fn.dot(nrm) > 0 else (3, 2, 1, 0)
+    part.add('rubber', ([tuple(v) for v in q], [idx]), [[(0, 0)] * 4])
+    for k in range(7):
+        sy = -h / 2 + 0.008 + k * (h - 0.016) / 6
+        a = c + ey * sy + nrm * 0.004
+        part.strut('trimdark', a - ex * (w / 2 - 0.006), a + ex * (w / 2 - 0.006), 0.0028, n=5)
+    return 0
+
+
+def handrail(part, c, ex, nrm, length):
+    for sx in (-1, 1):
+        base = c + ex * (sx * length / 2)
+        part.strut('bat', base, base + nrm * 0.03, 0.005, n=6)
+    part.strut('bat', c + ex * (-length / 2) + nrm * 0.03, c + ex * (length / 2) + nrm * 0.03, 0.005, n=6)
+
+
+def wall_panel(ctx, part, x_sign, gz=-0.25, w=0.2, h=0.13):
+    """one access panel on the liner at eye level, left (x_sign -1) or right (+1)"""
+    best = None
+    for k in range(360):
+        phi = 2 * math.pi * k / 360
+        p = shell_pt(ctx, phi, gz, LINER)
+        sc = abs(p.y) - 0.0
+        if p.x * x_sign > 0.2 and (best is None or sc < best[0]):
+            best = (sc, phi)
+    if best is None:
+        return 0
+    phi = best[1]
+    c = shell_pt(ctx, phi, gz, LINER - 0.0)
+    pa, pb = shell_pt(ctx, phi + 0.02, gz, LINER), shell_pt(ctx, phi - 0.02, gz, LINER)
+    ex = (pa - pb).normalized()
+    pu, pd = shell_pt(ctx, phi, gz - 0.03, LINER), shell_pt(ctx, phi, gz + 0.03, LINER)
+    ey = (pu - pd).normalized()
+    nrm = ex.cross(ey).normalized()
+    axisp = Vector((AX, ctx.g((0, 0, ctx.e.z)).y, c.z))
+    if nrm.dot(axisp - c) < 0:
+        nrm = -nrm
+    ey = nrm.cross(ex).normalized()
+    return access_panel(part, c + nrm * 0.004, ex, ey, nrm, w, h)
+
+
 def build(ctx, root, mats, panel_info=None):
     import cc_panel as PN
     P = PN.PCtx(ctx)
@@ -328,10 +426,10 @@ def build(ctx, root, mats, panel_info=None):
     plane_mesh(part, 'plate', B0, ey, rows)
     # 2) hood: starts at the console's top edge and slopes toward the eye over the head side
     hey, hrows = clip_plane(ctx, T0, hdir, 0.0, 3.0)
-    plane_mesh(part, 'plate', T0, hey, hrows)
+    plane_mesh(part, 'plate', T0, hey, hrows, uvc=ctx.flat_uv2)
     # 3) lower wall: from the console's bottom edge straight down (a plane across the axis) to the feet-side shell, in front of the knees
     ley, lrows = clip_plane(ctx, B0, Vector((0, -1, 0)), 0.0, 3.0)
-    plane_mesh(part, 'plate', B0, ley, lrows)
+    plane_mesh(part, 'plate', B0, ley, lrows, uvc=ctx.flat_uv2)
     nl = liner(ctx, part, wall)
     # fine seams and a few screws on the three flat walls, two small placards
     ex = Vector((1, 0, 0))
@@ -344,15 +442,38 @@ def build(ctx, root, mats, panel_info=None):
     nscrews += seams(part, T0, hey, hrows, nrm_of(hey), [0.17, 0.36, 0.55], xs)
     nscrews += seams(part, B0, ley, lrows, nrm_of(ley), [0.2, 0.42, 0.66], xs)
     placard(part, 'MDC UPPER CLOSEOUT|DO NOT STEP', T0, ex, hey, nrm_of(hey), AX - 0.23, 0.265, 0.17, 0.045, 1)
+    nh = nrm_of(hey)
+    def hood_ok(x, s, w, h, m=0.07):
+        a, b = _ext(hrows, s - h / 2), _ext(hrows, s + h / 2)
+        return a is not None and b is not None and x - w / 2 > max(a[0], b[0]) + m and x + w / 2 < min(a[1], b[1]) - m
+    got = []
+    for (x, s, w, h) in ((AX - 0.68, 0.46, 0.30, 0.15), (AX - 0.13, 0.46, 0.26, 0.15), (AX + 0.34, 0.265, 0.24, 0.13), (AX - 0.62, 0.26, 0.20, 0.12)):
+        if hood_ok(x, s, w, h):
+            nscrews += access_panel(part, T0 + ex * x + hey * s + nh * 0, ex, hey, nh, w, h); got.append((round(x, 2), s))
+    if hood_ok(AX + 0.2, 0.46, 0.14, 0.07):
+        vent(part, T0 + ex * (AX + 0.2) + hey * 0.46, ex, hey, nh, 0.14, 0.07); got.append('vent')
+    if hood_ok(AX + 0.64, 0.45, 0.30, 0.0, 0.05):
+        handrail(part, T0 + ex * (AX + 0.64) + hey * 0.45, ex, nh, 0.30); got.append('rail')
+    C.log('closeout details on hood', got)
     placard(part, 'EQUIPMENT BAY ACCESS|NO LOOSE ITEMS', B0, ex, ley, nrm_of(ley), AX - 0.68, 0.31, 0.17, 0.045, 2)
-    # 4) wall furniture and window frames in front of the wall and inside the view cone are replaced by the liner
+    # 4) the room is closed: no windows, no wall dressing anywhere (the liner covers the whole shell)
     ncull = 0
-    for nm, pp in list(PARTS.items()):
-        if nm.startswith('apollo_walls'):
-            ncull += cull(pp, lambda q: _ang(q) < LIM + 6 and q.z > wall.z(q.y) + 0.003)
-        elif nm.startswith(('frame_', 'glass_')):
-            ncull += cull(pp, lambda q: _ang(q) < LIM + 10 and q.z > wall.z(q.y) + 0.003)
-            if not any(d['f'] for d in pp.m.values()):
-                del PARTS[nm]
+    for nm in list(PARTS):
+        if nm.startswith(('apollo_walls', 'frame_', 'glass_')):
+            del PARTS[nm]; ncull += 1
+    # 5) the side crew hatch is removed entirely (the liner runs smoothly over its spot); the runtime null-checks door_side / ladderTop_side / plug_side
+    nh_ = 0
+    for nm in list(PARTS):
+        n_ = nm
+        hit = False
+        for _ in range(20):
+            if n_ == 'hatch_side':
+                hit = True; break
+            n_ = PARTS[n_].parent if n_ in PARTS else None
+            if n_ is None:
+                break
+        if hit and nm in PARTS:
+            del PARTS[nm]; nh_ += 1
+    C.log('side hatch parts removed', nh_)
     C.log('closeout: backdrop rows', len(rows), 'hood rows', len(hrows), 'lower rows', len(lrows), 'liner faces', nl, 'screws', nscrews, 'culled islands', ncull, 'tris', part.tris())
     return part

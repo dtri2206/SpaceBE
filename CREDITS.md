@@ -22,3 +22,20 @@ The Earth and Mars maps are real imagery (below). Sky and terrain are generated 
 | Ship hum (`ambience_ship`) | [BigSoundBank, "Ventilation #5"](https://bigsoundbank.com/ventilation-5-s3598.html) | CC0. Trimmed, filtered and converted to MP3. |
 | Suit breathing (`suit_breath`) | [BigSoundBank, "Man Breathing"](https://bigsoundbank.com/man-breathing-s2195.html) | CC0. Trimmed, filtered and converted to MP3. |
 | Radio static (`radio_static`) | [Oreocooke, "Static B"](https://commons.wikimedia.org/wiki/File:Static_B.wav) | CC0. Trimmed, filtered and converted to MP3. |
+
+## Memorial photographs
+
+Images for the "In Memoriam" tribute (`public/assets/tributes/`, details in `credits.json`). Downscaled copies of the Wikimedia Commons originals.
+
+| Asset | Source | License |
+|---|---|---|
+| `soyuz1-komarov.jpg`: Vladimir Komarov, 1965 (portrait) | [File:%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9A](https://commons.wikimedia.org/wiki/File:%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%BC%D0%B8%D1%80_%D0%9A%D0%BE%D0%BC%D0%B0%D1%80%D0%BE%D0%B2.jpg), by Valentin Cheredintsev / TASS (via Russian Ministry of Defence, 60cosmonauts.mil.ru) | CC BY 4.0 |
+| `soyuz1-vehicle.jpg`: Soyuz 7K-OK(A) capsule, National Space Centre, Leicester | [File:Soyuz_7K-OK(A)_at_Space_Center.jpg](https://commons.wikimedia.org/wiki/File:Soyuz_7K-OK(A)_at_Space_Center.jpg), by Alan Saunders (Kaptain Kobold) | CC BY 2.0 |
+| `challenger-crew.jpg`: STS-51-L official crew portrait, 15 November 1985 | [File:Challenger_flight_51-l_crew.jpg](https://commons.wikimedia.org/wiki/File:Challenger_flight_51-l_crew.jpg), by NASA | Public domain (NASA) |
+| `columbia-crew.jpg`: STS-107 official crew photograph, 2001 | [File:Crew_of_STS-107,_official_photo.jpg](https://commons.wikimedia.org/wiki/File:Crew_of_STS-107,_official_photo.jpg), by NASA | Public domain (NASA) |
+| `apollo1-crew.jpg`: Apollo 1 crew in front of Launch Complex 34 | [File:Apollo1-Crew_01.jpg](https://commons.wikimedia.org/wiki/File:Apollo1-Crew_01.jpg), by NASA | Public domain (NASA) |
+| `soyuz11-crew.jpg`: Soyuz 11 cosmonauts, USSR memorial stamp 1971 (cropped) | [File:Soyuz_11_crew.jpg](https://commons.wikimedia.org/wiki/File:Soyuz_11_crew.jpg), by USSR Post | Public domain (PD-RU-exempt, cropped stamp) |
+
+## Voices, sound effects and music (ElevenLabs)
+
+All files in `public/assets/audio/demo/` were generated with ElevenLabs (elevenlabs.io) on a paid Starter plan: six original voices made with Voice Design (no real person's voice imitated), 44 lines with Eleven v3 text-to-speech, 20 sound effects, and 3 instrumental scores with Eleven Music. `manifest.json` lists every file with its subtitle and length.

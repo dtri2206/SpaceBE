@@ -1,0 +1,13 @@
+/* The flight-recorder readout: amber monospace on black, typed out line by line. Sits above the black layer of the return home. */
+.rh-analysis { position: absolute; inset: 0; background: #000; display: flex; align-items: center; justify-content: center; opacity: 1; animation: rh-an-in .6s ease both; }
+.rh-analysis::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .22) 0 1px, transparent 1px 3px); }
+.rh-analysis-pre { font: 500 clamp(12px, 1.7vw, 24px)/1.75 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .04em; color: #ffb41f; text-shadow: 0 0 9px rgba(255, 180, 31, .45); white-space: pre; padding: 0 4vw; max-width: 100vw; overflow: hidden; }
+.rh-an-line { min-height: 1.75em; }
+.rh-an-head { color: #ffd27a; }
+.rh-an-ok { color: #ffb41f; }
+.rh-an-warn { color: #ffb41f; }
+.rh-an-bad { color: #ff7a3d; }
+.rh-an-cursor { display: inline-block; width: .6em; height: 1.05em; margin-left: .15em; vertical-align: -.15em; background: currentColor; animation: rh-an-blink .8s steps(2, jump-none) infinite; }
+@keyframes rh-an-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rh-an-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .rh-analysis { animation: none; } .rh-an-cursor { animation: none; } }

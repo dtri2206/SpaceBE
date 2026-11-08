@@ -45,6 +45,7 @@ import { createPadFire, PAD_FIRE } from './padFire.js';
 import { createFireFlash } from './hud/fireFlash.js';
 import { buttonCentre, hasButton as cockpitHasButton, pickButton } from './phase0Aim.js';
 import { stackParts } from './rocketStack.js';
+import demo from './demo/index.js'; // pitch demo (hold C+R+7); inert until triggered, drives its own frames (demo/driver.js)
 import { ZOOM_DEFAULT, ZOOM_PAD, applyMouse, createChaseState, createOrbit, horizonFrame, liftAboveGround, resetOrbit, stepZoom, updateChase } from './chaseCam.js';
 
 const fmt = (n, d = 0) => (Number.isFinite(n) ? n.toFixed(d) : '∞');
@@ -60,6 +61,11 @@ const ENTRY_TO_LANDING = 6000; // m: ENTRY hands over to LANDING here
 const LOW_MARS_ALTITUDE = 800;
 const LAUNCH_SITE_TOP = 40000; // m: Role 3's launch site shows its detail below this
 const DEBRIS_AFTER_ORBIT = 20; // s in orbit before the orbital-debris encounter (TEAM_PROMPT §6.3)
+const DEMO_DEBRIS_AFTER_ORBIT = 1.5; // s: in the pitch demo the debris encounter starts almost at once
+const DEMO_WARP_BOOST = 2.5; // pitch demo: the in-air warp caps and the auto warp of Mars entry/landing are this much higher
+const DEMO_ENTRY_APPROACH = 28; // s of approach before the atmosphere in the pitch demo (shorter, still time to trim)
+const demoOn = () => !!globalThis.__demo?.active;
+const demoCue = (name) => { if (demoOn()) { try { globalThis.__demo?.cue?.(name); } catch { /* the demo's audio only */ } } }; // pitch demo voice/sfx cues (src/flight/demo/audio.js)
 const COUNTDOWN = 10; // s: T-10 … ignition at T-3 … clamps release at T-0
 const IGNITION_AT = 3;
 const CALLOUT_SECONDS = 3.5;
@@ -86,6 +92,7 @@ const v3 = (p) => new THREE.Vector3(p.x, p.y, p.z);
 
 function newController(planetId, start, fuel) {
   const fc = new FlightController({ bus: events, planets: PLANETS, g0: G0, planetId, shipSpec: getShip(), start, fuel });
+  fc.demoSafe = demoOn();
   mission.fc = fc;
   mission.autopilot = createAutopilot(); // one flight computer per controller
   mission.planetId = planetId;
@@ -126,7 +133,7 @@ function controllerFor(state) {
     mission.entryList = createChecklist('entry');
     mission.blackout = 'before';
     const entry = newController('mars', { ...STARTS.marsEntry, flightPathDeg: ENTRY_FPA }, marsFuel);
-    approachBack(entry, ENTRY_APPROACH); // start far enough out to trim the angle before the interface
+    approachBack(entry, demoOn() ? DEMO_ENTRY_APPROACH : ENTRY_APPROACH); // start far enough out to trim the angle before the interface
     return entry;
   }
   // LANDING: keep the Mars controller from ENTRY, or the landed one when coming back to the seat.
@@ -360,13 +367,14 @@ const SMOOTH = (x) => x * x * (3 - 2 * x);
 const ZOOM_SECONDS = 0.6;
 const ZOOM_FILL = 0.75; // the display's height fills this much of the camera's vertical FOV
 const BRAKE_PULSE = 0.3; // s the ASSIST/brake switch pulses after a lock (animation only)
-const whoosh = (now) => { if (s && now - (s.whooshAt ?? -9) > 0.8) { s.whooshAt = now; audio.play('debris.whoosh'); } };
+const whoosh = (now) => { if (s && now - (s.whooshAt ?? -9) > 0.8) { s.whooshAt = now; audio.play('debris.whoosh'); demoCue('whoosh'); } };
 const callout = (text, t = CALLOUT_SECONDS) => { if (s) s.callout = { text, t }; };
 
 function offerManualUi() {
   if (!s) return;
   callout('Gravity turn coming up. The stick is yours if you want it.', MANUAL.windows.ascent.offerSeconds);
   audio.play('cockpit.manualOffer');
+  demoCue('manualOffer');
   s.pacer.event('manual_offer', s.fc.t, 0.5); // back to 1× now
 }
 
@@ -384,6 +392,7 @@ function placeDebris() {
   s.pacer.event('debris', fc.t, 4); // back to 1× (the offer / window also pins it)
   audio.play('alarm.master');
   audio.play('cockpit.manualOffer');
+  demoCue('debris');
   dw.offer();
   if (stick().free) { stick().giveBack(); dw.take(); callout('Debris ahead. Your stick is scored now.'); }
   else callout('Debris conjunction ahead. Take the stick to dodge, or the computer burns for you.', 6);
@@ -429,6 +438,7 @@ function toggleManual() {
   const w = mission.manualAscent;
   const fc = s?.fc;
   if (!s || s.phase0?.active) return null;
+  if (demoOn() && (s.stateName === 'ENTRY' || s.stateName === 'LANDING')) return null; // pitch demo: the computer flies Mars entry and landing, no free-manual offers
   const dw = mission.debrisWin;
   if (mission.foam.offered && fc?.planetId === 'earth') { mission.foam.take(); startSweep(); return 'inspect'; }
   if (dw.offered) { dw.take(); zoomIn(); callout('You have the stick. Dodge!'); return 'window'; }
@@ -596,6 +606,9 @@ function stepEgress(dt) {
 // ---------- module ----------
 export default {
   init() {
+    // read by the pitch demo director (./demo): where the flight is, without reaching into the session
+    demo.setFlightStatus(() => (s ? { state: s.stateName, phase0Active: !!s.phase0?.active, countdown: s.countdown ?? 0, landed: !!s.fc.landed, failed: !!s.fc.failed, debrisPlaced: mission.debrisDone, debrisBusy: mission.debrisWin.busy,
+      planetId: s.fc.planetId, altitude: s.fc.altitude, throttle: s.fc.throttle, chuteOpen: !!s.fc.chuteOpen, inAtmosphere: s.fc.altitude <= atmosphereTop(s.fc.planet) } : null));
     if (new URLSearchParams(location.search).get('debug') === '1') window.__role2flight = {
       get look() { return s?.look; }, get fc() { return s?.fc; }, get orbit() { return s?.orbit; }, get session() { return s; },
       skipPhase0() { s?.phase0?.skip(); },
@@ -707,7 +720,7 @@ export default {
           graphics.setSunDirection(new THREE.Vector3(0.5, 0.55, -0.67));
           graphics.setView(site.scene, site.camera); session.mode = 'site';
         },
-        onCountdown: (info) => { if (s === session && session.countdown === undefined) { session.countdown = COUNTDOWN; session.countdownAt = performance.now(); if (info?.padFire) session.padFire = createPadFire(); } },
+        onCountdown: (info) => { if (s === session && session.countdown === undefined) { session.countdown = COUNTDOWN; session.countdownAt = performance.now(); demoCue('countdown'); if (info?.padFire) session.padFire = createPadFire(); } },
         onScrub: () => requestState('HANGAR'),
       });
     }
@@ -721,6 +734,7 @@ export default {
       if (['maxq_warning', 'g_high', 'heat_warning', 'engine_hot'].includes(type)) audio.play('alarm.master');
       if (type === 'orbit_achieved') audio.play('radio.blip');
       if (type === 'debris_near_miss') whoosh(fc.t);
+      demoCue(`notice:${type}`);
     };
     events.emit('flight:phase', { phase: fc.phase });
 
@@ -774,8 +788,8 @@ export default {
     }
     if (s.countdown > 0) {
       s.countdown = Math.max(0, COUNTDOWN - (performance.now() - s.countdownAt) / 1000);
-      if (s.countdown <= IGNITION_AT && fc.throttle === 0) fc.throttle = 1; // main engine start at T-3
-      if (s.countdown <= 0) fc.holdDown = false; // T-0: clamps release
+      if (s.countdown <= IGNITION_AT && fc.throttle === 0) { fc.throttle = 1; demoCue('ignition'); } // main engine start at T-3
+      if (s.countdown <= 0) { fc.holdDown = false; demoCue('liftoff'); } // T-0: clamps release
       for (const e of s.padFire?.update(s.countdown, performance.now() / 1000) ?? []) {
         if (e === 'alarm') { audio.play('alarm.master'); callout('Fire in the cockpit!', 3); s.fireFlash ??= createFireFlash({ parent: s.hud.root.parentElement ?? s.hud.root }); s.fireFlash.start(PAD_FIRE.fadeSeconds); }
         else if (e === 'fail') { fc.throttle = 0; fc.failWith('pureOxygen', 'pad_fire', {}, 'apollo1'); }
@@ -841,7 +855,7 @@ export default {
         for (const o of fc.obstacles) if (!o.whooshed && o.minDist < 40) { o.whooshed = true; whoosh(fc.t); }
         for (const ev of r.events) {
           if (ev === 'declined') callout('Computer has it.');
-          else if (ev === 'clear' || ev === 'timeout') { finishManual('Clear of the debris. Computer has it.'); audio.play('cockpit.lock'); }
+          else if (ev === 'clear' || ev === 'timeout') { finishManual('Clear of the debris. Computer has it.'); audio.play('cockpit.lock'); demoCue('debrisClear'); }
         }
       }
       if (snap.ahead === 0 && fc.t - s.debrisAt > 2) { // the whole field has passed: rate it, then the lesson
@@ -861,6 +875,8 @@ export default {
     const pace = paceContext(fc, { ascent: ascent0, landing: landing0, countdown: s.countdown > 0, trimming: !!pilot.trim, aligned, manual: win.busy || stick().free || mission.debrisWin.busy });
     for (const name of s.events.update(pace)) s.pacer.event(name, pace.t);
     s.warpInfo = s.pacer.decide(pace, Math.min(dt, 0.1));
+    fc.capBoost = demoOn() && fc.planetId === 'mars' ? DEMO_WARP_BOOST : 1; // pitch demo only (FlightController.allowedWarp)
+    if (fc.capBoost > 1 && s.warpInfo.auto && s.warpInfo.reason !== 'approach') s.warpInfo = { ...s.warpInfo, warp: s.warpInfo.warp * fc.capBoost };
     // heat-shield inspection offer / sweep (the sweep fast-forwards its 40 mission seconds into a few real ones)
     for (const ev of mission.foam.update(dtMan, { busy: mission.debrisWin.busy || hasStick() || fc.failed || state !== 'ORBIT' })) {
       if (ev === 'offered') { audio.play('cockpit.manualOffer'); s.pacer.event('foam', fc.t, FOAM.offerSeconds); }
@@ -890,7 +906,7 @@ export default {
     // Orbital debris encounter, once per mission, some time after reaching orbit (armor = ShipSpec.stats.armorHits)
     if (state === 'ORBIT' && t.phase === 'orbit' && !mission.debrisDone) {
       s.inOrbitFor = (s.inOrbitFor ?? 0) + dt;
-      if (s.inOrbitFor > DEBRIS_AFTER_ORBIT) {
+      if (s.inOrbitFor > (demoOn() ? DEMO_DEBRIS_AFTER_ORBIT : DEBRIS_AFTER_ORBIT)) {
         placeDebris();
       }
     }
